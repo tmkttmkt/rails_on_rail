@@ -1,0 +1,51 @@
+formatVersion: 1
+catalog: track-roadbeds # 路盤カタログ
+
+# 路盤は軌道支持方式の下で軌道全体を支える人工的な基礎とする。
+# 自然地盤の土質・岩盤・湿地などはマップ側の属性として扱う。
+
+items:
+  - id: minimal-earthwork
+    name: 最小限の路盤整備
+    regionType: global
+    status: draft
+    constructionType: minimal
+    drainageType: none
+    description: 整地を中心とする最小限の施工。可搬軌道や短期利用を想定する。
+    sources: []
+
+  - id: simple-earth-roadbed
+    name: 簡易土路盤
+    regionType: global
+    status: draft
+    constructionType: earthwork
+    drainageType: simple
+    description: 小規模な盛土・切土と簡易排水を備える軽便・産業鉄道向け路盤。
+    sources: []
+
+  - id: standard-drained-roadbed
+    name: 標準排水路盤
+    regionType: global
+    status: draft
+    constructionType: engineered-earthwork
+    drainageType: standard
+    description: 一般鉄道向けに締固め、排水、法面を整備した標準的な路盤。
+    sources: []
+
+  - id: reinforced-roadbed
+    name: 強化路盤
+    regionType: global
+    status: draft
+    constructionType: reinforced
+    drainageType: enhanced
+    description: 高軸重・高速・高密度運転に備えて支持力と排水性を高めた路盤。
+    sources: []
+
+  - id: soft-ground-improved-roadbed
+    name: 軟弱地盤対策路盤
+    regionType: global
+    status: draft
+    constructionType: ground-improvement
+    drainageType: enhanced
+    description: マップ上の軟弱地盤による沈下を抑えるため、地盤改良を含めて施工する路盤。
+    sources: []

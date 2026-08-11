@@ -1,0 +1,35 @@
+formatVersion: 1
+catalog: vehicle-coupler-systems
+
+items:
+  - id: buffer-and-chain
+    name: バッファー・鎖式連結器
+    status: draft
+    directlyCompatibleWithIds:
+      - buffer-and-chain
+    description: 側面バッファーと中央の鎖を用いる連結方式。
+    sources: []
+
+  - id: link-and-pin
+    name: リンク・ピン式連結器
+    status: draft
+    directlyCompatibleWithIds:
+      - link-and-pin
+    description: リンクと垂直ピンで車両を接続する方式。
+    sources: []
+
+  - id: knuckle
+    name: 自動連結器
+    status: draft
+    directlyCompatibleWithIds:
+      - knuckle
+    description: ナックルを噛み合わせて自動的に機械連結する方式。
+    sources: []
+
+  - id: center-buffer-light
+    name: 軽便鉄道用中央緩衝連結器
+    status: draft
+    directlyCompatibleWithIds:
+      - center-buffer-light
+    description: 軽便・産業鉄道向けの中央緩衝器と連結金具をまとめた汎用方式。
+    sources: []

@@ -1,0 +1,40 @@
+formatVersion: 1
+catalog: vehicle-coaches
+
+items:
+  - id: generic-light-two-axle-coach
+    name: 汎用軽便二軸客車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: LC-2
+    introducedYear: 1880
+    legalClassification:
+      defaultCategoryId: passenger-coach
+    dimensions:
+      lengthOverCouplersM: 8.5
+      maximumWidthM: 2.0
+      maximumHeightM: 3.0
+    runningGear:
+      gaugeMm: 762
+      minimumCurveRadiusM: 25
+      axleGroups:
+        - id: running-axles
+          axleCount: 2
+          assemblyType: fixed-frame
+          powered: false
+          emptyLoadPerAxleT: 2.5
+          maximumLoadedLoadPerAxleT: 3.5
+    capabilities:
+      selfPropelled: false
+      canHaulOtherVehicles: false
+      passengerCapacity: 40
+      cargoCapacityT: 0
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    hasHandBrake: true
+    sources: []

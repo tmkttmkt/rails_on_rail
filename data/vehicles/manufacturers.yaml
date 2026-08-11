@@ -1,0 +1,10 @@
+formatVersion: 1
+catalog: vehicle-manufacturers
+
+items:
+  - id: generic-railway-workshop
+    name: 汎用鉄道工場
+    status: draft
+    regionType: global
+    description: 車両データ構造を確認するための仮想製造者。
+    sources: []

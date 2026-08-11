@@ -2,6 +2,10 @@
 
 鉄道の規格・車両・歴史・経営を詳細に扱う2D鉄道シミュレーションゲーム。
 
+## 名称について
+
+「Rails on Rail」という名称には、**複数の複雑な鉄道規格（Rails）が、歴史という一本の線路（Rail）に乗っている**という意味を込めている。
+
 ## 概要
 
 Rails on Rail は、長期的な鉄道経営と鉄道技術の発展を扱う2Dシミュレーションゲームである。
@@ -112,12 +116,15 @@ AIへの委任では、目的を与えられたAIが、何を調べるべきか�
 - 車両、規格、技術などは可能な限りデータとして定義する
 - AIによる操作を初期段階から考慮する
 
-詳細は `docs/technical-direction.md` を参照する。
+構想段階の詳細は `docs/planning/technical-direction.md` を参照する。
+
+ドキュメント全体の入口は `docs/README.md`、人間とAIの開発プロトコルは `docs/workflow.md` を参照する。
 
 ## 開発段階
 
 開発は機能を段階的に追加して進める。
 
+- Phase -1: 技術プロトタイプ
 - Phase 0: 鉄道が動く
 - Phase 1: 鉄道経営の核
 - Phase 2: 運行
@@ -126,8 +133,24 @@ AIへの委任では、目的を与えられたAIが、何を調べるべきか�
 - Phase 5: 社会と制度
 - Phase 6: 鉄道史
 
-詳細は `docs/development-stages.md` を参照する。
+開発段階全体の構想は `docs/planning/development-stages.md`、現在のPhase -1は `docs/epics/phase-minus-one.md` を参照する。
 
 ## 現在の状態
 
-構想・初期設計段階。
+Phase -1の技術プロトタイプを開発中。
+
+## プロトタイプを動かす
+
+```bash
+npm install
+npm run dev
+```
+
+表示されたURLをブラウザで開き、自由なマップを移動・拡大縮小しながら線路を敷設し、線路上へ駅を設置できる。複数駅を停車順に選ぶと運行経路を作成し、試験列車を走らせられる。
+
+自動テストと本番ビルドは次のコマンドで実行する。
+
+```bash
+npm run test
+npm run build
+```

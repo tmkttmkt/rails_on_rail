@@ -1,0 +1,51 @@
+formatVersion: 1
+catalog: vehicle-powered-cars
+
+items:
+  - id: generic-light-diesel-railcar
+    name: 汎用軽便ディーゼル動車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: LDC-1
+    introducedYear: 1930
+    legalClassification:
+      defaultCategoryId: powered-passenger-car
+    dimensions:
+      lengthOverCouplersM: 10
+      maximumWidthM: 2.1
+      maximumHeightM: 3.1
+    runningGear:
+      gaugeMm: 762
+      minimumCurveRadiusM: 35
+      axleGroups:
+        - id: powered-axle
+          axleCount: 1
+          assemblyType: fixed-frame
+          powered: true
+          emptyLoadPerAxleT: 4.2
+          maximumLoadedLoadPerAxleT: 5.0
+        - id: trailing-axle
+          axleCount: 1
+          assemblyType: fixed-frame
+          powered: false
+          emptyLoadPerAxleT: 3.8
+          maximumLoadedLoadPerAxleT: 4.8
+    capabilities:
+      selfPropelled: true
+      canHaulOtherVehicles: true
+      passengerCapacity: 45
+      cargoCapacityT: 1
+    traction:
+      propulsionType: diesel-mechanical
+      maximumPowerKw: 90
+      startingTractiveEffortKn: 18
+      maximumSpeedKmh: 55
+    connections:
+      front:
+        couplerSystemId: knuckle
+        throughBrakeSystemIds: [air-automatic]
+      rear:
+        couplerSystemId: knuckle
+        throughBrakeSystemIds: [air-automatic]
+    hasHandBrake: true
+    sources: []

@@ -1,0 +1,42 @@
+formatVersion: 1
+catalog: legal-enforcement-policies # 取締方針カタログ
+
+items:
+  - id: strict-mainline-enforcement
+    name: 本線重点取締
+    status: draft
+    oversightLevel: 0.9
+    localDiscretion: 0.2
+    safetyRiskAversion: 0.9
+    toleranceFactors:
+      closureRiskWeight: 0.1
+      socialNecessityWeight: 0.2
+      alternativeTransportShortageWeight: 0.1
+    description: 高密度・高速・他社直通のある本線で、安全と制度適合を強く求める方針。
+    sources: []
+
+  - id: discretionary-terminal-line-enforcement
+    name: 末端路線裁量取締
+    status: draft
+    oversightLevel: 0.3
+    localDiscretion: 0.9
+    safetyRiskAversion: 0.6
+    toleranceFactors:
+      closureRiskWeight: 0.9
+      socialNecessityWeight: 0.9
+      alternativeTransportShortageWeight: 0.8
+    description: 廃線危機、生活上の必要性、代替交通不足を考慮して軽微な違反を黙認し得る方針。
+    sources: []
+
+  - id: industrial-site-light-enforcement
+    name: 産業敷地内軽監視
+    status: draft
+    oversightLevel: 0.2
+    localDiscretion: 0.8
+    safetyRiskAversion: 0.5
+    toleranceFactors:
+      closureRiskWeight: 0.5
+      socialNecessityWeight: 0.2
+      alternativeTransportShortageWeight: 0.4
+    description: 一般旅客や他社線への影響が小さい産業敷地内で、監視頻度を低くする方針。
+    sources: []

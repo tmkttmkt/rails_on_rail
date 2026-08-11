@@ -1,0 +1,16 @@
+formatVersion: 1
+catalog: track-gauges # 軌間カタログ
+items:
+  - id: gauge-1067mm # 永続的な機械識別子
+    name: 1067 mm軌間
+    status: draft # 下書き / 検証済み / 廃止
+    gaugeMm: 1067 # 軌間。単位はmm
+    description: 狭軌の一種。構造例として収録する。
+    sources: [] # 根拠資料ID
+
+  - id: gauge-1435mm
+    name: 1435 mm軌間
+    status: draft
+    gaugeMm: 1435
+    description: 標準軌。構造例として収録する。
+    sources: []

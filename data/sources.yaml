@@ -1,0 +1,174 @@
+formatVersion: 1
+catalog: sources # 出典資料カタログ
+items:
+  - id: nippon-steel-rails-k003
+    name: 日本製鉄 RAILS K003
+    status: researched
+    publisher: 日本製鉄株式会社
+    url: https://www.nipponsteel.com/product/catalog_download/__icsFiles/afieldfile/2026/06/05/K003en.pdf
+    description: 日本および各国規格のレール断面、寸法、単位質量などを掲載する製品資料。
+
+  - id: arcelormittal-european-rails
+    name: ArcelorMittal Transport Rails — European Standards
+    status: researched
+    publisher: ArcelorMittal
+    url: https://rails.arcelormittal.com/profiles/transport-rails/
+    description: EN規格を中心とするレール断面、別名、寸法、単位質量の一覧。
+
+  - id: arcelormittal-transport-rails
+    name: ArcelorMittal Transport Rails
+    status: researched
+    publisher: ArcelorMittal
+    url: https://rails.arcelormittal.com/products/transport-rails/
+    description: 欧州、北米、ロシア、豪州などの輸送用レール製品資料への入口。
+
+  # 以下は歴史レール項目から移された出典候補。書誌情報とURLの確認が必要。
+  - id: britannica-1911-railways
+    name: Encyclopaedia Britannica 1911 — Railways
+    status: draft
+    notes: 版、章、参照箇所、公開URLを要確認。
+
+  - id: british-bullhead-history
+    name: 英国Bullheadレール史資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: british-track-1835-60lb
+    name: 1835年前後の英国60 lb/ydレール資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: curr-plateway-history
+    name: John Currとプレートウェイの歴史資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: early-steel-rail-1857
+    name: 1857年の初期鋼レール資料
+    status: draft
+    notes: Mushet鋼レールに関する書誌情報と公開URLを要確認。
+
+  - id: early-steel-rail-history
+    name: 初期鋼レール史資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: english-railway-management-84lb
+    name: 英国84 lb/yd双頭レール資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: gwr-baulk-road-history
+    name: GWR Baulk Road史資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: haer-central-georgia
+    name: HAER Central of Georgia Railway資料
+    status: draft
+    notes: 文書番号、参照箇所、公開URLを要確認。
+
+  - id: inland-transport-jessop-1789
+    name: Jessop 1789年エッジレール資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: jfe-japan-first-wrought-iron-rail
+    name: JFE 日本最初期の錬鉄レール分析資料
+    status: draft
+    notes: 論文名、著者、発行年、公開URLを要確認。
+
+  - id: liverpool-manchester-35lb
+    name: Liverpool & Manchester Railway 35 lb/ydレール資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: nps-allegheny-portage
+    name: 米国国立公園局 Allegheny Portage Railroad資料
+    status: draft
+    notes: 対象ページと公開URLを要確認。
+
+  - id: powerhouse-barlow-rail
+    name: Powerhouse Collection Barlow rail資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: railway-practice-1830s
+    name: 1830年代Railway Practice資料
+    status: draft
+    notes: 書名、版、参照箇所、公開URLを要確認。
+
+  - id: smg-95lb-bullhead
+    name: Science Museum Group 95 lb Bullhead rail資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: smg-cast-iron-fish-belly-1815
+    name: Science Museum Group 鋳鉄フィッシュベリーレール資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: smg-coalbrookdale-1767
+    name: Science Museum Group Coalbrookdale 1767レール資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: smg-north-midland-bullhead-1840
+    name: Science Museum Group North Midland Railwayレール資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: smg-stockton-darlington-1825
+    name: Science Museum Group Stockton & Darlingtonレール資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: smithsonian-stevens-rail
+    name: Smithsonian Stevens T Rail資料
+    status: draft
+    notes: 所蔵品番号と公開URLを要確認。
+
+  - id: standards-australia-historical-rails
+    name: Standards Australia 歴史的レール資料
+    status: draft
+    notes: 規格番号、版、参照箇所を要確認。
+
+  - id: victorian-railways-75lb
+    name: Victorian Railways 75 lb双頭レール資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: horonobe-tonkanbetsu-colonization-railway
+    name: 幌延町問寒別殖民軌道資料
+    status: draft
+    notes: 6 kg/m軌条の記載箇所と公開URLを要確認。
+
+  - id: shiretoko-museum-shari-colonization-railway
+    name: 知床博物館・斜里殖民軌道資料
+    status: draft
+    notes: 6 kg/m軌条の記載箇所と公開URLを要確認。
+
+  - id: decauville-diego-suarez
+    name: Decauville・Diego Suarez鉄道資料
+    status: draft
+    notes: 9.5 kg/m級軌条の書誌情報、記載箇所、公開URLを要確認。
+
+  - id: lrrsa-moreton-central-20lb
+    name: LRRSA Moreton Central Sugar Mill資料
+    status: draft
+    notes: 20 lb/yd軌条の書誌情報、記載箇所、公開URLを要確認。
+
+  - id: hokkaido-museum-light-rail-collection
+    name: 北海道博物館・簡易軌道資料
+    status: draft
+    notes: 12 kg/m軌条の所蔵情報と公開URLを要確認。
+
+  - id: cuba-sugar-railway-30lb
+    name: キューバ砂糖鉄道30 lb/yd軌条資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。
+
+  - id: cuba-sugar-railway-35lb
+    name: キューバ砂糖鉄道35 lb/yd軌条資料
+    status: draft
+    notes: 具体的な書誌情報と公開URLを要確認。

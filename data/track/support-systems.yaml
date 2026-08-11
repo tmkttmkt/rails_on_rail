@@ -1,0 +1,147 @@
+formatVersion: 1
+catalog: track-support-systems # 軌道支持方式カタログ
+
+# 締結装置、枕木・支持構造、道床を一体の方式として定義する。
+# compatibleProfileFamiliesは使用可能なレール断面系統を表す。
+
+items:
+  - id: wooden-wagonway-support
+    name: 木製ワゴンウェイ支持方式
+    regionType: global
+    status: draft
+    introducedYear: 1600
+    constructionType: timber-integrated
+    supportMaterial: wood
+    trackBedType: ground
+    compatibleProfileFamilies:
+      - wooden-edge
+      - strap-rail
+    description: 木製レールまたは鉄板被覆木製レールを横木・縦木で支える初期方式。
+    sources: []
+
+  - id: stone-block-chair-support
+    name: 石製ブロック・チェア支持方式
+    regionType: europe
+    status: draft
+    introducedYear: 1760
+    constructionType: block-and-chair
+    supportMaterial: stone
+    trackBedType: ground
+    compatibleProfileFamilies:
+      - plate-rail
+      - l-plate
+      - edge-rail
+      - fish-belly
+      - rolled-fish-belly
+    description: 石製ブロックと鋳鉄製チェアなどで短尺レールを点支持する初期軌道方式。
+    sources: []
+
+  - id: timber-sleeper-chair-ballast
+    name: 木枕木・チェア・バラスト軌道
+    regionType: global
+    status: draft
+    introducedYear: 1830
+    constructionType: transverse-sleeper
+    supportMaterial: wood
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - parallel-chair-rail
+      - double-head
+      - bullhead
+      - chair-rail
+    description: 木枕木上のチェアとキーで双頭・Bullhead系レールを支持する方式。
+    sources: []
+
+  - id: timber-sleeper-direct-ballast
+    name: 木枕木・直接締結・バラスト軌道
+    regionType: global
+    status: draft
+    introducedYear: 1830
+    constructionType: transverse-sleeper
+    supportMaterial: wood
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - flat-bottom
+      - light-flat-bottom
+    description: 平底レールを木枕木へ直接固定し、バラストで支持する一般的な方式。
+    sources: []
+
+  - id: longitudinal-timber-bridge-support
+    name: 縦枕木・ブリッジレール軌道
+    regionType: europe
+    regionTags: [britain]
+    status: draft
+    introducedYear: 1838
+    constructionType: longitudinal-timber
+    supportMaterial: wood
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - bridge-rail
+    description: 縦方向の木材でブリッジレールを連続支持するGWR系の方式。
+    sources:
+      - gwr-baulk-road-history
+
+  - id: direct-ballast-barlow-support
+    name: Barlowレール直接支持方式
+    regionType: global
+    status: draft
+    introducedYear: 1849
+    constructionType: direct-support
+    supportMaterial: none
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - barlow
+    description: 枕木を使わず、Barlowレールをバラストへ直接載せる方式。
+    sources:
+      - powerhouse-barlow-rail
+
+  - id: portable-track-panel
+    name: 可搬式軌框
+    regionType: global
+    status: draft
+    introducedYear: 1875
+    constructionType: prefabricated-panel
+    supportMaterial: steel
+    trackBedType: ground
+    compatibleProfileFamilies:
+      - portable-flat-bottom
+      - light-flat-bottom
+    description: 軽レールと簡易横材を軌框として組み、短時間で敷設・撤去する方式。
+    sources: []
+
+  - id: steel-sleeper-ballast
+    name: 鉄枕木・バラスト軌道
+    regionType: global
+    status: draft
+    constructionType: transverse-sleeper
+    supportMaterial: steel
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - flat-bottom
+      - light-flat-bottom
+    description: 鉄製枕木とバラストを組み合わせた軌道支持方式。
+    sources: []
+
+  - id: pc-sleeper-ballast
+    name: PC枕木・バラスト軌道
+    regionType: global
+    status: draft
+    constructionType: transverse-sleeper
+    supportMaterial: prestressed-concrete
+    trackBedType: ballast
+    compatibleProfileFamilies:
+      - flat-bottom
+    description: PC枕木、弾性締結、バラストを一体の方式として扱う現代的な軌道。
+    sources: []
+
+  - id: concrete-slab-direct-fixation
+    name: コンクリートスラブ・直接締結軌道
+    regionType: global
+    status: draft
+    constructionType: slab
+    supportMaterial: reinforced-concrete
+    trackBedType: concrete-slab
+    compatibleProfileFamilies:
+      - flat-bottom
+    description: レールをコンクリートスラブ上へ直接固定する省保守型の軌道支持方式。
+    sources: []

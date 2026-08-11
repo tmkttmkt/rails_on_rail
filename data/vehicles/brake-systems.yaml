@@ -1,0 +1,17 @@
+formatVersion: 1
+catalog: vehicle-brake-systems
+
+items:
+  - id: vacuum-automatic
+    name: 自動真空ブレーキ
+    status: draft
+    brakeType: continuous
+    description: 編成へ真空管を貫通させる自動ブレーキ方式。
+    sources: []
+
+  - id: air-automatic
+    name: 自動空気ブレーキ
+    status: draft
+    brakeType: continuous
+    description: 編成へ空気管を貫通させる自動ブレーキ方式。
+    sources: []

@@ -1,0 +1,294 @@
+{
+  "formatVersion": 1,
+  "metadata": {
+    "name": "テストマップ 西ノ宮線",
+    "createdAt": "2026-08-09T17:48:00.830Z",
+    "updatedAt": "2026-08-09T17:48:00.830Z"
+  },
+  "state": {
+    "version": 7,
+    "tracks": [
+      {
+        "id": "track-1",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -580,
+            "y": -6
+          },
+          {
+            "x": 580,
+            "y": -6
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1160,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-2",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -580,
+            "y": 6
+          },
+          {
+            "x": 580,
+            "y": 6
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1160,
+              "cantMm": 0
+            }
+          ]
+        }
+      }
+    ],
+    "trackGroups": [
+      {
+        "id": "track-group-1",
+        "name": "線路群 1",
+        "trackIds": [
+          "track-1",
+          "track-2"
+        ]
+      }
+    ],
+    "junctions": [],
+    "stations": [
+      {
+        "id": "station-1",
+        "name": "西ノ宮",
+        "position": {
+          "x": -490,
+          "y": -6
+        },
+        "stopPoints": [
+          {
+            "trackId": "track-1",
+            "startDistanceM": 50,
+            "endDistanceM": 130,
+            "startPosition": {
+              "x": -530,
+              "y": -6
+            },
+            "endPosition": {
+              "x": -450,
+              "y": -6
+            },
+            "direction": "both"
+          },
+          {
+            "trackId": "track-2",
+            "startDistanceM": 50,
+            "endDistanceM": 130,
+            "startPosition": {
+              "x": -530,
+              "y": 6
+            },
+            "endPosition": {
+              "x": -450,
+              "y": 6
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-2",
+        "name": "北条",
+        "position": {
+          "x": -240.00000000000006,
+          "y": -6
+        },
+        "stopPoints": [
+          {
+            "trackId": "track-1",
+            "startDistanceM": 300,
+            "endDistanceM": 380,
+            "startPosition": {
+              "x": -280,
+              "y": -6
+            },
+            "endPosition": {
+              "x": -200,
+              "y": -6
+            },
+            "direction": "both"
+          },
+          {
+            "trackId": "track-2",
+            "startDistanceM": 300,
+            "endDistanceM": 380,
+            "startPosition": {
+              "x": -280,
+              "y": 6
+            },
+            "endPosition": {
+              "x": -200,
+              "y": 6
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-3",
+        "name": "中央",
+        "position": {
+          "x": 0,
+          "y": -6
+        },
+        "stopPoints": [
+          {
+            "trackId": "track-1",
+            "startDistanceM": 499.9999999999999,
+            "endDistanceM": 660,
+            "startPosition": {
+              "x": -80.00000000000011,
+              "y": -6
+            },
+            "endPosition": {
+              "x": 80,
+              "y": -6
+            },
+            "direction": "both"
+          },
+          {
+            "trackId": "track-2",
+            "startDistanceM": 499.9999999999999,
+            "endDistanceM": 660,
+            "startPosition": {
+              "x": -80.00000000000011,
+              "y": 6
+            },
+            "endPosition": {
+              "x": 80,
+              "y": 6
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-4",
+        "name": "新東",
+        "position": {
+          "x": 240,
+          "y": -6
+        },
+        "stopPoints": [
+          {
+            "trackId": "track-1",
+            "startDistanceM": 780,
+            "endDistanceM": 860,
+            "startPosition": {
+              "x": 200,
+              "y": -6
+            },
+            "endPosition": {
+              "x": 280,
+              "y": -6
+            },
+            "direction": "both"
+          },
+          {
+            "trackId": "track-2",
+            "startDistanceM": 780,
+            "endDistanceM": 860,
+            "startPosition": {
+              "x": 200,
+              "y": 6
+            },
+            "endPosition": {
+              "x": 280,
+              "y": 6
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-5",
+        "name": "東ノ宮",
+        "position": {
+          "x": 490,
+          "y": -6
+        },
+        "stopPoints": [
+          {
+            "trackId": "track-1",
+            "startDistanceM": 1030,
+            "endDistanceM": 1110,
+            "startPosition": {
+              "x": 450,
+              "y": -6
+            },
+            "endPosition": {
+              "x": 530,
+              "y": -6
+            },
+            "direction": "both"
+          },
+          {
+            "trackId": "track-2",
+            "startDistanceM": 1030,
+            "endDistanceM": 1110,
+            "startPosition": {
+              "x": 450,
+              "y": 6
+            },
+            "endPosition": {
+              "x": 530,
+              "y": 6
+            },
+            "direction": "both"
+          }
+        ]
+      }
+    ],
+    "routes": [],
+    "operatingTrains": [],
+    "nextTrackId": 3,
+    "nextTrackGroupId": 2,
+    "nextJunctionId": 1,
+    "nextStationId": 6,
+    "nextRouteId": 1,
+    "nextOperatingTrainId": 1
+  }
+}

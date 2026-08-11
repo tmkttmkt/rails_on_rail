@@ -1,0 +1,47 @@
+formatVersion: 1
+catalog: vehicle-locomotives
+
+items:
+  - id: generic-light-steam-0-4-0
+    name: 汎用小型蒸気機関車 0-4-0
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: LS-040
+    introducedYear: 1880
+    legalClassification:
+      defaultCategoryId: locomotive
+    dimensions:
+      lengthOverCouplersM: 6.5
+      maximumWidthM: 2.0
+      maximumHeightM: 3.0
+    runningGear:
+      gaugeMm: 762
+      minimumCurveRadiusM: 25
+      axleGroups:
+        - id: driving
+          axleCount: 2
+          assemblyType: fixed-frame
+          powered: true
+          emptyLoadPerAxleT: 4.5
+          maximumLoadedLoadPerAxleT: 5.0
+    displayNotations:
+      whyte: 0-4-0
+    capabilities:
+      selfPropelled: true
+      canHaulOtherVehicles: true
+      passengerCapacity: 0
+      cargoCapacityT: 0
+    traction:
+      propulsionType: steam
+      maximumPowerKw: 120
+      startingTractiveEffortKn: 30
+      maximumSpeedKmh: 35
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    hasHandBrake: true
+    sources: []

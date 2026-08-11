@@ -1,0 +1,75 @@
+formatVersion: 1
+catalog: legal-violation-types # 違反種類カタログ
+
+items:
+  - id: unregistered-vehicle-operation
+    name: 未登録車両の運行
+    status: draft
+    subjectType: operation
+    occurrenceType: event
+    severity:
+      administrative: 0.8
+      safety: 0.2
+    tolerable: true
+    description: 登録を必要とする制度下で未登録車両を運行する行為。
+    sources: []
+
+  - id: inspection-expired-operation
+    name: 検査期限切れ車両の運行
+    status: draft
+    subjectType: operation
+    occurrenceType: event
+    severity:
+      administrative: 0.7
+      safety: 0.5
+    tolerable: true
+    description: 必要な検査の有効期限が切れた車両を運行する行為。
+    sources: []
+
+  - id: unauthorized-vehicle-modification
+    name: 車両の未認可改造
+    status: draft
+    subjectType: vehicle
+    occurrenceType: continuing
+    severity:
+      administrative: 0.8
+      safety: 0.3
+    tolerable: true
+    description: 認可を必要とする車両改造を、認可なしで適用している継続状態。
+    sources: []
+
+  - id: exception-scope-violation
+    name: 特例認可範囲外の運行
+    status: draft
+    subjectType: operation
+    occurrenceType: event
+    severity:
+      administrative: 0.9
+      safety: 0.5
+    tolerable: false
+    description: 特例で指定された区間、速度、用途、期間などの条件から外れて運行する行為。
+    sources: []
+
+  - id: axle-load-exceeded-operation
+    name: 許容軸重超過運行
+    status: draft
+    subjectType: operation
+    occurrenceType: event
+    severity:
+      administrative: 0.6
+      safety: 0.9
+    tolerable: false
+    description: 軌道または認可条件の許容軸重を超える車両を運行する行為。
+    sources: []
+
+  - id: accident-report-concealment
+    name: 事故報告の隠蔽
+    status: draft
+    subjectType: operator
+    occurrenceType: event
+    severity:
+      administrative: 1.0
+      safety: 0.8
+    tolerable: false
+    description: 報告対象となる事故を意図的に隠蔽する行為。特例認可の対象にしない。
+    sources: []

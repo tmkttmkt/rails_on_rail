@@ -1,0 +1,42 @@
+formatVersion: 1
+catalog: vehicle-wagons
+
+items:
+  - id: generic-light-two-axle-flat-wagon
+    name: 汎用軽便二軸長物車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: LW-2
+    introducedYear: 1880
+    legalClassification:
+      defaultCategoryId: freight-wagon
+    dimensions:
+      lengthOverCouplersM: 7
+      maximumWidthM: 1.9
+      maximumHeightM: 1.2
+    runningGear:
+      gaugeMm: 762
+      minimumCurveRadiusM: 20
+      axleGroups:
+        - id: running-axles
+          axleCount: 2
+          assemblyType: fixed-frame
+          powered: false
+          emptyLoadPerAxleT: 1.5
+          maximumLoadedLoadPerAxleT: 4.5
+    capabilities:
+      selfPropelled: false
+      canHaulOtherVehicles: false
+      passengerCapacity: 0
+      cargoCapacityT: 6
+      cargoVolumeM3: 0
+      supportedCargoTypes: [logs, machinery, general-goods]
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: []
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: []
+    hasHandBrake: true
+    sources: []

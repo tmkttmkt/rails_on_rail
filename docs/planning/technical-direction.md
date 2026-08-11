@@ -1,3 +1,7 @@
+---
+md_class: operation
+---
+
 # 技術方針
 
 ## 基本方針

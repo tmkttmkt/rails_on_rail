@@ -1,0 +1,35 @@
+formatVersion: 1
+catalog: electrification-systems # 電化方式カタログ
+items:
+  - id: non-electrified
+    name: 非電化
+    status: draft
+    collectionSystem: none # 集電方式: なし
+    currentSystem: none # 電流方式: なし
+    sources: []
+
+  - id: dc-1500v-overhead
+    name: 直流1500V架空電車線方式
+    status: draft
+    collectionSystem: overhead-contact-line # 集電方式: 架空電車線
+    currentSystem: dc # 電流方式: 直流
+    voltageV: 1500 # 電圧。単位はV
+    sources: []
+
+  - id: ac-25000v-50hz-overhead
+    name: 交流25kV・50Hz架空電車線方式
+    status: draft
+    collectionSystem: overhead-contact-line
+    currentSystem: ac # 電流方式: 交流
+    voltageV: 25000
+    frequencyHz: 50 # 周波数。単位はHz
+    sources: []
+
+  - id: ac-25000v-60hz-overhead
+    name: 交流25kV・60Hz架空電車線方式
+    status: draft
+    collectionSystem: overhead-contact-line
+    currentSystem: ac
+    voltageV: 25000
+    frequencyHz: 60
+    sources: []

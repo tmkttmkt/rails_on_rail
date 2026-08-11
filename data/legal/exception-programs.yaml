@@ -1,0 +1,157 @@
+formatVersion: 1
+catalog: legal-exception-programs # 特例認可制度カタログ
+
+items:
+  - id: distressed-line-vehicle-exception
+    name: 廃線危機路線向け車両特例
+    status: draft
+    purposeType: service-continuity
+    regimeIds:
+      - generic-local-railway-regime
+    applicableSubjectTypes:
+      - vehicle
+      - operator-class
+    waivableViolationTypeIds:
+      - unregistered-vehicle-operation
+      - inspection-expired-operation
+      - unauthorized-vehicle-modification
+    requirements:
+      minimumClosureRisk: 0.7
+      requiresAlternativeTransportShortage: true
+      requiresSafetyInspection: true
+    availableConditions:
+      - restricted-line
+      - maximum-speed
+      - passenger-capacity
+      - operating-hours
+      - additional-inspection
+    retroactivity:
+      allowed: true
+      clearsPastViolations: false
+    description: 廃線危機にある生活・産業路線で、通常基準を満たさない車両を限定条件下で合法運行するための汎用特例。
+    sources: []
+
+  - id: emergency-provisional-operation
+    name: 緊急仮運行認可
+    status: draft
+    purposeType: emergency
+    regimeIds:
+      - generic-railway-regime
+      - generic-local-railway-regime
+    applicableSubjectTypes:
+      - vehicle
+      - operation
+    waivableViolationTypeIds:
+      - unregistered-vehicle-operation
+      - inspection-expired-operation
+    requirements:
+      requiresEmergency: true
+      requiresSafetyInspection: true
+    availableConditions:
+      - restricted-line
+      - maximum-speed
+      - limited-duration
+      - additional-inspection
+    retroactivity:
+      allowed: false
+      clearsPastViolations: false
+    description: 災害、交通途絶などの緊急時に、期間と範囲を限定して運行を合法化する仮認可。
+    sources: []
+
+  - id: enhanced-mainline-speed-approval
+    name: 本線高速化特例認可
+    status: draft
+    purposeType: performance-enhancement
+    regimeIds:
+      - generic-railway-regime
+    applicableSubjectTypes:
+      - track
+      - operation
+      - vehicle
+    authorizedDeviationTypes:
+      - higher-operating-speed
+      - alternative-safety-demonstration
+    approvalParameterKeys:
+      - line-ids
+      - approved-maximum-speed-kmh
+      - approved-vehicle-ids
+      - validity-period
+    requiredAssessments:
+      - vehicle-track-dynamic-test
+      - braking-distance-assessment
+      - signaling-capacity-assessment
+      - crossing-risk-assessment
+    availableConditions:
+      - enhanced-signaling
+      - continuous-track-monitoring
+      - approved-vehicle-only
+      - increased-inspection
+      - weather-speed-restriction
+      - incident-reporting
+    description: 通常の設計・運用基準を超える本線速度を、車両・軌道試験と追加安全対策を条件に正式認可する制度。
+    sources: []
+
+  - id: mainline-level-crossing-approval
+    name: 本線踏切存置特例認可
+    status: draft
+    purposeType: infrastructure-accommodation
+    regimeIds:
+      - generic-railway-regime
+      - generic-local-railway-regime
+    applicableSubjectTypes:
+      - track
+      - operation
+    authorizedDeviationTypes:
+      - mainline-level-crossing-retention
+      - alternative-crossing-risk-control
+    approvalParameterKeys:
+      - line-ids
+      - crossing-ids
+      - approved-maximum-speed-kmh
+      - validity-period
+    requiredAssessments:
+      - crossing-traffic-assessment
+      - collision-risk-assessment
+      - stopping-and-clearance-time-assessment
+    availableConditions:
+      - crossing-protection-upgrade
+      - obstacle-detection
+      - road-traffic-restriction
+      - approach-speed-control
+      - continuous-monitoring
+      - periodic-risk-review
+    description: 立体交差化を通常求める本線で、指定踏切の存置を追加保安装置と速度・道路交通条件の下で正式認可する制度。
+    sources: []
+
+  - id: experimental-railway-technology-approval
+    name: 鉄道新技術試験特例認可
+    status: draft
+    purposeType: innovation
+    regimeIds:
+      - generic-railway-regime
+      - generic-local-railway-regime
+    applicableSubjectTypes:
+      - vehicle
+      - track
+      - operation
+    authorizedDeviationTypes:
+      - experimental-technology
+      - alternative-safety-demonstration
+    approvalParameterKeys:
+      - test-subject-ids
+      - test-line-ids
+      - test-operation-limit
+      - validity-period
+    requiredAssessments:
+      - test-plan-review
+      - fallback-procedure-review
+      - independent-safety-assessment
+    availableConditions:
+      - non-revenue-operation
+      - approved-crew-only
+      - restricted-line
+      - maximum-speed
+      - continuous-monitoring
+      - mandatory-test-reporting
+    description: 通常基準が想定しない車両・軌道・運行技術を、範囲を限定した試験として合法化する制度。
+    sources: []

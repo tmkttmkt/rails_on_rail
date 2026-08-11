@@ -1,0 +1,16 @@
+formatVersion: 1
+catalog: track-standards # 鉄路構成プリセット
+items:
+  - id: draft-conventional-mainline
+    name: 在来幹線構成例
+    status: draft
+    gaugeId: gauge-1067mm # 軌間カタログへの参照
+    railProfileId: jis-50n # レールカタログへの参照
+    supportSystemId: pc-sleeper-ballast # 締結・枕木・道床をまとめた支持方式
+    roadbedId: reinforced-roadbed # 支持方式の下にある路盤
+    electrificationSystemId: dc-1500v-overhead
+    design:
+      maxAxleLoadT: 16 # 最大軸重。単位はメートルトン
+      maxSpeedKmh: 120 # 最高速度。単位はkm/h
+    description: 参照構造を確認するための仮プリセット。正式な工学値ではない。
+    sources: []

@@ -1,0 +1,39 @@
+formatVersion: 1
+catalog: legal-regimes # 法制度カタログ
+
+items:
+  - id: generic-railway-regime
+    name: 汎用鉄道法制度
+    status: draft
+    jurisdictionType: national
+    applicableSubjectTypes:
+      - vehicle
+      - track
+      - operation
+      - operator
+    description: 国・年代固有の法制度を追加するまで使用する構造確認用制度。
+    sources: []
+
+  - id: generic-local-railway-regime
+    name: 汎用地方鉄道法制度
+    status: draft
+    jurisdictionType: local
+    applicableSubjectTypes:
+      - vehicle
+      - track
+      - operation
+      - operator
+    description: 地方当局の裁量と限定区間の特例を扱う構造確認用制度。
+    sources: []
+
+  - id: unregulated-railway-context
+    name: 法制度未整備状態
+    status: draft
+    jurisdictionType: none
+    applicableSubjectTypes:
+      - vehicle
+      - track
+      - operation
+      - operator
+    description: 鉄道固有の制度がまだ整備されていない地域・時代を表す。
+    sources: []

@@ -1,0 +1,1244 @@
+formatVersion: 1
+catalog: rail-profiles # レール規格カタログ
+
+# referenceMaxAxleLoadTはゲーム分類用の暫定参考値であり、
+# レール断面単独の工学的な許容限界を表さない。
+# 実際の限界は鋼種、摩耗、締結装置、枕木間隔、軌道状態などから計算する。
+# referenceMaxSpeedKmhもゲーム用の暫定参考値であり、レール単独の速度限界ではない。
+
+items:
+  # ============================================================
+  # Japan / JIS
+  # ============================================================
+
+  - id: jis-37a
+    name: JIS 37A
+    regionType: japan
+    profileFamily: flat-bottom
+    status: researched
+    standard: JIS E 1101
+    massKgPerM: 37.20
+    referenceMaxAxleLoadT: 14
+    description: 日本の軽量級普通レール。地方線・旧規格線路向けの基準候補。
+    sources:
+      - nippon-steel-rails-k003
+
+  - id: jis-40n
+    name: JIS 40N
+    regionType: japan
+    profileFamily: flat-bottom
+    status: researched
+    standard: JIS E 1101
+    massKgPerM: 40.90
+    referenceMaxAxleLoadT: 16
+    description: 37Aより強化された軽量～中量級普通レール。
+    sources:
+      - nippon-steel-rails-k003
+
+  - id: jis-50n
+    name: JIS 50N
+    regionType: japan
+    profileFamily: flat-bottom
+    status: researched
+    standard: JIS E 1101
+    massKgPerM: 50.40
+    referenceMaxAxleLoadT: 22.5
+    description: 日本の代表的な幹線用普通レール。
+    sources:
+      - nippon-steel-rails-k003
+
+  - id: jis-60
+    name: JIS 60
+    regionType: japan
+    profileFamily: flat-bottom
+    status: researched
+    standard: JIS E 1101
+    massKgPerM: 60.80
+    referenceMaxAxleLoadT: 25
+    description: 日本の重量級普通レール。高速・高密度・重軸重線向け。
+    sources:
+      - nippon-steel-rails-k003
+
+
+  # ============================================================
+  # Europe / EN 13674
+  # ============================================================
+
+  - id: en-39e1
+    name: 39E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-4
+    aliases:
+      - BS80A
+    massKgPerM: 39.77
+    referenceMaxAxleLoadT: 15
+    description: 欧州系軽量レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-45e1
+    name: 45E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-4
+    aliases:
+      - BS90A
+    massKgPerM: 45.11
+    referenceMaxAxleLoadT: 18
+    description: 英国系90 lb/yd級に由来する中量レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-45e3
+    name: 45E3
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-4
+    aliases:
+      - RN45
+    massKgPerM: 44.79
+    referenceMaxAxleLoadT: 18
+    description: 欧州中量級レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-46e1
+    name: 46E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 46.17
+    referenceMaxAxleLoadT: 18
+    description: 欧州中量級レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-46e2
+    name: 46E2
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - U33
+    massKgPerM: 46.27
+    referenceMaxAxleLoadT: 18
+    description: U33系断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: mav-48
+    name: MAV48
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 48.50
+    referenceMaxAxleLoadT: 20
+    description: ハンガリー系中量レール断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-49e1
+    name: 49E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - S49
+    massKgPerM: 49.39
+    referenceMaxAxleLoadT: 20
+    description: 欧州で広く使用された約49kg/m級レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-49e5
+    name: 49E5
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 49.13
+    referenceMaxAxleLoadT: 20
+    description: 49kg/m級欧州断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-50e2
+    name: 50E2
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 49.97
+    referenceMaxAxleLoadT: 22.5
+    description: 約50kg/m級欧州レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-50e3
+    name: 50E3
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 50.02
+    referenceMaxAxleLoadT: 22.5
+    description: 約50kg/m級欧州レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-50e6
+    name: 50E6
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - U50
+    massKgPerM: 50.90
+    referenceMaxAxleLoadT: 22.5
+    description: U50系断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-54e1
+    name: 54E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - UIC54
+    massKgPerM: 54.77
+    referenceMaxAxleLoadT: 22.5
+    description: UIC54として知られる代表的欧州幹線レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-54e2
+    name: 54E2
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - UIC54E
+    massKgPerM: 53.82
+    referenceMaxAxleLoadT: 22.5
+    description: UIC54系の派生断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-54e3
+    name: 54E3
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - S54
+    massKgPerM: 54.57
+    referenceMaxAxleLoadT: 22.5
+    description: S54系断面。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-54e4
+    name: 54E4
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 54.31
+    referenceMaxAxleLoadT: 22.5
+    description: 54kg/m級欧州レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-54e5
+    name: 54E5
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 54.42
+    referenceMaxAxleLoadT: 22.5
+    description: 54kg/m級欧州レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-56e1
+    name: 56E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 56.30
+    referenceMaxAxleLoadT: 25
+    description: 54kg級と60kg級の中間に位置する重量レール。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-60e1
+    name: 60E1
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    aliases:
+      - UIC60
+    massKgPerM: 60.21
+    referenceMaxAxleLoadT: 25
+    description: 現代欧州の代表的重量級幹線レール。高速・重貨物双方で使用可能。
+    sources:
+      - arcelormittal-european-rails
+
+  - id: en-60e2
+    name: 60E2
+    regionType: europe
+    profileFamily: flat-bottom
+    status: researched
+    standard: EN 13674-1
+    massKgPerM: 60.03
+    referenceMaxAxleLoadT: 25
+    description: 60E1に近い重量級欧州レール。
+    sources:
+      - arcelormittal-european-rails
+
+
+  # ============================================================
+  # North America / AREMA
+  # ============================================================
+
+  - id: arema-90ara-a
+    name: 90ARA-A
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    aliases:
+      - TR45
+    massKgPerM: 44.65
+    referenceMaxAxleLoadT: 18
+    description: 約90 lb/yd級の旧来型北米レール。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: arema-100re
+    name: 100RE
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    massKgPerM: 50.35
+    referenceMaxAxleLoadT: 22.5
+    description: 100 lb/yd級北米レール。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: arema-115re
+    name: 115RE
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    massKgPerM: 56.73
+    referenceMaxAxleLoadT: 25
+    description: 北米の中～重量級レール。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: arema-132re
+    name: 132RE
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    massKgPerM: 65.53
+    referenceMaxAxleLoadT: 30
+    description: 北米重量級幹線レール。
+    sources:
+      - nippon-steel-rails-k003
+
+  - id: arema-136re
+    name: 136RE
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    massKgPerM: 67.40
+    referenceMaxAxleLoadT: 32.5
+    description: 北米で広く使われる重量級レール。重貨物向けにも適する。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: arema-141re
+    name: 141RE
+    regionType: north-america
+    profileFamily: flat-bottom
+    status: researched
+    standard: AREMA
+    massKgPerM: 69.79
+    referenceMaxAxleLoadT: 35
+    description: 非常に重量の大きい北米系レール断面。
+    sources:
+      - nippon-steel-rails-k003
+
+
+  # ============================================================
+  # Russia / GOST
+  # ============================================================
+
+  - id: gost-r50
+    name: R50
+    regionType: russia
+    profileFamily: flat-bottom
+    status: researched
+    standard: GOST
+    aliases:
+      - P50
+    massKgPerM: 51.80
+    referenceMaxAxleLoadT: 22.5
+    description: 旧ソ連・ロシア系50kg/m級レール。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: gost-r65
+    name: R65
+    regionType: russia
+    profileFamily: flat-bottom
+    status: researched
+    standard: GOST
+    aliases:
+      - P65
+    massKgPerM: 64.88
+    referenceMaxAxleLoadT: 30
+    description: 旧ソ連・ロシア系重量級幹線レール。
+    sources:
+      - arcelormittal-transport-rails
+
+
+  # ============================================================
+  # Australia
+  # ============================================================
+
+  - id: as-60
+    name: AS60
+    regionType: australia
+    profileFamily: flat-bottom
+    status: researched
+    standard: AS 1085.1
+    massKgPerM: 60.60
+    referenceMaxAxleLoadT: 30
+    description: 豪州重量級レール。重貨物線を想定した設定にも向く。
+    sources:
+      - arcelormittal-transport-rails
+
+  - id: as-68
+    name: AS68
+    regionType: australia
+    profileFamily: flat-bottom
+    status: researched
+    standard: AS 1085.1
+    massKgPerM: 67.50
+    referenceMaxAxleLoadT: 35
+    description: 豪州の非常に重量の大きいレール断面。重軸重貨物向け。
+    sources:
+      - arcelormittal-transport-rails
+  # ============================================================
+  # 木製軌道時代
+  # ============================================================
+
+  - id: wooden-wagonway-c1600
+    name: 初期木製ワゴンウェイレール
+    regionType: europe
+    status: draft
+    introducedYear: 1600
+    typicalUntilYear: 1760
+    regionTags: [britain, europe]
+    profileFamily: wooden-edge
+    material: wood
+    massKgPerM: 12
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 1.2
+    referenceMaxSpeedKmh: 10
+    capabilityEvidence: modeled
+    description: >
+      鉱山・採石場の初期ワゴンウェイを代表する木製レール。
+      馬匹牽引・重力輸送向け。摩耗が大きく、重量車両や蒸気機関車には適さない。
+    sources:
+      - britannica-1911-railways
+
+
+  - id: iron-faced-wooden-rail-c1730
+    name: 鉄板被覆木製レール
+    regionType: global
+    status: draft
+    introducedYear: 1730
+    typicalUntilYear: 1840
+    regionTags: [britain, north-america]
+    profileFamily: strap-rail
+    material: wood-wrought-iron-composite
+    massKgPerM: 22
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 2.0
+    referenceMaxSpeedKmh: 15
+    capabilityEvidence: modeled
+    description: >
+      木製レールの走行面に薄い鉄板を取り付けた複合レール。
+      木材のみより耐摩耗性が高いが、鉄板の浮き・変形・脱落が問題となる。
+      北米では19世紀にも安価な鉄道建設方式として使用された。
+    sources:
+      - britannica-1911-railways
+      - nps-allegheny-portage
+      - haer-central-georgia
+
+
+  # ============================================================
+  # 鋳鉄時代
+  # ============================================================
+
+  - id: coalbrookdale-plate-1767
+    name: Coalbrookdale 1767 鋳鉄プレートレール
+    regionType: europe
+    status: draft
+    introducedYear: 1767
+    typicalUntilYear: 1800
+    regionTags: [britain]
+    profileFamily: plate-rail
+    material: cast-iron
+    massKgPerM: 18
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 2.5
+    referenceMaxSpeedKmh: 15
+    capabilityEvidence: modeled
+    description: >
+      Coalbrookdaleで1767年から使用された初期鋳鉄レールをモデル化。
+      平らな車輪をレール側の立ち上がりで案内するプレートウェイ型。
+    sources:
+      - smg-coalbrookdale-1767
+      - britannica-1911-railways
+
+
+  - id: l-plate-rail-c1780
+    name: L形鋳鉄プレートレール
+    regionType: europe
+    status: draft
+    introducedYear: 1780
+    typicalUntilYear: 1820
+    regionTags: [britain]
+    profileFamily: l-plate
+    material: cast-iron
+    massKgPerM: 20
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 3.0
+    referenceMaxSpeedKmh: 18
+    capabilityEvidence: modeled
+    description: >
+      John Currらによる18世紀後半のL形プレートウェイを代表するモデル。
+      車輪側にフランジを必要としない反面、道路横断や泥・石の堆積に弱い。
+    sources:
+      - curr-plateway-history
+
+
+  - id: jessop-edge-rail-1789
+    name: Jessop 1789 鋳鉄エッジレール
+    regionType: europe
+    status: draft
+    introducedYear: 1789
+    typicalUntilYear: 1825
+    regionTags: [britain]
+    profileFamily: edge-rail
+    material: cast-iron
+    massKgPerM: 22
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 3.5
+    referenceMaxSpeedKmh: 20
+    capabilityEvidence: modeled
+    description: >
+      William Jessopが1789年のLoughborough-Nanpantan線で採用した方式をモデル化。
+      レールではなく車輪側にフランジを設ける、現代鉄道へ続く重要な転換点。
+    sources:
+      - inland-transport-jessop-1789
+
+
+  - id: cast-iron-fish-belly-c1815
+    name: 鋳鉄フィッシュベリーレール
+    regionType: europe
+    status: draft
+    introducedYear: 1800
+    typicalUntilYear: 1830
+    regionTags: [britain]
+    profileFamily: fish-belly
+    material: cast-iron
+    massKgPerM: 24
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 4.0
+    referenceMaxSpeedKmh: 25
+    capabilityEvidence: modeled
+    description: >
+      支点間中央部を厚くしたフィッシュベリー形状。
+      鋳鉄の少ない材料で曲げ強度を確保するための合理的設計だが、
+      脆性が高く衝撃荷重には弱い。
+    sources:
+      - smg-cast-iron-fish-belly-1815
+
+
+  # ============================================================
+  # 錬鉄・蒸気鉄道初期
+  # ============================================================
+
+  - id: birkinshaw-25lb-1825
+    name: Birkinshaw / Stockton & Darlington 25 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1820
+    typicalUntilYear: 1840
+    regionTags: [britain]
+    profileFamily: rolled-fish-belly
+    material: wrought-iron
+    massKgPerM: 12.40
+    massEvidence: documented
+    referenceMaxAxleLoadT: 4.0
+    referenceMaxSpeedKmh: 30
+    capabilityEvidence: modeled
+    description: >
+      Birkinshawの圧延錬鉄レール系統。
+      Stockton & Darlington Railwayで使用された25 lb/yd級を代表値とする。
+      鋳鉄から錬鉄への技術転換を表す重要な規格。
+    sources:
+      - smg-stockton-darlington-1825
+
+
+  - id: liverpool-manchester-35lb-1830
+    name: Liverpool & Manchester 35 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1830
+    typicalUntilYear: 1845
+    regionTags: [britain]
+    profileFamily: rolled-fish-belly
+    material: wrought-iron
+    massKgPerM: 17.36
+    massEvidence: documented
+    referenceMaxAxleLoadT: 4.5
+    referenceMaxSpeedKmh: 35
+    capabilityEvidence: modeled
+    description: >
+      Liverpool & Manchester Railway開業時の15フィート長・35 lb/yd錬鉄レール。
+      後の大型機関車には軽すぎ、早期に重量レールへの更新を要求された。
+    sources:
+      - liverpool-manchester-35lb
+
+
+  # ============================================================
+  # 平底レールの成立
+  # ============================================================
+
+  - id: stevens-t-36lb-1831
+    name: Stevens T Rail 36 lb/yd
+    regionType: north-america
+    status: draft
+    introducedYear: 1831
+    typicalUntilYear: 1850
+    regionTags: [north-america]
+    profileFamily: flat-bottom
+    material: wrought-iron
+    massKgPerM: 17.86
+    massEvidence: documented
+    referenceMaxAxleLoadT: 4.5
+    referenceMaxSpeedKmh: 35
+    capabilityEvidence: modeled
+    description: >
+      Robert L. Stevensによる初期平底Tレール。
+      広い底部を持ち、鋳鉄製チェアを省略して支持体へ直接固定できる。
+      現代平底レールの直接的祖先。
+    sources:
+      - smithsonian-stevens-rail
+
+
+  - id: stevens-t-42lb-1831
+    name: Stevens T Rail 42 lb/yd
+    regionType: north-america
+    status: draft
+    introducedYear: 1831
+    typicalUntilYear: 1855
+    regionTags: [north-america]
+    profileFamily: flat-bottom
+    material: wrought-iron
+    massKgPerM: 20.83
+    massEvidence: documented
+    referenceMaxAxleLoadT: 5.5
+    referenceMaxSpeedKmh: 45
+    capabilityEvidence: modeled
+    description: >
+      最初の36 lb/yd型に続いて導入された重量化Stevensレール。
+      北米における平底レール発展の初期段階。
+    sources:
+      - smithsonian-stevens-rail
+
+
+  # ============================================================
+  # 1830年代の重量化
+  # ============================================================
+
+  - id: british-parallel-50lb-c1835
+    name: 英国平行断面 50 lb/yd級
+    regionType: europe
+    status: draft
+    introducedYear: 1833
+    typicalUntilYear: 1855
+    regionTags: [britain]
+    profileFamily: parallel-chair-rail
+    material: wrought-iron
+    massKgPerM: 24.80
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 6.5
+    referenceMaxSpeedKmh: 55
+    capabilityEvidence: modeled
+    description: >
+      1830年代半ばに35 lb/yd級から急速に重量化していった英国幹線レールを代表する。
+      同時代史料では50 lb/yd以上が一般的になりつつあった。
+    sources:
+      - railway-practice-1830s
+
+
+  - id: british-parallel-60lb-c1835
+    name: 英国平行・双頭系 60 lb/yd級
+    regionType: europe
+    status: draft
+    introducedYear: 1835
+    typicalUntilYear: 1860
+    regionTags: [britain]
+    profileFamily: double-head
+    material: wrought-iron
+    massKgPerM: 29.76
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 7.5
+    referenceMaxSpeedKmh: 65
+    capabilityEvidence: modeled
+    description: >
+      1835年前後に幹線向けとして提案・採用された60 lb/yd級レールをモデル化。
+      初期蒸気鉄道から本格的幹線鉄道への移行を表す。
+    sources:
+      - british-track-1835-60lb
+
+
+  - id: locke-double-head-84lb-1837
+    name: Locke 双頭レール 84 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1837
+    typicalUntilYear: 1880
+    regionTags: [britain]
+    profileFamily: double-head
+    material: wrought-iron
+    massKgPerM: 41.67
+    massEvidence: documented
+    referenceMaxAxleLoadT: 9.0
+    referenceMaxSpeedKmh: 80
+    capabilityEvidence: modeled
+    description: >
+      Joseph Lockeが1837年に導入した上下対称の双頭レール。
+      摩耗後に上下反転して再利用する構想だったが、
+      下側もチェアとの接触で損傷するため実際には期待通り再利用できなかった。
+    sources:
+      - english-railway-management-84lb
+
+
+  # ============================================================
+  # Brunel系
+  # ============================================================
+
+  - id: gwr-bridge-43lb-1838
+    name: GWR 初期ブリッジレール 43 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1838
+    typicalUntilYear: 1843
+    regionTags: [britain]
+    profileFamily: bridge-rail
+    material: wrought-iron
+    massKgPerM: 21.33
+    massEvidence: documented
+    referenceMaxAxleLoadT: 5.5
+    referenceMaxSpeedKmh: 50
+    capabilityEvidence: modeled
+    description: >
+      BrunelのGreat Western Railway初期baulk road用ブリッジレール。
+      縦方向の木製支持材で連続支持するため、単純なkg/m比較だけでは評価できない。
+      初期型は軽すぎ、比較的早期に更新された。
+    sources:
+      - gwr-baulk-road-history
+
+
+  - id: gwr-bridge-62lb-c1839
+    name: GWR ブリッジレール 62 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1839
+    typicalUntilYear: 1890
+    regionTags: [britain]
+    profileFamily: bridge-rail
+    material: wrought-iron
+    massKgPerM: 30.76
+    massEvidence: documented
+    referenceMaxAxleLoadT: 8.0
+    referenceMaxSpeedKmh: 75
+    capabilityEvidence: modeled
+    description: >
+      GWRで43 lb/yd型の問題を受けて重量化されたブリッジレール。
+      縦枕木による連続支持と組み合わせることを前提とする。
+    sources:
+      - gwr-baulk-road-history
+
+
+  # ============================================================
+  # Bullhead / Barlow
+  # ============================================================
+
+  - id: early-bullhead-c1840
+    name: 初期Bullheadレール
+    regionType: europe
+    status: draft
+    introducedYear: 1840
+    typicalUntilYear: 1880
+    regionTags: [britain]
+    profileFamily: bullhead
+    material: wrought-iron
+    massKgPerM: 30
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 8.0
+    referenceMaxSpeedKmh: 70
+    capabilityEvidence: modeled
+    description: >
+      双頭レールから発展し、実際に摩耗する上部へ材料を集中した初期Bullhead型。
+      North Midland Railwayでは1840年の実物が残る。
+    sources:
+      - smg-north-midland-bullhead-1840
+
+
+  - id: barlow-95lb-1849
+    name: Barlow Rail 95 lb/yd級
+    regionType: global
+    status: draft
+    introducedYear: 1849
+    typicalUntilYear: 1870
+    regionTags: [britain, australia]
+    profileFamily: barlow
+    material: wrought-iron
+    massKgPerM: 47.13
+    massEvidence: documented
+    referenceMaxAxleLoadT: 10
+    referenceMaxSpeedKmh: 70
+    capabilityEvidence: modeled
+    description: >
+      William Henry Barlowの大型逆V字形レール。
+      枕木を省略し、レール自体を直接バラストへ載せる構想。
+      材料量は大きいが、軌間保持・曲線敷設・保守に問題があり短命に終わった。
+      ゲームでは「高価なレールだが枕木コストを削減できる失敗技術」として非常に使いやすい。
+    sources:
+      - powerhouse-barlow-rail
+      - standards-australia-historical-rails
+
+
+  - id: double-head-75lb-c1855
+    name: 双頭錬鉄レール 75 lb/yd級
+    regionType: global
+    status: draft
+    introducedYear: 1850
+    typicalUntilYear: 1885
+    regionTags: [britain, empire]
+    profileFamily: double-head
+    material: wrought-iron
+    massKgPerM: 37.20
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 9.0
+    referenceMaxSpeedKmh: 80
+    capabilityEvidence: modeled
+    description: >
+      19世紀中葉の輸出鉄道・幹線で見られる重量級双頭レールを代表する。
+      1850年代豪州でも75 lb/yd双頭レールが調達された。
+    sources:
+      - victorian-railways-75lb
+
+
+  # ============================================================
+  # 鋼レール革命
+  # ============================================================
+
+  - id: mushet-early-steel-c1857
+    name: 初期Mushet鋼レール
+    regionType: europe
+    status: draft
+    introducedYear: 1857
+    typicalUntilYear: 1870
+    regionTags: [britain]
+    profileFamily: chair-rail
+    material: early-steel
+    massKgPerM: 37
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 12
+    referenceMaxSpeedKmh: 100
+    capabilityEvidence: modeled
+    description: >
+      Robert Forester Mushetが1857年に製造しDerbyで試験敷設した
+      初期鋼レールをゲーム上のアーキタイプとしてモデル化。
+      同重量の錬鉄レールより耐摩耗性と寿命に大きな優位を持つ。
+    sources:
+      - early-steel-rail-1857
+
+
+  - id: steel-flat-bottom-70lb-c1865
+    name: 初期鋼平底レール 70 lb/yd級
+    regionType: global
+    status: draft
+    introducedYear: 1865
+    typicalUntilYear: 1890
+    regionTags: [north-america, europe, global]
+    profileFamily: flat-bottom
+    material: steel
+    massKgPerM: 34.73
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 11
+    referenceMaxSpeedKmh: 95
+    capabilityEvidence: modeled
+    description: >
+      Bessemer・Siemens-Martin製鋼の普及初期を代表する軽量鋼平底レール。
+      錬鉄より寿命が長く、レール重量を抑えながら性能を高められる。
+    sources:
+      - early-steel-rail-history
+
+
+  - id: steel-flat-bottom-80lb-c1875
+    name: 鋼平底レール 80 lb/yd級
+    regionType: global
+    status: draft
+    introducedYear: 1875
+    typicalUntilYear: 1910
+    regionTags: [north-america, europe, global]
+    profileFamily: flat-bottom
+    material: steel
+    massKgPerM: 39.69
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 13
+    referenceMaxSpeedKmh: 110
+    capabilityEvidence: modeled
+    description: >
+      19世紀後半の幹線鉄道重量化を代表する鋼レール。
+      大型蒸気機関車と高速旅客列車の双方へ対応する中間世代。
+    sources:
+      - early-steel-rail-history
+
+
+  - id: steel-flat-bottom-90lb-c1885
+    name: 鋼平底レール 90 lb/yd級
+    regionType: global
+    status: draft
+    introducedYear: 1885
+    typicalUntilYear: 1930
+    regionTags: [north-america, global]
+    profileFamily: flat-bottom
+    material: steel
+    massKgPerM: 44.65
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 15
+    referenceMaxSpeedKmh: 130
+    capabilityEvidence: modeled
+    description: >
+      重量・速度双方が増大した19世紀末幹線向けの代表モデル。
+      この頃になると「軽い鉄レール」から現代的な重量鋼レールへ性格が変わる。
+    sources:
+      - early-steel-rail-history
+
+
+  - id: british-bullhead-95lb-c1900
+    name: 英国Bullhead 95 lb/yd
+    regionType: europe
+    status: draft
+    introducedYear: 1890
+    typicalUntilYear: 1960
+    regionTags: [britain]
+    profileFamily: bullhead
+    material: steel
+    massKgPerM: 47.13
+    massEvidence: documented
+    referenceMaxAxleLoadT: 18
+    referenceMaxSpeedKmh: 145
+    capabilityEvidence: modeled
+    description: >
+      英国幹線Bullheadレールの成熟形。
+      1905年にはBS 9としてBullheadレールが英国規格化される。
+      平底レールよりチェア・キーなど多くの部材を必要とする。
+    sources:
+      - smg-95lb-bullhead
+      - british-bullhead-history
+
+
+  # ============================================================
+  # 日本の初期鉄道
+  # ============================================================
+
+  - id: japan-double-head-1872
+    name: 日本鉄道創業期 双頭錬鉄レール
+    regionType: japan
+    status: draft
+    introducedYear: 1872
+    typicalUntilYear: 1900
+    regionTags: [japan]
+    profileFamily: double-head
+    material: wrought-iron
+    massKgPerM: 30
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 8
+    referenceMaxSpeedKmh: 65
+    capabilityEvidence: modeled
+    description: >
+      1872年新橋・横浜間の鉄道創業期に使用された英国系双頭錬鉄レールをモデル化。
+      双頭断面と錬鉄材であったことは実物分析で確認されている。
+      質量30 kg/mはゲーム用推定値。
+    sources:
+      - jfe-japan-first-wrought-iron-rail
+
+
+  # ============================================================
+  # 超軽量・可搬・農業・殖民軌道
+  # ============================================================
+
+  - id: portable-steel-4-5kg-c1875
+    name: 可搬式軽レール 4.5 kg/m級
+    regionType: global
+    status: draft
+    introducedYear: 1875
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 4.5
+    massEvidence: estimated
+    referenceMaxAxleLoadT: 0.8
+    referenceMaxSpeedKmh: 10
+    capabilityEvidence: modeled
+    typicalUses:
+      - field-railway
+      - plantation
+      - construction
+      - temporary-railway
+    description: >
+      最軽量級の可搬式軌道を表現するゲーム用代表規格。
+      人力・馬力・極小型車両向け。地面へ簡易敷設する用途を想定。
+    sources: []
+
+  - id: light-steel-6kg-c1900
+    name: 軽量鋼レール 6 kg/m級
+    regionType: global
+    regionTags: [japan]
+    status: draft
+    introducedYear: 1890
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 6
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 1.2
+    referenceMaxSpeedKmh: 15
+    capabilityEvidence: partly-documented
+    typicalUses:
+      - colonial-railway
+      - horse-railway
+      - agricultural-railway
+      - field-railway
+    description: >
+      馬力主体の極軽量恒久軌道を代表する規格。
+      北海道の殖民軌道では実際に6 kg/m軌条の使用例がある。
+    sources:
+      - horonobe-tonkanbetsu-colonization-railway
+      - shiretoko-museum-shari-colonization-railway
+
+  - id: decauville-7-5kg-c1880
+    name: Decauville 7.5 kg/m級
+    regionType: global
+    regionTags: [france]
+    status: draft
+    introducedYear: 1880
+    profileFamily: portable-flat-bottom
+    material: steel
+    massKgPerM: 7.5
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 1.8
+    referenceMaxSpeedKmh: 20
+    capabilityEvidence: modeled
+    typicalUses:
+      - plantation
+      - military-field-railway
+      - construction
+      - temporary-railway
+    description: >
+      Decauville系可搬軌道の軽量型。
+      軽量な軌框を短時間で敷設・撤去できる。
+    sources: []
+
+  - id: decauville-9-5kg-c1880
+    name: Decauville 9.5 kg/m級
+    regionType: global
+    regionTags: [france]
+    status: draft
+    introducedYear: 1880
+    profileFamily: portable-flat-bottom
+    material: steel
+    massKgPerM: 9.5
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 3.0
+    referenceMaxSpeedKmh: 30
+    capabilityEvidence: partly-documented
+    typicalUses:
+      - plantation
+      - military-field-railway
+      - industrial-railway
+    description: >
+      蒸気・内燃機関車にも対応可能なDecauville系軽軌条。
+      600 mm級軽便鉄道の代表的な重量帯。
+    sources:
+      - decauville-diego-suarez
+
+  - id: cane-20lb-rail-c1890
+    name: プランテーションレール 20 lb/yd級
+    regionType: global
+    regionTags: [australia]
+    status: draft
+    introducedYear: 1880
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 9.92
+    massEvidence: documented
+    referenceMaxAxleLoadT: 3.0
+    referenceMaxSpeedKmh: 25
+    capabilityEvidence: modeled
+    typicalUses:
+      - sugar-cane-railway
+      - plantation
+      - horse-railway
+    description: >
+      19世紀末～20世紀初頭の軽量プランテーション鉄道を代表。
+      豪州Moreton Central Sugar Millでは20 lb/yd線路の実例がある。
+      一部区間では蒸気機関車には軽すぎた。
+    sources:
+      - lrrsa-moreton-central-20lb
+
+  - id: light-steel-12kg-c1900
+    name: 軽量鋼レール 12 kg/m級
+    regionType: global
+    regionTags: [japan]
+    status: draft
+    introducedYear: 1890
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 12
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 4.0
+    referenceMaxSpeedKmh: 35
+    capabilityEvidence: modeled
+    typicalUses:
+      - colonial-railway
+      - agricultural-railway
+      - sugar-cane-railway
+      - industrial-railway
+    description: >
+      馬力軌道から小型内燃・蒸気機関車への移行期に適する軽軌条。
+      北海道の簡易軌道でも12 kgレールの実物が確認されている。
+    sources:
+      - hokkaido-museum-light-rail-collection
+
+  - id: plantation-30lb-rail-c1890
+    name: プランテーションレール 30 lb/yd級
+    regionType: global
+    regionTags: [cuba]
+    status: draft
+    introducedYear: 1885
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 14.88
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 5.0
+    referenceMaxSpeedKmh: 40
+    capabilityEvidence: partly-documented
+    typicalUses:
+      - sugar-cane-railway
+      - plantation
+      - industrial-railway
+    description: >
+      蒸気機関車牽引を前提とし始めたプランテーション鉄道向け。
+      キューバの砂糖鉄道で30 lb/yd級の使用例がある。
+    sources:
+      - cuba-sugar-railway-30lb
+
+  - id: plantation-35lb-rail-c1900
+    name: プランテーションレール 35 lb/yd級
+    regionType: global
+    regionTags: [cuba]
+    status: draft
+    introducedYear: 1895
+    profileFamily: light-flat-bottom
+    material: steel
+    massKgPerM: 17.36
+    massEvidence: documented-class
+    referenceMaxAxleLoadT: 6.0
+    referenceMaxSpeedKmh: 50
+    capabilityEvidence: partly-documented
+    typicalUses:
+      - sugar-cane-railway
+      - plantation
+      - industrial-railway
+      - light-railway
+    description: >
+      20世紀初頭の比較的本格的なプランテーション・産業鉄道向け。
+      大型化した蒸気機関車への更新に対応する。
+    sources:
+      - cuba-sugar-railway-35lb
+
+  - id: industrial-steel-20kg-c1900
+    name: 産業用鋼レール 20 kg/m級
+    regionType: global
+    status: draft
+    introducedYear: 1890
+    profileFamily: flat-bottom
+    material: steel
+    massKgPerM: 20
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 7.0
+    referenceMaxSpeedKmh: 60
+    capabilityEvidence: modeled
+    typicalUses:
+      - sugar-cane-railway
+      - mining-railway
+      - industrial-railway
+      - light-railway
+    description: >
+      軽便鉄道と通常鉄道の中間に位置する産業用レール。
+      大型の内燃・蒸気機関車を使う恒久的な産業鉄道向け。
+    sources: []
+
+  - id: light-mainline-22kg-c1900
+    name: 軽便幹線レール 22 kg/m級
+    regionType: global
+    status: draft
+    introducedYear: 1890
+    profileFamily: flat-bottom
+    material: steel
+    massKgPerM: 22
+    massEvidence: modeled-class
+    referenceMaxAxleLoadT: 8.0
+    referenceMaxSpeedKmh: 70
+    capabilityEvidence: modeled
+    typicalUses:
+      - light-railway
+      - colonial-railway
+      - industrial-railway
+    description: >
+      恒久的な軽便鉄道向けの重量帯。
+      農業・殖民軌道を本格的な機関車鉄道へ改良した状態を表現する。
+    sources: []
