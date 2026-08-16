@@ -3,7 +3,7 @@ md_class: history
 id: task-steam-operations-test-map
 type: task
 created: 2026-08-11
-status: review
+status: done
 owners:
   - codex
 relations:

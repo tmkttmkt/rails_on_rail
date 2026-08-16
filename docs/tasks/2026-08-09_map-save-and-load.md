@@ -3,7 +3,7 @@ md_class: history
 id: task-map-save-and-load
 type: task
 created: 2026-08-09
-status: review
+status: done
 owners:
   - codex
 relations:

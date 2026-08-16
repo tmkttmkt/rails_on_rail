@@ -3,7 +3,7 @@ md_class: history
 id: task-centralize-keybindings
 type: task
 created: 2026-08-09
-status: review
+status: done
 owners:
   - codex
 relations:

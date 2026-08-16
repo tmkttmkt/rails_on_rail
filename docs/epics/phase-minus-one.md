@@ -27,6 +27,8 @@ created: 2026-08-08
 - ゲーム状態をJSONとして保存・復元できるか
 - 人間とAIが共通の操作命令を利用できる構造にできるか
 
+後続の運行概念整理は[路線・系統・経路・運行・運用を再構築する](../tasks/2026-08-16_structure-lines-service-systems-and-operations.md)で追跡する。
+
 ## 責任範囲
 
 - TypeScriptとViteを中心とする開発環境
@@ -129,11 +131,17 @@ type GameCommand =
 
 ## 関連文書
 
+- [購入可能な車両・編成をゲーム状態へ統合し駅から運行する](../tasks/2026-08-13_integrate-purchasable-fleet-and-scheduled-dispatch.md) — done
+- [AI生成マップの確定前に接続状態を確認する](../tasks/2026-08-13_inspect-ai-map-connectivity.md) — review
+- [AI生成マップの確定前に線路別最小半径を確認する](../tasks/2026-08-13_inspect-ai-map-track-radii.md) — done
+
 - [技術方針](../planning/technical-direction.md)
 - [Task一覧](../task-index.md)
 
 ## 配下Task
 
+- [`review` 既設線路間の曲線接続位置をキーで調整する](../tasks/2026-08-13_adjust-curve-connection-positions.md)
+- [`review` 既設線路間の接続曲線を二円弧へ置換する](../tasks/2026-08-13_replace-existing-track-connector-with-biarc.md)
 - [`review` ゲーム内時間を実装する](../tasks/2026-08-11_simulation-clock.md)
 - [`review` 蒸気機関車運用テストマップを生成する](../tasks/2026-08-11_steam-operations-test-map.md)
 - [`review` 明示的な保存操作だけでサーバー同期する](../tasks/2026-08-11_explicit-save-server-sync.md)

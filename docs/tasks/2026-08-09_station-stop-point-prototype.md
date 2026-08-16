@@ -2,7 +2,7 @@
 md_class: history
 id: task-station-stop-point-prototype
 type: task
-status: review
+status: done
 created: 2026-08-09
 epic: epic-phase-minus-one
 design: design-station-stop-points

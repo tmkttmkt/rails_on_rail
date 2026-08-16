@@ -3,7 +3,7 @@ md_class: operation
 id: task-keyboard-driven-operations
 type: task
 created: 2026-08-10
-status: design
+status: done
 owners: []
 relations:
   - design-keyboard-driven-operations

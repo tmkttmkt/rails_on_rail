@@ -1,4 +1,51 @@
 import type { TrackSpecification } from "../data/trackCatalog";
+import { createInitialFleetState, type FleetState } from "./fleet";
+import type {
+  CommercialStopType,
+  Line,
+  Operation,
+  OperationExecution,
+  OperationExecutionStatus,
+  OperationStopTime,
+  Route,
+  RouteLeg,
+  RouteLineSection,
+  RouteStop,
+  RouteTraversal,
+  RouteTraversalLeg,
+  RouteTraversalTrack,
+  ServiceCalendar,
+  ServiceSystem,
+  VehicleDuty,
+  VehicleDutyAssignment,
+  VehicleDutyExecution,
+} from "./serviceModel";
+
+export type {
+  CommercialStopType,
+  Line,
+  Operation,
+  OperationExecution,
+  OperationExecutionStatus,
+  OperationStopTime,
+  Route,
+  RouteLeg,
+  RouteLineSection,
+  RouteStop,
+  RouteTraversal,
+  RouteTraversalLeg,
+  RouteTraversalTrack,
+  ServiceCalendar,
+  ServiceSystem,
+  VehicleDuty,
+  VehicleDutyAssignment,
+  VehicleDutyExecution,
+};
+
+// Aliases for compatibility
+export type TrainRunStatus = OperationExecutionStatus;
+export type TrainRun = OperationExecution;
+export type OperationRoute = Route;
 
 export interface Point {
   x: number;
@@ -49,6 +96,7 @@ export interface TrackJunction {
 }
 
 export interface StationStopPoint {
+  id: string;
   trackId: string;
   startDistanceM: number;
   endDistanceM: number;
@@ -70,25 +118,13 @@ export interface TrackGroup {
   trackIds: string[];
 }
 
-export interface RouteTraversal {
-  trackId: string;
-  fromDistanceM: number;
-  toDistanceM: number;
-}
-
-export interface OperationRoute {
-  id: string;
-  name: string;
-  stationIds: string[];
-  legs: RouteTraversal[][];
-  lengthM: number;
-}
-
 export interface OperatingTrain {
   id: string;
   name: string;
   formationId: string;
   routeId: string;
+  trainRunId?: string;
+  operationExecutionId?: string;
   speedKph: number;
   dwellSeconds: number;
   state: "running" | "dwelling" | "completed";
@@ -98,6 +134,19 @@ export interface OperatingTrain {
   remainingDwellSeconds: number;
   position: Point;
 }
+
+export interface VehiclePlacement {
+  id: string;
+  formationId: string;
+  stationId: string;
+  trackId: string;
+  centerDistanceM: number;
+  occupiedStartDistanceM: number;
+  occupiedEndDistanceM: number;
+  orientation: "forward" | "reversed";
+}
+
+export type FormationOperationalStatus = "unplaced" | "placed" | "reserved" | "operating" | "awaiting-placement";
 
 export type TrackGeometry = "straight" | "curve";
 
@@ -112,20 +161,46 @@ export interface SimulationClock {
 }
 
 export interface MapState {
-  version: 8;
+  version: 11;
   clock: SimulationClock;
   tracks: Track[];
   trackGroups: TrackGroup[];
   junctions: TrackJunction[];
   stations: Station[];
-  routes: OperationRoute[];
+  lines: Record<string, Line>;
+  serviceSystems: Record<string, ServiceSystem>;
+  routes: Record<string, Route>;
+  operations: Record<string, Operation>;
+  vehicleDuties: Record<string, VehicleDuty>;
+  vehicleDutyExecutions: Record<string, VehicleDutyExecution>;
+  operationExecutions: Record<string, OperationExecution>;
   operatingTrains: OperatingTrain[];
+  fleet: FleetState;
+  vehiclePlacements: VehiclePlacement[];
+  // Backward compatibility alias properties
+  operationRoutes: Record<string, any>;
+  servicePatterns: Record<string, any>;
+  stopPatterns: Record<string, any>;
+  trainRuns: Record<string, any>;
+  nextOperationRouteId?: number;
+  nextServicePatternId?: number;
+  nextStopPatternId?: number;
+  nextTrainRunId?: number;
   nextTrackId: number;
   nextTrackGroupId: number;
   nextJunctionId: number;
   nextStationId: number;
+  nextLineId: number;
+  nextServiceSystemId: number;
   nextRouteId: number;
+  nextOperationId: number;
+  nextVehicleDutyId: number;
+  nextVehicleDutyExecutionId: number;
+  nextOperationExecutionId: number;
   nextOperatingTrainId: number;
+  nextOperatorClassId: number;
+  nextVehicleUnitId: number;
+  nextFormationId: number;
 }
 
 export interface Camera {
@@ -141,7 +216,78 @@ export interface Viewport {
 }
 
 export function createInitialState(): MapState {
-  return { version: 8, clock: createInitialClock(), tracks: [], trackGroups: [], junctions: [], stations: [], routes: [], operatingTrains: [], nextTrackId: 1, nextTrackGroupId: 1, nextJunctionId: 1, nextStationId: 1, nextRouteId: 1, nextOperatingTrainId: 1 };
+  const state: MapState = {
+    version: 11,
+    clock: createInitialClock(),
+    tracks: [],
+    trackGroups: [],
+    junctions: [],
+    stations: [],
+    lines: {},
+    serviceSystems: {},
+    routes: {},
+    operations: {},
+    vehicleDuties: {},
+    vehicleDutyExecutions: {},
+    operationExecutions: {},
+    operatingTrains: [],
+    fleet: createInitialFleetState(),
+    vehiclePlacements: [],
+    operationRoutes: {},
+    servicePatterns: {},
+    stopPatterns: {},
+    trainRuns: {},
+    nextOperationRouteId: 1,
+    nextServicePatternId: 1,
+    nextStopPatternId: 1,
+    nextTrainRunId: 1,
+    nextTrackId: 1,
+    nextTrackGroupId: 1,
+    nextJunctionId: 1,
+    nextStationId: 1,
+    nextLineId: 1,
+    nextServiceSystemId: 1,
+    nextRouteId: 1,
+    nextOperationId: 1,
+    nextVehicleDutyId: 1,
+    nextVehicleDutyExecutionId: 1,
+    nextOperationExecutionId: 1,
+    nextOperatingTrainId: 1,
+    nextOperatorClassId: 1,
+    nextVehicleUnitId: 1,
+    nextFormationId: 1,
+  };
+  return state;
+}
+
+export function getFormationOperationalStatus(state: MapState, formationId: string): FormationOperationalStatus {
+  if (
+    state.operatingTrains.some((train) => train.formationId === formationId && train.state !== "completed") ||
+    Object.values(state.operationExecutions || {}).some(
+      (exec) => exec.formationId === formationId && exec.status === "operating"
+    )
+  ) {
+    return "operating";
+  }
+  if (
+    Object.values(state.operationExecutions || {}).some(
+      (exec) => exec.formationId === formationId && (exec.status === "reserved" || exec.status === "planned")
+    )
+  ) {
+    return "reserved";
+  }
+  if (state.vehiclePlacements.some((placement) => placement.formationId === formationId)) {
+    return "placed";
+  }
+  if (
+    state.operatingTrains.some((train) => train.formationId === formationId && train.state === "completed") ||
+    Object.values(state.operationExecutions || {}).some(
+      (exec) => exec.formationId === formationId && exec.status === "completed"
+    )
+  ) {
+    return "awaiting-placement";
+  }
+  return "unplaced";
 }
 
 export function createInitialClock(): SimulationClock {

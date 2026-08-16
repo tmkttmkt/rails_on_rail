@@ -3,7 +3,7 @@ md_class: history
 id: task-independent-tracks-and-groups
 type: task
 created: 2026-08-09
-status: review
+status: done
 owners:
   - codex
 relations:

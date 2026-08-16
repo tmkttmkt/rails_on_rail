@@ -1,6 +1,66 @@
-import type { MapState, Point, Track } from "./model";
+import type { MapState, Point, Track, TrackJunctionPortLocation } from "./model";
 
 const CURVE_STEPS_PER_SEGMENT = 20;
+
+export const TANGENT_ANGLE_TOLERANCE_RAD = (5 * Math.PI) / 180; // 5 degrees tolerance for tangent continuity
+
+export function calculateTangentAngleDifferenceRad(tangent1: Point, tangent2: Point): number {
+  const u1 = normalize(tangent1);
+  const u2 = normalize(tangent2);
+  const dot = Math.abs(u1.x * u2.x + u1.y * u2.y);
+  const clampedDot = Math.min(1, Math.max(0, dot));
+  return Math.acos(clampedDot);
+}
+
+export function isTangentContinuous(tangent1: Point, tangent2: Point, toleranceRad = TANGENT_ANGLE_TOLERANCE_RAD): boolean {
+  return calculateTangentAngleDifferenceRad(tangent1, tangent2) <= toleranceRad;
+}
+
+export function getTrackTangentAtPosition(
+  track: Pick<Track, "geometry" | "points" | "startTangent" | "endTangent"> & Partial<Pick<Track, "resolvedPath">>,
+  position: Point
+): Point {
+  const sampled = sampleTrack(track);
+  if (sampled.length < 2) return { x: 1, y: 0 };
+  let bestDist = Infinity;
+  let bestTangent = { x: 1, y: 0 };
+  for (let index = 0; index < sampled.length - 1; index += 1) {
+    const candidate = closestPointOnSegment(position, sampled[index], sampled[index + 1]);
+    if (candidate.distance < bestDist) {
+      bestDist = candidate.distance;
+      const dx = sampled[index + 1].x - sampled[index].x;
+      const dy = sampled[index + 1].y - sampled[index].y;
+      bestTangent = normalize({ x: dx, y: dy });
+    }
+  }
+  return bestTangent;
+}
+
+export function getTrackPortTangent(
+  track: Pick<Track, "geometry" | "points" | "startTangent" | "endTangent"> & Partial<Pick<Track, "resolvedPath">>,
+  location: TrackJunctionPortLocation,
+  distanceM?: number
+): Point {
+  const sampled = sampleTrack(track);
+  if (sampled.length < 2) return { x: 1, y: 0 };
+  if (location === "start" || (distanceM !== undefined && distanceM <= 0.001)) {
+    return normalize({ x: sampled[1].x - sampled[0].x, y: sampled[1].y - sampled[0].y });
+  }
+  if (location === "end") {
+    return normalize({ x: sampled.at(-1)!.x - sampled.at(-2)!.x, y: sampled.at(-1)!.y - sampled.at(-2)!.y });
+  }
+  if (distanceM !== undefined) {
+    let traversed = 0;
+    for (let index = 0; index < sampled.length - 1; index += 1) {
+      const segLen = Math.hypot(sampled[index + 1].x - sampled[index].x, sampled[index + 1].y - sampled[index].y);
+      if (traversed + segLen >= distanceM || index === sampled.length - 2) {
+        return normalize({ x: sampled[index + 1].x - sampled[index].x, y: sampled[index + 1].y - sampled[index].y });
+      }
+      traversed += segLen;
+    }
+  }
+  return normalize({ x: sampled.at(-1)!.x - sampled.at(-2)!.x, y: sampled.at(-1)!.y - sampled.at(-2)!.y });
+}
 
 export function sampleTrack(track: Pick<Track, "geometry" | "points" | "startTangent" | "endTangent"> & Partial<Pick<Track, "resolvedPath">>): Point[] {
   if (track.resolvedPath || track.geometry === "straight") return track.points.map((point) => ({ ...point }));
@@ -153,21 +213,38 @@ function sampleStraightSegment(start: Point, end: Point, steps: number): Sampled
 }
 
 function sampleDirectionConnector(start: Point, end: Point, startTangent: Point, endTangent: Point, steps: number): SampledSegment {
-  const distance = Math.hypot(end.x - start.x, end.y - start.y);
   const first = normalize(startTangent);
   const last = orientToward(endTangent, start, end);
-  const handle = distance / 3;
-  const points = Array.from({ length: steps + 1 }, (_, step) => {
-    const t = step / steps;
-    const inverse = 1 - t;
-    const p1 = { x: start.x + first.x * handle, y: start.y + first.y * handle };
-    const p2 = { x: end.x - last.x * handle, y: end.y - last.y * handle };
-    return {
-      x: inverse ** 3 * start.x + 3 * inverse ** 2 * t * p1.x + 3 * inverse * t ** 2 * p2.x + t ** 3 * end.x,
-      y: inverse ** 3 * start.y + 3 * inverse ** 2 * t * p1.y + 3 * inverse * t ** 2 * p2.y + t ** 3 * end.y,
-    };
-  });
-  return { points, endTangent: last };
+  const chord = { x: end.x - start.x, y: end.y - start.y };
+  const chordSquared = chord.x ** 2 + chord.y ** 2;
+  if (chordSquared < 1e-12) {
+    throw new Error("同じ位置にある両端を円弧で接続できません。接続位置を変更してください");
+  }
+
+  // Equal-distance biarc: choose one join point whose two circular arcs share
+  // the same tangent while preserving both existing-track endpoint tangents.
+  const tangentDot = first.x * last.x + first.y * last.y;
+  const a = 2 * (1 - tangentDot);
+  const b = 2 * (chord.x * (first.x + last.x) + chord.y * (first.y + last.y));
+  const distance = Math.abs(a) < 1e-10
+    ? Math.abs(b) < 1e-10 ? Number.NaN : chordSquared / b
+    : (-b + Math.sqrt(Math.max(0, b * b + 4 * a * chordSquared))) / (2 * a);
+  if (!Number.isFinite(distance) || distance <= 1e-9) {
+    throw new Error("両端の方向を円弧で接続できません。制御点または接続位置を変更してください");
+  }
+
+  const join = {
+    x: (start.x + end.x + distance * (first.x - last.x)) / 2,
+    y: (start.y + end.y + distance * (first.y - last.y)) / 2,
+  };
+  const firstSteps = Math.max(2, Math.floor(steps / 2));
+  const secondSteps = Math.max(2, steps - firstSteps);
+  const firstArc = sampleArcSegment(start, join, first, firstSteps);
+  const secondArc = sampleArcSegment(join, end, firstArc.endTangent, secondSteps);
+  return {
+    points: [...firstArc.points.slice(0, -1), ...secondArc.points],
+    endTangent: secondArc.endTangent,
+  };
 }
 
 function directedAngle(angle: number, direction: number): number {

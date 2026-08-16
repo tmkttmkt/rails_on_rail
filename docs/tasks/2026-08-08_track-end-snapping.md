@@ -3,7 +3,7 @@ md_class: history
 id: task-track-end-snapping
 type: task
 created: 2026-08-08
-status: review
+status: done
 owners:
   - codex
 relations:

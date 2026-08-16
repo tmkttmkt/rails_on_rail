@@ -34,7 +34,10 @@ describe("ゲーム内時間", () => {
     state = executeCommand(state, { type: "station.createRange", name: "A", trackId: "track-1", startPosition: { x: 10, y: 0 }, endPosition: { x: 30, y: 0 } }).state;
     state = executeCommand(state, { type: "station.createRange", name: "B", trackId: "track-1", startPosition: { x: 270, y: 0 }, endPosition: { x: 290, y: 0 } }).state;
     state = executeCommand(state, { type: "route.create", name: "A-B", stationIds: ["station-1", "station-2"] }).state;
-    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: "formation-1", name: "時計試験", speedKph: 36, dwellSeconds: 5 }).state;
+    state = executeCommand(state, { type: "fleet.formation-template.acquire", templateId: "test-single-locomotive", name: "時計試験" }).state;
+    const fId = state.fleet.formations.at(-1)!.id;
+    state = executeCommand(state, { type: "fleet.formation.place", formationId: fId, stationId: "station-1", trackId: "track-1", distanceM: 20 }).state;
+    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: fId, name: "時計試験", speedKph: 36, dwellSeconds: 5 }).state;
     state = executeCommand(state, { type: "simulation.tick", elapsedSeconds: 35 }).state;
     expect(state.clock.currentTimeMs).toBe(INITIAL_SIMULATION_TIME_MS + 35_000);
     expect(state.operatingTrains[0].state).toBe("completed");

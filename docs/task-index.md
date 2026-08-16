@@ -1,6 +1,6 @@
 ---
 md_class: status
-updated: 2026-08-11
+updated: 2026-08-16
 ---
 
 # Task一覧
@@ -13,46 +13,55 @@ updated: 2026-08-11
 
 | Status | Task | Epic |
 |---|---|---|
-| `review` | [ゲーム内時間を実装する](tasks/2026-08-11_simulation-clock.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [蒸気機関車運用テストマップを生成する](tasks/2026-08-11_steam-operations-test-map.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [明示的な保存操作だけでサーバー同期する](tasks/2026-08-11_explicit-save-server-sync.md) | [Phase -1](epics/phase-minus-one.md) |
-| `design` | [UIエリアの役割定義とナビゲーション構造](tasks/2026-08-10_ui-navigation-structure.md) | 横断 |
-| `design` | [キーボード操作の全面拡張](tasks/2026-08-10_keyboard-driven-operations.md) | 横断 |
-| `design` | [建設モードUI再設計](tasks/2026-08-10_construction-ui-redesign.md) | 横断 |
-| `active` | [AI連携用APIのVite組み込み (agy実装)](tasks/2026-08-10_ai-api-integration.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [駅間経路探索と列車移動を試作](tasks/2026-08-09_route-and-train-movement-prototype.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [線路上の停車地点として駅を試作](tasks/2026-08-09_station-stop-point-prototype.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [線路接続構造と現行文書の安定化](tasks/2026-08-09_stabilize-track-topology-and-docs.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [一本以上の接続で束分岐を許可し重ねがけを拒否](tasks/2026-08-09_allow-partial-bundle-branch-and-reject-overlap.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [N/Mで線路群の接続対応を調整](tasks/2026-08-09_adjust-bundle-connection-with-nm.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [キーボード割当の一元管理](tasks/2026-08-09_centralize-keybindings.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [個別線路を実体にして線路群を再編可能にする](tasks/2026-08-09_independent-tracks-and-groups.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [名前付き複数セーブ](tasks/2026-08-09_named-save-slots.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [マップの保存と読込](tasks/2026-08-09_map-save-and-load.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [線路自体の描画改善](tasks/2026-08-09_track-canvas-rendering.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [参考作品に沿った単純な地図UI](tasks/2026-08-09_simplify-reference-game-ui.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [曲線生成を円弧チェーンへ置換](tasks/2026-08-09_replace-curve-with-arc-chain.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [曲線半径とカントのゲーム実装](tasks/2026-08-09_curve-radius-and-cant.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [車両個体・編成・列車の最小実装](tasks/2026-08-09_fleet-formations-and-trains.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [車両データと連結・ブレーキ互換性](tasks/2026-08-09_vehicle-data-and-connection-compatibility.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [法的状態データ領域の定義](tasks/2026-08-09_define-legal-data.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [軌道構成データのゲーム統合](tasks/2026-08-09_track-construction-data-integration.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [鉄路データ定義の再構築](tasks/2026-08-08_rebuild-track-data.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [複数線路間の個別接続](tasks/2026-08-08_individual-track-connections.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [N本の線路を同時敷設](tasks/2026-08-08_parallel-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [敷設中線路の終点吸着](tasks/2026-08-08_track-end-snapping.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [線路の延長操作と途中分岐](tasks/2026-08-08_track-extension-and-branching.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [曲線線路の敷設](tasks/2026-08-08_curved-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
-| `review` | [自由マップ線路敷設プロトタイプ](tasks/2026-08-08_free-map-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
+| `review` | [路線・系統・経路・運行・運用を再構築する](tasks/2026-08-16_structure-lines-service-systems-and-operations.md) | [Phase -1](epics/phase-minus-one.md) |
+| `review` | [AI生成マップの確定前に接続状態を確認する](tasks/2026-08-13_inspect-ai-map-connectivity.md) | [Phase -1](epics/phase-minus-one.md) |
 
 ## 完了
 
-現在、完了したTaskはない。
+| Status | Task | Epic |
+|---|---|---|
+| `done` | [既設線路間の曲線接続位置をキーで調整する](tasks/2026-08-13_adjust-curve-connection-positions.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [既設線路間の接続曲線を二円弧へ置換する](tasks/2026-08-13_replace-existing-track-connector-with-biarc.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [接線適合な線路接続とトポロジー判定の実装](tasks/2026-08-13_tangent-valid-railway-connectivity.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [購入可能な車両・編成をゲーム状態へ統合し駅から運行する](tasks/2026-08-13_integrate-purchasable-fleet-and-scheduled-dispatch.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [AI生成マップの確定前に線路別最小半径を確認する](tasks/2026-08-13_inspect-ai-map-track-radii.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [ゲーム内時間を実装する](tasks/2026-08-11_simulation-clock.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [蒸気機関車運用テストマップを生成する](tasks/2026-08-11_steam-operations-test-map.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [明示的な保存操作だけでサーバー同期する](tasks/2026-08-11_explicit-save-server-sync.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [UIエリアの役割定義とナビゲーション構造](tasks/2026-08-10_ui-navigation-structure.md) | 横断 |
+| `done` | [キーボード操作の全面拡張](tasks/2026-08-10_keyboard-driven-operations.md) | 横断 |
+| `done` | [建設モードUI再設計](tasks/2026-08-10_construction-ui-redesign.md) | 横断 |
+| `done` | [AI連携用APIのVite組み込み (agy実装)](tasks/2026-08-10_ai-api-integration.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [駅間経路探索と列車移動を試作](tasks/2026-08-09_route-and-train-movement-prototype.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [線路上の停車地点として駅を試作](tasks/2026-08-09_station-stop-point-prototype.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [線路接続構造と現行文書の安定化](tasks/2026-08-09_stabilize-track-topology-and-docs.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [一本以上の接続で束分岐を許可し重ねがけを拒否](tasks/2026-08-09_allow-partial-bundle-branch-and-reject-overlap.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [N/Mで線路群の接続対応を調整](tasks/2026-08-09_adjust-bundle-connection-with-nm.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [キーボード割当の一元管理](tasks/2026-08-09_centralize-keybindings.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [個別線路を実体にして線路群を再編可能にする](tasks/2026-08-09_independent-tracks-and-groups.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [名前付き複数セーブ](tasks/2026-08-09_named-save-slots.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [マップの保存と読込](tasks/2026-08-09_map-save-and-load.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [線路自体の描画改善](tasks/2026-08-09_track-canvas-rendering.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [参考作品に沿った単純な地図UI](tasks/2026-08-09_simplify-reference-game-ui.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [曲線生成を円弧チェーンへ置換](tasks/2026-08-09_replace-curve-with-arc-chain.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [曲線半径とカントのゲーム実装](tasks/2026-08-09_curve-radius-and-cant.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [車両個体・編成・列車の最小実装](tasks/2026-08-09_fleet-formations-and-trains.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [車両データと連結・ブレーキ互換性](tasks/2026-08-09_vehicle-data-and-connection-compatibility.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [法的状態データ領域の定義](tasks/2026-08-09_define-legal-data.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [軌道構成データのゲーム統合](tasks/2026-08-09_track-construction-data-integration.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [鉄路データ定義の再構築](tasks/2026-08-08_rebuild-track-data.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [複数線路間の個別接続](tasks/2026-08-08_individual-track-connections.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [N本の線路を同時敷設](tasks/2026-08-08_parallel-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [敷設中線路の終点吸着](tasks/2026-08-08_track-end-snapping.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [線路の延長操作と途中分岐](tasks/2026-08-08_track-extension-and-branching.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [曲線線路の敷設](tasks/2026-08-08_curved-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
+| `done` | [自由マップ線路敷設プロトタイプ](tasks/2026-08-08_free-map-track-building.md) | [Phase -1](epics/phase-minus-one.md) |
 
 ## 中止
 
 | Status | Task | 後継 |
 |---|---|---|
+| `cancelled` | [路線・運行系統・運行経路・個別列車運行を分離して統合する](tasks/2026-08-13_structure-lines-services-routes-and-train-runs.md) | [路線・系統・経路・運行・運用を再構築する](tasks/2026-08-16_structure-lines-service-systems-and-operations.md) |
 | `cancelled` | [最初の操作可能な鉄道プロトタイプ](tasks/2026-08-08_first-interactive-prototype.md) | [自由マップ線路敷設プロトタイプ](tasks/2026-08-08_free-map-track-building.md) |
 
 ## 今後の候補

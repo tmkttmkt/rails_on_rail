@@ -3,7 +3,7 @@ md_class: history
 id: task-vehicle-data-and-connection-compatibility
 type: task
 created: 2026-08-09
-status: review
+status: done
 owners:
   - codex
 epic: epic-phase-minus-one

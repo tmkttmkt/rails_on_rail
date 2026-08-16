@@ -14,6 +14,13 @@ describe("キーボード割当", () => {
     expect(matchesKey("simulation.togglePause", { key: " " })).toBe(true);
   });
 
+  it("曲線接続の終点調整キーを判定する", () => {
+    expect(matchesKey("connection.shiftEndBackward", { key: "," })).toBe(true);
+    expect(matchesKey("connection.shiftEndForward", { key: "." })).toBe(true);
+    expect(shortcutLabel("connection.shiftEndBackward")).toBe(",");
+    expect(shortcutLabel("connection.shiftEndForward")).toBe(".");
+  });
+
   it("入力要素と編集可能要素を判定する", () => {
     expect(isTextEntryTarget({ tagName: "INPUT" } as unknown as EventTarget)).toBe(true);
     expect(isTextEntryTarget({ tagName: "DIV", isContentEditable: true } as unknown as EventTarget)).toBe(true);

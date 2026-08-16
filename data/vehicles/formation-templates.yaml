@@ -1,0 +1,39 @@
+formatVersion: 1
+catalog: vehicle-formation-templates
+
+items:
+  - id: test-single-locomotive
+    name: テスト機関車単行編成
+    vehicles:
+      - designId: test-virtual-locomotive
+        orientation: forward
+
+  - id: test-passenger-3car
+    name: テスト旅客3両編成
+    vehicles:
+      - designId: test-virtual-locomotive
+        orientation: forward
+      - designId: generic-light-two-axle-coach
+        orientation: forward
+      - designId: generic-light-two-axle-coach
+        orientation: forward
+
+  - id: test-freight-4car
+    name: テスト貨物4両編成
+    vehicles:
+      - designId: test-virtual-locomotive
+        orientation: forward
+      - designId: generic-light-two-axle-flat-wagon
+        orientation: forward
+      - designId: generic-light-two-axle-flat-wagon
+        orientation: forward
+      - designId: generic-light-two-axle-flat-wagon
+        orientation: forward
+
+  - id: test-bidirectional-diesel-2car
+    name: テスト双方向気動車2両編成
+    vehicles:
+      - designId: generic-light-diesel-railcar
+        orientation: forward
+      - designId: generic-light-diesel-railcar
+        orientation: reversed

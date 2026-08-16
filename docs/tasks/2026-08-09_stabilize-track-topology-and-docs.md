@@ -2,7 +2,7 @@
 md_class: history
 id: task-stabilize-track-topology-and-docs
 type: task
-status: review
+status: done
 created: 2026-08-09
 epic: epic-phase-minus-one
 design: design-track-junction-topology

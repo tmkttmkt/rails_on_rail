@@ -108,6 +108,27 @@ describe("free map", () => {
     expect(Math.abs(dy / dx)).toBeLessThan(0.01);
   });
 
+  it("既設線路間の接続を半径一定の二円弧で構成する", () => {
+    const sampled = sampleArcChain([{ x: 0, y: 0 }, { x: 160, y: 120 }], 100, { x: 1, y: 0 }, { x: 1, y: 0 });
+    const joinIndex = 50;
+    const firstRadii = analyzeLine(sampled.slice(0, joinIndex + 1)).samples.flatMap((sample) => sample.radiusM === null ? [] : [sample.radiusM]);
+    const secondRadii = analyzeLine(sampled.slice(joinIndex)).samples.flatMap((sample) => sample.radiusM === null ? [] : [sample.radiusM]);
+    const startDirection = { x: sampled[1].x - sampled[0].x, y: sampled[1].y - sampled[0].y };
+    const endDirection = { x: sampled.at(-1)!.x - sampled.at(-2)!.x, y: sampled.at(-1)!.y - sampled.at(-2)!.y };
+
+    expect(Math.abs(startDirection.y / startDirection.x)).toBeLessThan(0.02);
+    expect(Math.abs(endDirection.y / endDirection.x)).toBeLessThan(0.02);
+    expect(Math.max(...firstRadii) - Math.min(...firstRadii)).toBeLessThan(1e-5);
+    expect(Math.max(...secondRadii) - Math.min(...secondRadii)).toBeLessThan(1e-5);
+  });
+
+  it("既設線路間の接続半径はサンプリング数に依存しない", () => {
+    const coarse = analyzeLine(sampleArcChain([{ x: 0, y: 0 }, { x: 160, y: 120 }], 20, { x: 1, y: 0 }, { x: 1, y: 0 }));
+    const fine = analyzeLine(sampleArcChain([{ x: 0, y: 0 }, { x: 160, y: 120 }], 200, { x: 1, y: 0 }, { x: 1, y: 0 }));
+
+    expect(coarse.minimumRadiusM).toBeCloseTo(fine.minimumRadiusM ?? 0, 5);
+  });
+
   it("円弧区間は一定半径になる", () => {
     const sampled = sampleArcChain([{ x: 0, y: 0 }, { x: 100, y: 100 }], 20, { x: 1, y: 0 });
     const radii = analyzeLine(sampled).samples.flatMap((sample) => sample.radiusM === null ? [] : [sample.radiusM]);
@@ -210,7 +231,7 @@ describe("free map", () => {
 
   it("既設束の一本だけに接続する単線分岐を作れる", () => {
     let state = executeCommand(createInitialState(), { type: "track.create", geometry: "straight", trackCount: 3, points: [{ x: 0, y: 0 }, { x: 100, y: 0 }] }).state;
-    state = executeCommand(state, { type: "track.create", geometry: "straight", trackCount: 1, connectionAlignmentIndex: 2, startConnectionTrackId: "track-1", points: [{ x: 100, y: -12 }, { x: 180, y: 80 }] }).state;
+    state = executeCommand(state, { type: "track.create", geometry: "curve", trackCount: 1, connectionAlignmentIndex: 2, startConnectionTrackId: "track-1", points: [{ x: 100, y: -12 }, { x: 180, y: 80 }] }).state;
     expect(state.tracks[3].startConnection?.trackId).toBe("track-3");
     expect(state.tracks[3].points[0]).toEqual({ x: 100, y: 12 });
   });
@@ -246,7 +267,7 @@ describe("free map", () => {
   it("曲線途中への分岐位置を接続点として保存する", () => {
     let state = executeCommand(createInitialState(), { type: "track.create", geometry: "curve", points: [{ x: 0, y: 0 }, { x: 100, y: 80 }, { x: 200, y: 0 }] }).state;
     const point = state.tracks[0].points[Math.floor(state.tracks[0].points.length / 2)];
-    state = executeCommand(state, { type: "track.create", geometry: "straight", startConnectionTrackId: "track-1", points: [point, { x: point.x + 100, y: point.y }] }).state;
+    state = executeCommand(state, { type: "track.create", geometry: "curve", startConnectionTrackId: "track-1", points: [point, { x: point.x + 100, y: point.y }] }).state;
     expect(state.junctions[0].ports).toEqual(expect.arrayContaining([
       expect.objectContaining({ trackId: "track-1", location: "interior" }),
       expect.objectContaining({ trackId: "track-2", location: "start", distanceM: 0 }),
@@ -258,6 +279,13 @@ describe("free map", () => {
     state = executeCommand(state, { type: "track.create", geometry: "straight", trackCount: 2, endConnectionTrackId: "track-1", points: [{ x: 0, y: 0 }, { x: 100, y: -6 }] }).state;
     expect(state.tracks[2].points.at(-1)).toEqual({ x: 100, y: -6 });
     expect(state.tracks[3].points.at(-1)).toEqual({ x: 100, y: 6 });
+  });
+
+  it("終点側の接続対応番号で束内の到着線路を選べる", () => {
+    let state = executeCommand(createInitialState(), { type: "track.create", geometry: "straight", trackCount: 2, points: [{ x: 100, y: 0 }, { x: 200, y: 0 }] }).state;
+    state = executeCommand(state, { type: "track.create", geometry: "curve", trackCount: 1, endConnectionTrackId: "track-1", endConnectionAlignmentIndex: 1, endTangent: { x: 1, y: 0 }, points: [{ x: 0, y: 50 }, { x: 100, y: 6 }] }).state;
+    expect(state.tracks[2].points.at(-1)).toEqual({ x: 100, y: 6 });
+    expect(state.tracks[2].endConnection?.trackId).toBe("track-2");
   });
 
   it("束の個別線路から複線を伸ばすと対応する新線を開始位置へ合わせる", () => {
@@ -290,7 +318,7 @@ describe("free map", () => {
     let state = executeCommand(createInitialState(), { type: "track.create", geometry: "straight", points: [{ x: 0, y: 0 }, { x: 200, y: 0 }] }).state;
     state = executeCommand(state, { type: "station.createRange", name: " 仮駅 ", trackId: "track-1", startPosition: { x: 40, y: 7 }, endPosition: { x: 120, y: -3 } }).state;
     expect(state.stations[0]).toMatchObject({ name: "仮駅", position: { x: 80, y: 0 } });
-    expect(state.stations[0].stopPoints[0]).toEqual({ trackId: "track-1", startDistanceM: 40, endDistanceM: 120, startPosition: { x: 40, y: 0 }, endPosition: { x: 120, y: 0 }, direction: "both" });
+    expect(state.stations[0].stopPoints[0]).toMatchObject({ trackId: "track-1", startDistanceM: 40, endDistanceM: 120, startPosition: { x: 40, y: 0 }, endPosition: { x: 120, y: 0 }, direction: "both" });
     state = executeCommand(state, { type: "station.extend", stationId: "station-1", trackId: "track-1", position: { x: 160, y: 4 } }).state;
     expect(state.stations[0].stopPoints[0].endDistanceM).toBe(160);
     state = executeCommand(state, { type: "station.rename", stationId: "station-1", name: "中央" }).state;
@@ -377,5 +405,33 @@ describe("free map", () => {
     expect(state.tracks[0].engineering.builtMinimumRadiusM).not.toBeNull();
     expect(state.tracks[0].engineering.cantProfile).toHaveLength(2);
     expect(state.tracks[0].engineering.cantProfile[0].cantMm).toBeGreaterThan(0);
+  });
+
+  it("既設線路から既設線路へ接続しても二円弧の半径を保存する", () => {
+    let state = executeCommand(createInitialState(), {
+      type: "track.create",
+      geometry: "straight",
+      points: [{ x: -100, y: 0 }, { x: 0, y: 0 }],
+    }).state;
+    state = executeCommand(state, {
+      type: "track.create",
+      geometry: "straight",
+      points: [{ x: 160, y: 120 }, { x: 260, y: 120 }],
+    }).state;
+    state = executeCommand(state, {
+      type: "track.create",
+      geometry: "curve",
+      points: [{ x: 0, y: 0 }, { x: 160, y: 120 }],
+      startTangent: { x: 1, y: 0 },
+      endTangent: { x: 1, y: 0 },
+      startConnectionTrackId: "track-1",
+      endConnectionTrackId: "track-2",
+    }).state;
+
+    const connector = state.tracks[2];
+    expect(connector.startConnection?.trackId).toBe("track-1");
+    expect(connector.endConnection?.trackId).toBe("track-2");
+    expect(connector.engineering.builtMinimumRadiusM).not.toBeNull();
+    expect(connector.engineering.builtMinimumRadiusM).toBeGreaterThan(50);
   });
 });

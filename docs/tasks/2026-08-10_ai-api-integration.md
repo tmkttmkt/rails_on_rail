@@ -1,7 +1,7 @@
 ---
 md_class: operation
 type: task
-status: active
+status: done
 created: 2026-08-10
 assignee: agy
 ---

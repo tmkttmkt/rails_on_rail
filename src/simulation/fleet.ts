@@ -15,7 +15,6 @@ export interface OperatorVehicleClass {
   baseVehicleDesignId: string;
   connectionOverrides?: Partial<Record<VehicleEndName, VehicleConnectionEnd>>;
 }
-
 export interface VehicleUnit {
   id: string;
   operatorClassId: string;
@@ -201,7 +200,7 @@ function connectionViolations(
   ).violations;
 }
 
-function assertMechanicalConnection(
+export function assertMechanicalConnection(
   state: FleetState,
   first: FormationVehicle,
   firstSide: VehicleEndName,
@@ -213,7 +212,15 @@ function assertMechanicalConnection(
   if (violation) throw new Error(`${first.vehicleId}と${second.vehicleId}の連結器は互換ではありません`);
 }
 
-function formationWarnings(state: FleetState, formation: Formation): BrakeContinuityWarning[] {
+export function assertAllAdjacentConnections(state: FleetState, formation: Formation): void {
+  for (let index = 1; index < formation.vehicles.length; index += 1) {
+    const first = formation.vehicles[index - 1];
+    const second = formation.vehicles[index];
+    assertMechanicalConnection(state, first, "rear", second, "front");
+  }
+}
+
+export function formationWarnings(state: FleetState, formation: Formation): BrakeContinuityWarning[] {
   const warnings: BrakeContinuityWarning[] = [];
   for (let index = 1; index < formation.vehicles.length; index += 1) {
     const first = formation.vehicles[index - 1];
@@ -224,6 +231,7 @@ function formationWarnings(state: FleetState, formation: Formation): BrakeContin
   }
   return warnings;
 }
+
 
 function formationEndpoint(state: FleetState, assignment: TrainFormationAssignment, side: VehicleEndName): FormationVehicle {
   const formation = requireById(state.formations, assignment.formationId, "編成");
@@ -264,4 +272,25 @@ function trainWarnings(state: FleetState, train: Train): BrakeContinuityWarning[
     }
   }
   return warnings;
+}
+
+export function getFormationLengthM(
+  state: FleetState,
+  formation: Formation,
+): { lengthM: number; estimatedLength: boolean } {
+  let lengthM = 0;
+  let estimatedLength = false;
+  for (const item of formation.vehicles) {
+    const unit = requireById(state.vehicleUnits, item.vehicleId, "車両個体");
+    const operatorClass = requireById(state.operatorClasses, unit.operatorClassId, "運行会社形式");
+    const design = vehicleCatalog.getVehicleDesign(operatorClass.baseVehicleDesignId);
+    const vehicleLength = design.dimensions?.lengthOverCouplersM;
+    if (typeof vehicleLength === "number" && vehicleLength > 0) {
+      lengthM += vehicleLength;
+    } else {
+      lengthM += 20;
+      estimatedLength = true;
+    }
+  }
+  return { lengthM, estimatedLength };
 }

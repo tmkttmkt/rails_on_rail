@@ -45,3 +45,46 @@ items:
         throughBrakeSystemIds: [vacuum-automatic]
     hasHandBrake: true
     sources: []
+
+  - id: test-virtual-locomotive
+    name: テスト用仮想機関車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: TVL-1
+    introducedYear: 1900
+    legalClassification:
+      defaultCategoryId: locomotive
+    dimensions:
+      lengthOverCouplersM: 8.0
+      maximumWidthM: 2.0
+      maximumHeightM: 3.0
+    runningGear:
+      gaugeMm: 762
+      minimumCurveRadiusM: 20
+      axleGroups:
+        - id: driving
+          axleCount: 2
+          assemblyType: fixed-frame
+          powered: true
+          emptyLoadPerAxleT: 4.0
+          maximumLoadedLoadPerAxleT: 4.5
+    capabilities:
+      selfPropelled: true
+      canHaulOtherVehicles: true
+      bidirectionalOperationWithoutRunaround: true
+      passengerCapacity: 0
+      cargoCapacityT: 0
+    traction:
+      propulsionType: diesel-hydraulic
+      maximumPowerKw: 150
+      startingTractiveEffortKn: 40
+      maximumSpeedKmh: 45
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    hasHandBrake: true
+    sources: []

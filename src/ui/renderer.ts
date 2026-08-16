@@ -1,8 +1,23 @@
-import { worldToScreen, type Camera, type MapState, type Point, type Viewport } from "../simulation/model";
-import { closestPointOnSegment, createParallelLines, sampleTrack } from "../simulation/geometry";
+import { getFormationOperationalStatus, worldToScreen, type Camera, type MapState, type Point, type Viewport } from "../simulation/model";
+import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLines } from "../simulation/geometry";
 import type { TrackGeometry } from "../simulation/model";
 import { trackCatalog } from "../data/trackCatalog";
-import { alignPathEndsToConnection, alignPathsToConnection, centeredConnectionCandidateIndex, findTrackGroup } from "../simulation/commands";
+import { alignPathEndsToConnection, alignPathsToConnection, findTrackGroup } from "../simulation/commands";
+
+export interface PlacementPreviewState {
+  formationId: string;
+  formationName: string;
+  formationLengthM: number;
+  trackId: string;
+  stationId: string;
+  stationName: string;
+  centerDistanceM: number;
+  occupiedStartDistanceM: number;
+  occupiedEndDistanceM: number;
+  orientation: "forward" | "reversed";
+  isValid: boolean;
+  errorMessage?: string;
+}
 
 export interface RenderState {
   draftPoints: Point[];
@@ -18,9 +33,13 @@ export interface RenderState {
   draftGaugeMm: number;
   draftStartConnectionTrackId: string | null;
   draftEndConnectionTrackId: string | null;
+  draftEndConnectionFixed: boolean;
   draftConnectionAlignmentIndex: number;
+  draftEndConnectionAlignmentIndex: number;
   stationRangeStart: { trackId: string; position: Point } | null;
   stationScope: "single" | "bundle";
+  placementPreview?: PlacementPreviewState | null;
+  routeBuilderPreview?: { legs: any[]; isValid: boolean } | null;
 }
 
 export function drawMap(
@@ -48,14 +67,30 @@ export function drawMap(
     const gaugeM = trackCatalog.getGauge(track.specification.gaugeId).gaugeMm / 1000;
     drawTrack(context, sampleTrack(track), camera, viewport, gaugeM, renderState.selectedTrackIds.includes(track.id), false);
   }
-  for (const route of state.routes) {
-    for (const traversal of route.legs.flat()) {
-      const track = state.tracks.find((item) => item.id === traversal.trackId);
-      if (!track) continue;
-      const points = slicePathByDistance(sampleTrack(track), Math.min(traversal.fromDistanceM, traversal.toDistanceM), Math.max(traversal.fromDistanceM, traversal.toDistanceM));
-      if (points.length >= 2) strokePolyline(context, points, camera, viewport, "rgba(48,104,158,.55)", 2, [5, 4]);
+  for (const route of Object.values(state.operationRoutes || {})) {
+    for (const leg of route.legs || []) {
+      for (const traversal of leg.tracks || []) {
+        const track = state.tracks.find((item) => item.id === traversal.trackId);
+        if (!track) continue;
+        const points = slicePathByDistance(sampleTrack(track), traversal.startDistanceM, traversal.endDistanceM);
+        if (points.length >= 2) strokePolyline(context, points, camera, viewport, "rgba(48,104,158,.55)", 2, [5, 4]);
+      }
     }
   }
+
+  // Draw Live Preflight Route Overlay when in Route Builder Mode
+  if (renderState.routeBuilderPreview && renderState.routeBuilderPreview.legs) {
+    const color = renderState.routeBuilderPreview.isValid ? "#10b981" : "#ef4444";
+    for (const leg of renderState.routeBuilderPreview.legs) {
+      for (const traversal of leg.tracks || []) {
+        const track = state.tracks.find((item) => item.id === traversal.trackId);
+        if (!track) continue;
+        const points = slicePathByDistance(sampleTrack(track), traversal.startDistanceM, traversal.endDistanceM);
+        if (points.length >= 2) strokePolyline(context, points, camera, viewport, color, 6);
+      }
+    }
+  }
+
   for (const station of state.stations) {
     const selected = renderState.selectedStationIds.includes(station.id);
     for (const stopPoint of station.stopPoints) {
@@ -69,7 +104,33 @@ export function drawMap(
     }
     drawStation(context, station.position, station.name, camera, viewport, selected);
   }
-  for (const train of state.operatingTrains) drawOperatingTrain(context, train.position, train.name, train.state, camera, viewport);
+  for (const placement of state.vehiclePlacements) {
+    const track = state.tracks.find((item) => item.id === placement.trackId);
+    if (!track) continue;
+    const formation = state.fleet.formations.find((item) => item.id === placement.formationId);
+    const status = getFormationOperationalStatus(state, placement.formationId);
+    const trackPath = sampleTrack(track);
+    const occupiedRange = slicePathByDistance(trackPath, placement.occupiedStartDistanceM, placement.occupiedEndDistanceM);
+    if (occupiedRange.length >= 2) {
+      const color = status === "reserved" ? "#c47b24" : "#2b8a4b";
+      strokePolyline(context, occupiedRange, camera, viewport, color, 8);
+      strokePolyline(context, occupiedRange, camera, viewport, "#ffffff", 2);
+    }
+    const centerPoints = slicePathByDistance(trackPath, placement.centerDistanceM, placement.centerDistanceM);
+    const centerPoint = centerPoints[0];
+    if (centerPoint) {
+      drawPlacedFormation(context, centerPoint, formation?.name ?? placement.formationId, status, camera, viewport);
+    }
+  }
+  for (const train of state.operatingTrains) {
+    const formation = state.fleet.formations.find((f) => f.id === train.formationId);
+    const status = formation ? getFormationOperationalStatus(state, formation.id) : "unplaced";
+    drawOperatingTrain(context, train.position, train.name, train.state, status, camera, viewport);
+  }
+
+  if (renderState.placementPreview) {
+    drawPlacementPreview(context, state, renderState.placementPreview, camera, viewport);
+  }
 
   if (renderState.stationRangeStart && renderState.pointerWorld) {
     const track = state.tracks.find((item) => item.id === renderState.stationRangeStart?.trackId);
@@ -88,7 +149,10 @@ export function drawMap(
   }
 
   const draft = [...renderState.draftPoints];
-  if (renderState.pointerWorld && draft.length > 0) draft.push(renderState.pointerWorld);
+  const draftEnd = draft.at(-1);
+  if (!renderState.draftEndConnectionFixed && renderState.pointerWorld && draft.length > 0 && (!draftEnd || Math.hypot(renderState.pointerWorld.x - draftEnd.x, renderState.pointerWorld.y - draftEnd.y) > 1e-6)) {
+    draft.push(renderState.pointerWorld);
+  }
   if (draft.length > 1) {
     const preview = sampleTrack({
       geometry: renderState.draftGeometry,
@@ -101,8 +165,7 @@ export function drawMap(
       alignPathsToConnection(state, previewLines, renderState.draftStartConnectionTrackId, renderState.draftConnectionAlignmentIndex, preview[0]);
     }
     if (renderState.draftEndConnectionTrackId) {
-      const targetCount = findTrackGroup(state, renderState.draftEndConnectionTrackId)?.trackIds.length ?? 1;
-      alignPathEndsToConnection(state, previewLines, renderState.draftEndConnectionTrackId, centeredConnectionCandidateIndex(previewLines.length, targetCount), preview.at(-1)!);
+      alignPathEndsToConnection(state, previewLines, renderState.draftEndConnectionTrackId, renderState.draftEndConnectionAlignmentIndex, preview.at(-1)!);
     }
     for (const line of previewLines) {
       drawTrack(context, line, camera, viewport, renderState.draftGaugeMm / 1000, false, true);
@@ -146,18 +209,84 @@ export function drawMap(
   context.restore();
 }
 
-function drawOperatingTrain(context: CanvasRenderingContext2D, point: Point, name: string, state: "running" | "dwelling" | "completed", camera: Camera, viewport: Viewport): void {
+function drawOperatingTrain(
+  context: CanvasRenderingContext2D,
+  point: Point,
+  name: string,
+  state: "running" | "dwelling" | "completed",
+  formationStatus: string,
+  camera: Camera,
+  viewport: Viewport
+): void {
   const screen = worldToScreen(point, camera, viewport);
+  const isAwaitingPlacement = state === "completed" && formationStatus === "awaiting-placement";
   context.beginPath();
   context.arc(screen.x, screen.y, 6, 0, Math.PI * 2);
-  context.fillStyle = state === "completed" ? "#6c7377" : state === "dwelling" ? "#c47b24" : "#246eb0";
+  context.fillStyle = isAwaitingPlacement ? "#d9534f" : state === "completed" ? "#6c7377" : state === "dwelling" ? "#c47b24" : "#246eb0";
   context.fill();
-  context.strokeStyle = "#f4f5f5";
+  context.strokeStyle = isAwaitingPlacement ? "#ffd700" : "#f4f5f5";
   context.lineWidth = 2;
+  context.stroke();
+  context.fillStyle = isAwaitingPlacement ? "#a8322a" : "#172027";
+  context.font = "bold 9px Tahoma, 'Yu Gothic UI', sans-serif";
+  const displayName = isAwaitingPlacement ? `${name} [配置回収待ち]` : name;
+  context.fillText(displayName, screen.x + 9, screen.y + 3);
+}
+
+function drawPlacementPreview(
+  context: CanvasRenderingContext2D,
+  state: MapState,
+  preview: PlacementPreviewState,
+  camera: Camera,
+  viewport: Viewport
+): void {
+  const track = state.tracks.find((t) => t.id === preview.trackId);
+  if (!track) return;
+  const trackPath = sampleTrack(track);
+  const occupiedRange = slicePathByDistance(
+    trackPath,
+    Math.max(0, preview.occupiedStartDistanceM),
+    Math.min(analyzeTrackLines([trackPath]).lines[0]?.lengthM ?? 0, preview.occupiedEndDistanceM)
+  );
+  const color = preview.isValid ? "rgba(43, 138, 75, 0.8)" : "rgba(217, 83, 79, 0.8)";
+  if (occupiedRange.length >= 2) {
+    strokePolyline(context, occupiedRange, camera, viewport, color, 10, [6, 4]);
+    strokePolyline(context, occupiedRange, camera, viewport, "#ffffff", 2);
+  }
+  const centerPoints = slicePathByDistance(trackPath, preview.centerDistanceM, preview.centerDistanceM);
+  const center = centerPoints[0];
+  if (center) {
+    const screen = worldToScreen(center, camera, viewport);
+    context.beginPath();
+    context.arc(screen.x, screen.y, 7, 0, Math.PI * 2);
+    context.fillStyle = preview.isValid ? "#2b8a4b" : "#d9534f";
+    context.fill();
+    context.strokeStyle = "#ffffff";
+    context.lineWidth = 2;
+    context.stroke();
+
+    const dirLabel = preview.orientation === "forward" ? "→" : "←";
+    const labelText = preview.isValid
+      ? `${preview.formationName} [${dirLabel} R:反転]`
+      : `${preview.formationName} (${preview.errorMessage ?? "不可"})`;
+    context.fillStyle = preview.isValid ? "#172027" : "#a8322a";
+    context.font = "bold 10px Tahoma, 'Yu Gothic UI', sans-serif";
+    context.fillText(labelText, screen.x + 10, screen.y + 4);
+  }
+}
+
+function drawPlacedFormation(context: CanvasRenderingContext2D, point: Point, name: string, status: string, camera: Camera, viewport: Viewport): void {
+  const screen = worldToScreen(point, camera, viewport);
+  context.beginPath();
+  context.arc(screen.x, screen.y, 5, 0, Math.PI * 2);
+  context.fillStyle = status === "reserved" ? "#c47b24" : "#2b8a4b";
+  context.fill();
+  context.strokeStyle = "#ffffff";
+  context.lineWidth = 1.5;
   context.stroke();
   context.fillStyle = "#172027";
   context.font = "bold 9px Tahoma, 'Yu Gothic UI', sans-serif";
-  context.fillText(name, screen.x + 9, screen.y + 3);
+  context.fillText(name, screen.x + 7, screen.y + 3);
 }
 
 function drawStation(context: CanvasRenderingContext2D, point: Point, name: string, camera: Camera, viewport: Viewport, selected: boolean): void {

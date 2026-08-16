@@ -3,7 +3,7 @@ md_class: history
 id: task-replace-curve-with-arc-chain
 type: task
 created: 2026-08-09
-status: review
+status: done
 owners:
   - codex
 relations:

@@ -7,6 +7,8 @@ export type KeyAction =
   | "connection.shiftRight"
   | "connection.center"
   | "connection.nextCandidate"
+  | "connection.shiftEndBackward"
+  | "connection.shiftEndForward"
   | "view.panUp"
   | "view.panDown"
   | "view.panLeft"
@@ -25,13 +27,14 @@ export type KeyAction =
   | "track.countDown"
   | "track.countUp"
   | "app.save"
-  | "simulation.togglePause";
+  | "simulation.togglePause"
+  | "placement.toggleOrientation";
 
 export interface KeyBinding {
   action: KeyAction;
   keys: string[];
   display: string;
-  context: "global" | "view" | "construction" | "track-building" | "selection" | "connection-adjustment";
+  context: "global" | "view" | "construction" | "track-building" | "selection" | "connection-adjustment" | "placement";
   implemented: boolean;
   modifiers?: string[];
 }
@@ -45,6 +48,8 @@ export const KEY_BINDINGS: Record<KeyAction, KeyBinding> = {
   "connection.shiftRight": { action: "connection.shiftRight", keys: ["m"], display: "M", context: "connection-adjustment", implemented: true },
   "connection.center": { action: "connection.center", keys: ["0"], display: "0", context: "connection-adjustment", implemented: true },
   "connection.nextCandidate": { action: "connection.nextCandidate", keys: ["Tab"], display: "Tab", context: "connection-adjustment", implemented: true },
+  "connection.shiftEndBackward": { action: "connection.shiftEndBackward", keys: [","], display: ",", context: "connection-adjustment", implemented: true },
+  "connection.shiftEndForward": { action: "connection.shiftEndForward", keys: ["."], display: ".", context: "connection-adjustment", implemented: true },
   "view.panUp": { action: "view.panUp", keys: ["w", "ArrowUp"], display: "W/↑", context: "view", implemented: true },
   "view.panDown": { action: "view.panDown", keys: ["s", "ArrowDown"], display: "S/↓", context: "view", implemented: true },
   "view.panLeft": { action: "view.panLeft", keys: ["a", "ArrowLeft"], display: "A/←", context: "view", implemented: true },
@@ -64,6 +69,7 @@ export const KEY_BINDINGS: Record<KeyAction, KeyBinding> = {
   "track.countUp": { action: "track.countUp", keys: ["]"], display: "]", context: "track-building", implemented: true },
   "app.save": { action: "app.save", keys: ["s"], modifiers: ["ctrl"], display: "Ctrl+S", context: "global", implemented: true },
   "simulation.togglePause": { action: "simulation.togglePause", keys: [" "], display: "Space", context: "global", implemented: true },
+  "placement.toggleOrientation": { action: "placement.toggleOrientation", keys: ["r"], display: "R", context: "placement", implemented: true },
 };
 
 export function matchesKey(action: KeyAction, event: Pick<KeyboardEvent, "key"> & { ctrlKey?: boolean }): boolean {

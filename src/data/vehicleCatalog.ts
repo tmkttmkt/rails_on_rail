@@ -37,6 +37,11 @@ export interface VehicleDesign {
   manufacturerId: string;
   manufacturerModelName: string;
   connections: Record<VehicleEndName, VehicleConnectionEnd>;
+  dimensions?: {
+    lengthOverCouplersM?: number;
+    maximumWidthM?: number;
+    maximumHeightM?: number;
+  };
 }
 
 interface CatalogFile<T> {

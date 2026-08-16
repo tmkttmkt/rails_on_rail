@@ -22,13 +22,17 @@ describe("駅間経路と列車運行", () => {
 
   it("複数の停車駅を順に結ぶ運行経路を作成する", () => {
     const state = executeCommand(createThreeStationLine(), { type: "route.create", name: "A-C線", stationIds: ["station-1", "station-2", "station-3"] }).state;
-    expect(state.routes[0].legs).toHaveLength(2);
-    expect(state.routes[0].lengthM).toBeCloseTo(260);
+    const route = Object.values(state.operationRoutes)[0];
+    expect(route.legs).toHaveLength(2);
+    expect(route.totalDistanceM ?? route.lengthM).toBeCloseTo(260);
   });
 
   it("列車が始発と途中駅で停車して終着する", () => {
     let state = executeCommand(createThreeStationLine(), { type: "route.create", name: "A-C線", stationIds: ["station-1", "station-2", "station-3"] }).state;
-    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: "formation-1", name: "試運転", speedKph: 36, dwellSeconds: 2 }).state;
+    state = executeCommand(state, { type: "fleet.formation-template.acquire", templateId: "test-single-locomotive", name: "試運転" }).state;
+    const fId = state.fleet.formations.at(-1)!.id;
+    state = executeCommand(state, { type: "fleet.formation.place", formationId: fId, stationId: "station-1", trackId: "track-1", distanceM: 20 }).state;
+    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: fId, name: "試運転", speedKph: 36, dwellSeconds: 2 }).state;
     expect(state.operatingTrains[0].state).toBe("dwelling");
     state = executeCommand(state, { type: "simulation.tick", elapsedSeconds: 15 }).state;
     expect(state.operatingTrains[0].state).toBe("dwelling");
@@ -40,13 +44,17 @@ describe("駅間経路と列車運行", () => {
 
   it("逆向き経路の走行区間は終点距離が始点距離より小さい", () => {
     const routeState = executeCommand(createThreeStationLine(), { type: "route.create", name: "C-A線", stationIds: ["station-3", "station-1"] }).state;
-    const traversal = routeState.routes[0].legs[0][0];
-    expect(traversal.fromDistanceM).toBeGreaterThan(traversal.toDistanceM);
+    const route = Object.values(routeState.operationRoutes)[0];
+    const traversal = route.legs[0].tracks[0];
+    expect(traversal.direction).toBe("reversed");
   });
 
   it("逆向き経路で列車が正しく始発から終着へ移動する", () => {
     let state = executeCommand(createThreeStationLine(), { type: "route.create", name: "C-A線", stationIds: ["station-3", "station-1"] }).state;
-    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: "f1", name: "逆行試験", speedKph: 36, dwellSeconds: 2 }).state;
+    state = executeCommand(state, { type: "fleet.formation-template.acquire", templateId: "test-single-locomotive", name: "逆行試験" }).state;
+    const fId = state.fleet.formations.at(-1)!.id;
+    state = executeCommand(state, { type: "fleet.formation.place", formationId: fId, stationId: "station-3", trackId: "track-1", distanceM: 280, orientation: "reversed" }).state;
+    state = executeCommand(state, { type: "train.dispatch", routeId: "route-1", formationId: fId, name: "逆行試験", speedKph: 36, dwellSeconds: 2 }).state;
     expect(state.operatingTrains[0].state).toBe("dwelling");
     // 停車2秒 + 260m走行 (10m/s) = 28秒
     state = executeCommand(state, { type: "simulation.tick", elapsedSeconds: 30 }).state;

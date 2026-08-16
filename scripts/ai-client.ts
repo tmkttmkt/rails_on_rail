@@ -1,6 +1,7 @@
 import type { MapState, Point } from "../src/simulation/model";
 import type { MapCommand } from "../src/simulation/commands";
 import type { SaveFile } from "../src/simulation/persistence";
+import type { MapRadiusInspection } from "../src/simulation/inspection";
 
 export interface ServerSaveSummary {
   id: string;
@@ -32,6 +33,16 @@ export class RailsAiClient {
     const res = await fetch(`${this.baseUrl}/api/server-saves/${encodeURIComponent(id)}`);
     if (!res.ok) throw new Error("Failed to fetch save file");
     return { save: await res.json(), revision: Number.parseInt(res.headers.get("ETag")?.replaceAll('"', '') ?? "1", 10) };
+  }
+
+  async inspectSave(save: SaveFile): Promise<MapRadiusInspection> {
+    const res = await fetch(`${this.baseUrl}/api/server-saves/inspect`, {
+      method: "POST",
+      body: JSON.stringify(save),
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!res.ok) throw new Error("Failed to inspect save file");
+    return res.json();
   }
 
   async createSave(name: string, state: MapState): Promise<{ id: string; revision: number }> {

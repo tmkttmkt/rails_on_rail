@@ -3,7 +3,7 @@ md_class: operation
 id: task-ui-navigation-structure
 type: task
 created: 2026-08-10
-status: design
+status: done
 owners: []
 relations:
   - design-ui-navigation-structure

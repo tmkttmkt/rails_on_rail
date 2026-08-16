@@ -3,6 +3,8 @@ import type { Plugin } from "vite";
 import fs from "node:fs";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { inspectTrackRadii } from "./src/simulation/inspection";
+import type { MapState } from "./src/simulation/model";
 
 interface SaveIndexEntry {
   filename: string;
@@ -130,6 +132,26 @@ function aiIntegrationPlugin(): Plugin {
           return;
         }
 
+        if (requestUrl.pathname === "/api/server-saves/inspect" && req.method === "POST") {
+          try {
+            const parsed: unknown = JSON.parse(await readBody(req));
+            const save = isRecord(parsed) && "save" in parsed ? parsed.save : parsed;
+            if (!isSaveFile(save)) {
+              res.statusCode = 400;
+              res.end("Invalid SaveFile");
+              return;
+            }
+            const inspection = inspectTrackRadii(save.state as unknown as MapState);
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify(inspection));
+          } catch (error) {
+            res.statusCode = 400;
+            res.setHeader("Content-Type", "application/json");
+            res.end(JSON.stringify({ error: error instanceof Error ? error.message : "Bad Request" }));
+          }
+          return;
+        }
+
         if (requestUrl.pathname.startsWith("/api/server-saves/") && req.method === "GET") {
           const identifier = decodeURIComponent(requestUrl.pathname.slice("/api/server-saves/".length));
           const index = readIndex();
@@ -160,4 +182,9 @@ function aiIntegrationPlugin(): Plugin {
   };
 }
 
-export default defineConfig({ plugins: [aiIntegrationPlugin()] });
+export default defineConfig({
+  plugins: [aiIntegrationPlugin()],
+  test: {
+    include: ["tests/**/*.test.ts"],
+  },
+});

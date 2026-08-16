@@ -2,7 +2,7 @@
 md_class: history
 id: task-route-and-train-movement-prototype
 type: task
-status: review
+status: done
 created: 2026-08-09
 epic: epic-phase-minus-one
 design: design-route-and-train-movement

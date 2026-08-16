@@ -3,11 +3,11 @@ import { vehicleCatalog } from "../src/data/vehicleCatalog";
 
 describe("車両接続互換性", () => {
   it("4種類の車両カタログを分離して読み込む", () => {
-    expect(vehicleCatalog.locomotives).toHaveLength(1);
+    expect(vehicleCatalog.locomotives).toHaveLength(2);
     expect(vehicleCatalog.poweredCars).toHaveLength(1);
     expect(vehicleCatalog.coaches).toHaveLength(1);
     expect(vehicleCatalog.wagons).toHaveLength(1);
-    expect(vehicleCatalog.vehicleDesigns).toHaveLength(4);
+    expect(vehicleCatalog.vehicleDesigns).toHaveLength(5);
   });
 
   it("同じ連結器と真空ブレーキを持つ機関車・客車を接続できる", () => {

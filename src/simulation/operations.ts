@@ -1,5 +1,5 @@
-import { analyzeLine, sampleTrack } from "./geometry";
-import type { MapState, OperatingTrain, OperationRoute, Point, RouteTraversal } from "./model";
+import { analyzeLine, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
+import type { MapState, OperatingTrain, Point, Route, RouteStop, RouteTraversal, RouteTraversalLeg, RouteTraversalTrack } from "./model";
 
 interface Edge { to: string; cost: number; traversal?: RouteTraversal }
 
@@ -33,7 +33,17 @@ export function findStationRoute(state: MapState, fromStationId: string, toStati
   }
   for (const junction of state.junctions) {
     for (const first of junction.ports) for (const second of junction.ports) {
-      if (first !== second) addEdge(graph, nodeKey(first.trackId, first.distanceM), { to: nodeKey(second.trackId, second.distanceM), cost: 0 });
+      if (first !== second) {
+        const track1 = state.tracks.find((t) => t.id === first.trackId);
+        const track2 = state.tracks.find((t) => t.id === second.trackId);
+        if (track1 && track2) {
+          const tangent1 = getTrackPortTangent(track1, first.location, first.distanceM);
+          const tangent2 = getTrackPortTangent(track2, second.location, second.distanceM);
+          if (isTangentContinuous(tangent1, tangent2)) {
+            addEdge(graph, nodeKey(first.trackId, first.distanceM), { to: nodeKey(second.trackId, second.distanceM), cost: 0 });
+          }
+        }
+      }
     }
   }
 
@@ -48,49 +58,126 @@ export function findStationRoute(state: MapState, fromStationId: string, toStati
     pending.delete(current);
     if (targets.has(current)) { reached = current; break; }
     for (const edge of graph.get(current) ?? []) {
-      const candidate = distances.get(current)! + edge.cost;
-      if (candidate + 1e-9 >= (distances.get(edge.to) ?? Number.POSITIVE_INFINITY)) continue;
-      distances.set(edge.to, candidate);
-      previous.set(edge.to, { key: current, edge });
-      pending.add(edge.to);
+      const nextDistance = distances.get(current)! + edge.cost;
+      if (nextDistance < (distances.get(edge.to) ?? Infinity)) {
+        distances.set(edge.to, nextDistance);
+        previous.set(edge.to, { key: current, edge });
+        pending.add(edge.to);
+      }
     }
   }
-  if (!reached) throw new Error(`駅「${from.name}」から「${to.name}」へ到達できません`);
-  const reversed: RouteTraversal[] = [];
-  while (!starts.includes(reached)) {
-    const step = previous.get(reached);
-    if (!step) throw new Error("経路の復元に失敗しました");
-    if (step.edge.traversal) reversed.push(step.edge.traversal);
-    reached = step.key;
+  if (!reached) throw new Error(`「${from.name}」から「${to.name}」へ到達できません`);
+  const traversals: RouteTraversal[] = [];
+  let cursor: string | undefined = reached;
+  while (cursor && previous.has(cursor)) {
+    const step: { key: string; edge: Edge } = previous.get(cursor)!;
+    if (step.edge.traversal) traversals.unshift(step.edge.traversal);
+    cursor = step.key;
   }
-  return coalesceTraversals(reversed.reverse());
+  return coalesceTraversals(traversals);
 }
 
-export function createOperationRoute(state: MapState, name: string, stationIds: string[]): OperationRoute {
-  if (stationIds.length < 2) throw new Error("運行経路には2駅以上が必要です");
+export function createOperationRoute(state: MapState, name: string, stationIds: string[]): Route {
   const normalized = name.trim();
-  if (!normalized) throw new Error("運行経路名を入力してください");
-  const legs = stationIds.slice(1).map((stationId, index) => {
-    if (stationId === stationIds[index]) throw new Error("同じ駅を続けて指定できません");
-    return findStationRoute(state, stationIds[index], stationId);
+  if (normalized.length < 1 || normalized.length > 60) throw new Error("運行経路名は1〜60文字で入力してください");
+  if (stationIds.length < 2) throw new Error("運行経路には2駅以上を指定してください");
+  for (let index = 1; index < stationIds.length; index += 1) {
+    if (stationIds[index] === stationIds[index - 1]) throw new Error("同じ駅を連続して指定することはできません");
+  }
+
+  const legs: RouteTraversalLeg[] = stationIds.slice(1).map((toId, index) => {
+    const traversals = findStationRoute(state, stationIds[index], toId);
+    const tracks: RouteTraversalTrack[] = traversals.map((t) => ({
+      trackId: t.trackId,
+      direction: t.fromDistanceM <= t.toDistanceM ? ("forward" as const) : ("reversed" as const),
+      startDistanceM: Math.min(t.fromDistanceM, t.toDistanceM),
+      endDistanceM: Math.max(t.fromDistanceM, t.toDistanceM),
+      lengthM: Math.abs(t.toDistanceM - t.fromDistanceM),
+    }));
+    const totalDistanceM = tracks.reduce((sum, tr) => sum + tr.lengthM, 0);
+    return {
+      fromStopSequence: index + 1,
+      toStopSequence: index + 2,
+      tracks,
+      junctionIds: [],
+      totalDistanceM,
+    };
   });
-  const lengthM = legs.flat().reduce((sum, traversal) => sum + traversalLength(traversal), 0);
-  return { id: `route-${state.nextRouteId}`, name: normalized, stationIds: [...stationIds], legs, lengthM };
+
+  const lengthM = legs.reduce((sum, leg) => sum + leg.totalDistanceM, 0);
+  const routeStops: RouteStop[] = stationIds.map((stId, idx) => {
+    const station = state.stations.find((s) => s.id === stId);
+    const firstTrackId =
+      legs[idx]?.tracks[0]?.trackId || legs[idx - 1]?.tracks.at(-1)?.trackId || station?.stopPoints[0]?.trackId || "";
+    const stopPoint = station?.stopPoints.find((sp) => sp.trackId === firstTrackId) || station?.stopPoints[0];
+    return {
+      id: `rstop-${idx + 1}-${stId}`,
+      sequence: idx + 1,
+      stationId: stId,
+      trackId: firstTrackId,
+      stopPointId: stopPoint?.id || "",
+      stopPointIndex: 0,
+      distanceM: 0,
+      commercialType: "stop",
+      dwellSeconds: 5,
+    };
+  });
+
+  const defaultLineId = Object.keys(state.lines)[0] || "line-default";
+  const defaultSystemId = Object.keys(state.serviceSystems)[0] || undefined;
+  const lineSections = [
+    {
+      id: `sec-1-route-${state.nextRouteId}`,
+      fromStopId: routeStops[0].id,
+      toStopId: routeStops.at(-1)!.id,
+      lineId: defaultLineId,
+      serviceSystemId: defaultSystemId,
+    },
+  ];
+
+  return {
+    id: `route-${state.nextRouteId}`,
+    name: normalized,
+    directionName: "下り",
+    stops: routeStops,
+    legs,
+    lineSections,
+    stationIds,
+    totalDistanceM: lengthM,
+    lengthM,
+    status: "active",
+    createdAtGameTimeMs: state.clock.currentTimeMs,
+    updatedAtGameTimeMs: state.clock.currentTimeMs,
+  };
 }
 
-export function createOperatingTrain(state: MapState, routeId: string, formationId: string, name: string, speedKph = 80, dwellSeconds = 5): OperatingTrain {
+export function createOperatingTrain(
+  state: MapState,
+  routeId: string,
+  formationId: string,
+  name: string,
+  speedKph = 80,
+  dwellSeconds = 5
+): OperatingTrain {
   const route = requireRoute(state, routeId);
   if (!formationId.trim()) throw new Error("編成IDを入力してください");
   if (!Number.isFinite(speedKph) || speedKph <= 0) throw new Error("列車速度は0より大きくしてください");
-  const first = route.legs[0]?.[0];
-  if (!first) throw new Error("走行区間のない運行経路です");
+  const firstLegTrack = route.legs[0]?.tracks[0];
+  if (!firstLegTrack) throw new Error("走行区間のない運行経路です");
+  const startDistM = firstLegTrack.direction === "forward" ? firstLegTrack.startDistanceM : firstLegTrack.endDistanceM;
   return {
     id: `operating-train-${state.nextOperatingTrainId}`,
     name: name.trim() || `列車 ${state.nextOperatingTrainId}`,
-    formationId: formationId.trim(), routeId, speedKph, dwellSeconds,
-    state: "dwelling", legIndex: 0, traversalIndex: 0, distanceOnTraversalM: 0,
+    formationId: formationId.trim(),
+    routeId,
+    speedKph,
+    dwellSeconds,
+    state: "dwelling",
+    legIndex: 0,
+    traversalIndex: 0,
+    distanceOnTraversalM: 0,
     remainingDwellSeconds: dwellSeconds,
-    position: pointAtTrackDistance(state, first.trackId, first.fromDistanceM),
+    position: pointAtTrackDistance(state, firstLegTrack.trackId, startDistM),
   };
 }
 
@@ -110,26 +197,38 @@ function advanceTrain(state: MapState, train: OperatingTrain, elapsedSeconds: nu
     train.state = "running";
   }
   const route = requireRoute(state, train.routeId);
-  let travelM = remainingSeconds * train.speedKph / 3.6;
+  let travelM = (remainingSeconds * train.speedKph) / 3.6;
   while (travelM > 0 && train.state === "running") {
-    const traversal = route.legs[train.legIndex]?.[train.traversalIndex];
-    if (!traversal) { train.state = "completed"; return; }
-    const length = traversalLength(traversal);
+    const leg = route.legs[train.legIndex];
+    const trackTraversal = leg?.tracks?.[train.traversalIndex];
+    if (!trackTraversal) {
+      train.state = "completed";
+      return;
+    }
+    const length = trackTraversal.lengthM;
     const available = length - train.distanceOnTraversalM;
     const used = Math.min(travelM, available);
     train.distanceOnTraversalM += used;
     travelM -= used;
-    const direction = Math.sign(traversal.toDistanceM - traversal.fromDistanceM);
-    train.position = pointAtTrackDistance(state, traversal.trackId, traversal.fromDistanceM + direction * train.distanceOnTraversalM);
+    const currentDistM =
+      trackTraversal.direction === "forward"
+        ? trackTraversal.startDistanceM + train.distanceOnTraversalM
+        : trackTraversal.endDistanceM - train.distanceOnTraversalM;
+    train.position = pointAtTrackDistance(state, trackTraversal.trackId, currentDistM);
     if (train.distanceOnTraversalM + 1e-6 < length) break;
     train.traversalIndex += 1;
     train.distanceOnTraversalM = 0;
-    if (train.traversalIndex < route.legs[train.legIndex].length) continue;
+    if (train.traversalIndex < leg.tracks.length) continue;
     train.legIndex += 1;
     train.traversalIndex = 0;
-    if (train.legIndex >= route.legs.length) { train.state = "completed"; break; }
+    if (train.legIndex >= route.legs.length) {
+      train.state = "completed";
+      break;
+    }
+    const nextLegStop = route.stops?.[train.legIndex];
     train.state = "dwelling";
-    train.remainingDwellSeconds = train.dwellSeconds;
+    train.remainingDwellSeconds = nextLegStop?.dwellSeconds ?? train.dwellSeconds;
+    break;
   }
 }
 
@@ -156,21 +255,34 @@ function requireStation(state: MapState, id: string) {
   if (!station) throw new Error(`駅が存在しません: ${id}`);
   return station;
 }
-function requireRoute(state: MapState, id: string) {
-  const route = state.routes.find((item) => item.id === id);
+
+function requireRoute(state: MapState, id: string): Route {
+  const route = state.routes[id];
   if (!route) throw new Error(`運行経路が存在しません: ${id}`);
   return route;
 }
-function stopMidpoint(stop: { startDistanceM: number; endDistanceM: number }) { return (stop.startDistanceM + stop.endDistanceM) / 2; }
-function nodeKey(trackId: string, distance: number) { return `${trackId}@${distance.toFixed(6)}`; }
-function addEdge(graph: Map<string, Edge[]>, from: string, edge: Edge) { graph.set(from, [...(graph.get(from) ?? []), edge]); }
-function traversalLength(traversal: RouteTraversal) { return Math.abs(traversal.toDistanceM - traversal.fromDistanceM); }
+
+function stopMidpoint(stop: { startDistanceM: number; endDistanceM: number }) {
+  return (stop.startDistanceM + stop.endDistanceM) / 2;
+}
+
+function nodeKey(trackId: string, distance: number) {
+  return `${trackId}@${distance.toFixed(6)}`;
+}
+
+function addEdge(graph: Map<string, Edge[]>, from: string, edge: Edge) {
+  graph.set(from, [...(graph.get(from) ?? []), edge]);
+}
+
 function coalesceTraversals(items: RouteTraversal[]): RouteTraversal[] {
   const result: RouteTraversal[] = [];
   for (const item of items) {
     const previous = result.at(-1);
-    if (previous && previous.trackId === item.trackId && Math.abs(previous.toDistanceM - item.fromDistanceM) < 0.001) previous.toDistanceM = item.toDistanceM;
-    else result.push({ ...item });
+    if (previous && previous.trackId === item.trackId && Math.abs(previous.toDistanceM - item.fromDistanceM) < 0.001) {
+      previous.toDistanceM = item.toDistanceM;
+    } else {
+      result.push({ ...item });
+    }
   }
   return result;
 }
