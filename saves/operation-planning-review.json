@@ -1,0 +1,1253 @@
+{
+  "formatVersion": 1,
+  "metadata": {
+    "name": "運行計画UIレビューマップ",
+    "createdAt": "2026-08-19T05:58:48.522Z",
+    "updatedAt": "2026-08-19T05:58:48.522Z"
+  },
+  "state": {
+    "version": 11,
+    "clock": {
+      "currentTimeMs": -2208967200000,
+      "paused": true,
+      "speedMultiplier": 1
+    },
+    "tracks": [
+      {
+        "id": "track-1",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 600,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 100,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 600,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-2",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 600,
+            "y": 0
+          },
+          {
+            "x": 1200,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-1",
+          "junctionId": "junction-1"
+        },
+        "engineering": {
+          "designSpeedKmh": 100,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 600,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-3",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 1200,
+            "y": 0
+          },
+          {
+            "x": 1800,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-2",
+          "junctionId": "junction-2"
+        },
+        "engineering": {
+          "designSpeedKmh": 100,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 600,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-4",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 1800,
+            "y": 0
+          },
+          {
+            "x": 2400,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-3",
+          "junctionId": "junction-3"
+        },
+        "engineering": {
+          "designSpeedKmh": 100,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 600,
+              "cantMm": 0
+            }
+          ]
+        }
+      }
+    ],
+    "trackGroups": [],
+    "junctions": [
+      {
+        "id": "junction-1",
+        "position": {
+          "x": 600,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-2",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-1",
+            "location": "end",
+            "distanceM": 600
+          }
+        ]
+      },
+      {
+        "id": "junction-2",
+        "position": {
+          "x": 1200,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-3",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-2",
+            "location": "end",
+            "distanceM": 600
+          }
+        ]
+      },
+      {
+        "id": "junction-3",
+        "position": {
+          "x": 1800,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-4",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-3",
+            "location": "end",
+            "distanceM": 600
+          }
+        ]
+      }
+    ],
+    "stations": [
+      {
+        "id": "station-1",
+        "name": "青葉",
+        "position": {
+          "x": 130,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-1-sp-1",
+            "trackId": "track-1",
+            "startDistanceM": 80,
+            "endDistanceM": 180,
+            "startPosition": {
+              "x": 80,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 180,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-2",
+        "name": "中央",
+        "position": {
+          "x": 830,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-2-sp-1",
+            "trackId": "track-2",
+            "startDistanceM": 180,
+            "endDistanceM": 280,
+            "startPosition": {
+              "x": 780,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 880,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-3",
+        "name": "境川",
+        "position": {
+          "x": 1430,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-3-sp-1",
+            "trackId": "track-3",
+            "startDistanceM": 180,
+            "endDistanceM": 280,
+            "startPosition": {
+              "x": 1380,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 1480,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-4",
+        "name": "海浜",
+        "position": {
+          "x": 2230,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-4-sp-1",
+            "trackId": "track-4",
+            "startDistanceM": 380,
+            "endDistanceM": 480,
+            "startPosition": {
+              "x": 2180,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 2280,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      }
+    ],
+    "lines": {
+      "line-aoba": {
+        "id": "line-aoba",
+        "name": "青葉線",
+        "code": "AO",
+        "color": "#2563eb",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "line-kaihin": {
+        "id": "line-kaihin",
+        "name": "海浜線",
+        "code": "KH",
+        "color": "#ea580c",
+        "displayOrder": 2,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "serviceSystems": {
+      "system-local": {
+        "id": "system-local",
+        "lineId": "line-aoba",
+        "name": "青葉線各駅停車",
+        "shortName": "各停",
+        "color": "#60a5fa",
+        "description": "青葉―境川間の各駅停車",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "system-through": {
+        "id": "system-through",
+        "lineId": "line-kaihin",
+        "name": "海浜直通",
+        "shortName": "直通",
+        "description": "青葉線から海浜線へ直通する系統",
+        "displayOrder": 2,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "routes": {
+      "route-aoba-kaihin-down": {
+        "id": "route-aoba-kaihin-down",
+        "name": "青葉・海浜直通 下り",
+        "directionName": "下り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-1",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 130,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-2",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "stop",
+            "dwellSeconds": 45
+          },
+          {
+            "id": "rstop-3-station-3",
+            "sequence": 3,
+            "stationId": "station-3",
+            "trackId": "track-3",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-4-station-4",
+            "sequence": 4,
+            "stationId": "station-4",
+            "trackId": "track-4",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 430,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-1",
+                "direction": "forward",
+                "startDistanceM": 130,
+                "endDistanceM": 600,
+                "lengthM": 470
+              },
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 700
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              },
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 600
+          },
+          {
+            "fromStopSequence": 3,
+            "toStopSequence": 4,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              },
+              {
+                "trackId": "track-4",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 430,
+                "lengthM": 430
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 800
+          }
+        ],
+        "lineSections": [
+          {
+            "id": "sec-1-route-aoba-kaihin-down",
+            "fromStopId": "rstop-1-station-1",
+            "toStopId": "rstop-3-station-3",
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          },
+          {
+            "id": "sec-2-route-aoba-kaihin-down",
+            "fromStopId": "rstop-3-station-3",
+            "toStopId": "rstop-4-station-4",
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-2",
+          "station-3",
+          "station-4"
+        ],
+        "totalDistanceM": 2100,
+        "lengthM": 2100,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-1": {
+        "id": "route-1",
+        "name": "海浜・青葉直通 上り",
+        "directionName": "上り",
+        "stops": [
+          {
+            "id": "rstop-1-station-4",
+            "sequence": 1,
+            "stationId": "station-4",
+            "trackId": "track-4",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 430,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-3",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-2",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "stop",
+            "dwellSeconds": 45
+          },
+          {
+            "id": "rstop-4-station-1",
+            "sequence": 4,
+            "stationId": "station-1",
+            "trackId": "track-1",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 130,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-4",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 430,
+                "lengthM": 430
+              },
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 800
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              },
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 600
+          },
+          {
+            "fromStopSequence": 3,
+            "toStopSequence": 4,
+            "tracks": [
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              },
+              {
+                "trackId": "track-1",
+                "direction": "reversed",
+                "startDistanceM": 130,
+                "endDistanceM": 600,
+                "lengthM": 470
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 700
+          }
+        ],
+        "lineSections": [
+          {
+            "id": "sec-1-route-1",
+            "fromStopId": "rstop-1-station-4",
+            "toStopId": "rstop-2-station-3",
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
+          },
+          {
+            "id": "sec-2-route-1",
+            "fromStopId": "rstop-2-station-3",
+            "toStopId": "rstop-4-station-1",
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          }
+        ],
+        "stationIds": [
+          "station-4",
+          "station-3",
+          "station-2",
+          "station-1"
+        ],
+        "totalDistanceM": 2100,
+        "lengthM": 2100,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "operations": {
+      "operation-101": {
+        "id": "operation-101",
+        "name": "朝直通101号",
+        "operationNumber": "101",
+        "routeId": "route-aoba-kaihin-down",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-1",
+            "departureTime": "08:00:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-2-station-2",
+            "arrivalTime": "08:20:00",
+            "departureTime": "08:21:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-3-station-3",
+            "arrivalTime": "08:40:00",
+            "departureTime": "08:40:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-4-station-4",
+            "arrivalTime": "09:00:00",
+            "dayOffset": 0
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "operation-102": {
+        "id": "operation-102",
+        "name": "朝直通102号",
+        "operationNumber": "102",
+        "routeId": "route-1",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-4",
+            "departureTime": "09:10:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-2-station-3",
+            "arrivalTime": "09:30:00",
+            "departureTime": "09:30:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-3-station-2",
+            "arrivalTime": "09:49:00",
+            "departureTime": "09:50:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-4-station-1",
+            "arrivalTime": "10:10:00",
+            "dayOffset": 0
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "operation-901": {
+        "id": "operation-901",
+        "name": "長期試験901号",
+        "operationNumber": "901",
+        "routeId": "route-aoba-kaihin-down",
+        "calendar": {
+          "weekdays": [
+            6
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-1",
+            "departureTime": "23:30:00",
+            "dayOffset": 0
+          },
+          {
+            "routeStopId": "rstop-2-station-2",
+            "arrivalTime": "00:20:00",
+            "departureTime": "00:25:00",
+            "dayOffset": 1
+          },
+          {
+            "routeStopId": "rstop-3-station-3",
+            "arrivalTime": "12:00:00",
+            "departureTime": "12:00:00",
+            "dayOffset": 1
+          },
+          {
+            "routeStopId": "rstop-4-station-4",
+            "arrivalTime": "00:30:00",
+            "dayOffset": 2
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "vehicleDuties": {
+      "duty-a01": {
+        "id": "duty-a01",
+        "name": "青葉A01運用",
+        "assignments": [
+          {
+            "sequence": 1,
+            "operationId": "operation-101",
+            "serviceDayOffset": 0
+          },
+          {
+            "sequence": 2,
+            "operationId": "operation-102",
+            "serviceDayOffset": 0
+          }
+        ],
+        "defaultFormationId": "formation-1",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "vehicleDutyExecutions": {
+      "duty-exec-1": {
+        "id": "duty-exec-1",
+        "vehicleDutyId": "duty-a01",
+        "serviceDate": "2026-08-19",
+        "formationId": "formation-1",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "operationExecutions": {},
+    "operatingTrains": [],
+    "fleet": {
+      "operatorClasses": [
+        {
+          "id": "class-1",
+          "operatorId": "op-default",
+          "className": "テスト用仮想機関車",
+          "baseVehicleDesignId": "test-virtual-locomotive"
+        },
+        {
+          "id": "class-2",
+          "operatorId": "op-default",
+          "className": "汎用軽便二軸客車",
+          "baseVehicleDesignId": "generic-light-two-axle-coach"
+        }
+      ],
+      "vehicleUnits": [
+        {
+          "id": "vehicle-1",
+          "operatorClassId": "class-1",
+          "operatorNumber": "1"
+        },
+        {
+          "id": "vehicle-2",
+          "operatorClassId": "class-2",
+          "operatorNumber": "2"
+        },
+        {
+          "id": "vehicle-3",
+          "operatorClassId": "class-2",
+          "operatorNumber": "3"
+        },
+        {
+          "id": "vehicle-4",
+          "operatorClassId": "class-1",
+          "operatorNumber": "4"
+        },
+        {
+          "id": "vehicle-5",
+          "operatorClassId": "class-2",
+          "operatorNumber": "5"
+        },
+        {
+          "id": "vehicle-6",
+          "operatorClassId": "class-2",
+          "operatorNumber": "6"
+        }
+      ],
+      "formations": [
+        {
+          "id": "formation-1",
+          "name": "青葉01編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-1",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-2",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-3",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "id": "formation-2",
+          "name": "確認用不一致編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-4",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-5",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-6",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        }
+      ],
+      "trains": []
+    },
+    "vehiclePlacements": [
+      {
+        "id": "placement-formation-1",
+        "formationId": "formation-1",
+        "stationId": "station-1",
+        "trackId": "track-1",
+        "centerDistanceM": 130,
+        "occupiedStartDistanceM": 117.5,
+        "occupiedEndDistanceM": 142.5,
+        "orientation": "forward"
+      },
+      {
+        "id": "placement-formation-2",
+        "formationId": "formation-2",
+        "stationId": "station-2",
+        "trackId": "track-2",
+        "centerDistanceM": 230,
+        "occupiedStartDistanceM": 217.5,
+        "occupiedEndDistanceM": 242.5,
+        "orientation": "forward"
+      }
+    ],
+    "operationRoutes": {
+      "route-aoba-kaihin-down": {
+        "id": "route-aoba-kaihin-down",
+        "name": "青葉・海浜直通 下り",
+        "directionName": "下り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-1",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 130,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-2",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "stop",
+            "dwellSeconds": 45
+          },
+          {
+            "id": "rstop-3-station-3",
+            "sequence": 3,
+            "stationId": "station-3",
+            "trackId": "track-3",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-4-station-4",
+            "sequence": 4,
+            "stationId": "station-4",
+            "trackId": "track-4",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 430,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-1",
+                "direction": "forward",
+                "startDistanceM": 130,
+                "endDistanceM": 600,
+                "lengthM": 470
+              },
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 700
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              },
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 600
+          },
+          {
+            "fromStopSequence": 3,
+            "toStopSequence": 4,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              },
+              {
+                "trackId": "track-4",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 430,
+                "lengthM": 430
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 800
+          }
+        ],
+        "lineSections": [
+          {
+            "id": "sec-1-route-aoba-kaihin-down",
+            "fromStopId": "rstop-1-station-1",
+            "toStopId": "rstop-3-station-3",
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          },
+          {
+            "id": "sec-2-route-aoba-kaihin-down",
+            "fromStopId": "rstop-3-station-3",
+            "toStopId": "rstop-4-station-4",
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-2",
+          "station-3",
+          "station-4"
+        ],
+        "totalDistanceM": 2100,
+        "lengthM": 2100,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-1": {
+        "id": "route-1",
+        "name": "海浜・青葉直通 上り",
+        "directionName": "上り",
+        "stops": [
+          {
+            "id": "rstop-1-station-4",
+            "sequence": 1,
+            "stationId": "station-4",
+            "trackId": "track-4",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 430,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-3",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-2",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 230,
+            "commercialType": "stop",
+            "dwellSeconds": 45
+          },
+          {
+            "id": "rstop-4-station-1",
+            "sequence": 4,
+            "stationId": "station-1",
+            "trackId": "track-1",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 130,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-4",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 430,
+                "lengthM": 430
+              },
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 800
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              },
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 230,
+                "endDistanceM": 600,
+                "lengthM": 370
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 600
+          },
+          {
+            "fromStopSequence": 3,
+            "toStopSequence": 4,
+            "tracks": [
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 230,
+                "lengthM": 230
+              },
+              {
+                "trackId": "track-1",
+                "direction": "reversed",
+                "startDistanceM": 130,
+                "endDistanceM": 600,
+                "lengthM": 470
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 700
+          }
+        ],
+        "lineSections": [
+          {
+            "id": "sec-1-route-1",
+            "fromStopId": "rstop-1-station-4",
+            "toStopId": "rstop-2-station-3",
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
+          },
+          {
+            "id": "sec-2-route-1",
+            "fromStopId": "rstop-2-station-3",
+            "toStopId": "rstop-4-station-1",
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          }
+        ],
+        "stationIds": [
+          "station-4",
+          "station-3",
+          "station-2",
+          "station-1"
+        ],
+        "totalDistanceM": 2100,
+        "lengthM": 2100,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "servicePatterns": {},
+    "stopPatterns": {},
+    "trainRuns": {},
+    "nextOperationRouteId": 1,
+    "nextServicePatternId": 1,
+    "nextStopPatternId": 1,
+    "nextTrainRunId": 1,
+    "nextTrackId": 5,
+    "nextTrackGroupId": 1,
+    "nextJunctionId": 4,
+    "nextStationId": 5,
+    "nextLineId": 1,
+    "nextServiceSystemId": 1,
+    "nextRouteId": 2,
+    "nextOperationId": 1,
+    "nextVehicleDutyId": 1,
+    "nextVehicleDutyExecutionId": 2,
+    "nextOperationExecutionId": 1,
+    "nextOperatingTrainId": 1,
+    "nextOperatorClassId": 3,
+    "nextVehicleUnitId": 7,
+    "nextFormationId": 3
+  }
+}

@@ -20,6 +20,7 @@ updated: 2026-08-16
 
 | Status | Task | Epic |
 |---|---|---|
+| `done` | [運行計画UIのレビューマップを用意する](tasks/2026-08-19_create-operation-planning-review-map.md) | [Phase -1](epics/phase-minus-one.md) |
 | `done` | [既設線路間の曲線接続位置をキーで調整する](tasks/2026-08-13_adjust-curve-connection-positions.md) | [Phase -1](epics/phase-minus-one.md) |
 | `done` | [既設線路間の接続曲線を二円弧へ置換する](tasks/2026-08-13_replace-existing-track-connector-with-biarc.md) | [Phase -1](epics/phase-minus-one.md) |
 | `done` | [接線適合な線路接続とトポロジー判定の実装](tasks/2026-08-13_tangent-valid-railway-connectivity.md) | [Phase -1](epics/phase-minus-one.md) |
