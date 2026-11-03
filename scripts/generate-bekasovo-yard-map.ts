@@ -15,9 +15,8 @@ const outputPath = path.resolve(process.cwd(), process.argv[2] ?? "saves/bekasov
 let state = createInitialState();
 const run = (command: MapCommand): void => { state = executeCommand(state, command).state; };
 
-// 1520 mm軌間は軌間カタログに未収録のため、標準軌で代用する。
-const mainSpec = { gaugeId: "gauge-1435mm", railProfileId: "gost-r65", supportSystemId: "pc-sleeper-ballast", roadbedId: "reinforced-roadbed" };
-const yardSpec = { gaugeId: "gauge-1435mm", railProfileId: "gost-r50", supportSystemId: "pc-sleeper-ballast", roadbedId: "standard-drained-roadbed" };
+const mainSpec = { gaugeId: "gauge-1520mm", railProfileId: "gost-r65", supportSystemId: "pc-sleeper-ballast", roadbedId: "reinforced-roadbed" };
+const yardSpec = { gaugeId: "gauge-1520mm", railProfileId: "gost-r50", supportSystemId: "pc-sleeper-ballast", roadbedId: "standard-drained-roadbed" };
 
 type Spec = typeof mainSpec;
 const nextId = (): string => `track-${state.nextTrackId}`;

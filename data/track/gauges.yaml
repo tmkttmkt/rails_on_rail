@@ -14,3 +14,10 @@ items:
     gaugeMm: 1435
     description: 標準軌。構造例として収録する。
     sources: []
+
+  - id: gauge-1520mm
+    name: 1520 mm軌間
+    status: draft
+    gaugeMm: 1520
+    description: 旧ソ連・ロシア系の広軌。1970年代に1524 mmから改定された。構造例として収録する。
+    sources: []

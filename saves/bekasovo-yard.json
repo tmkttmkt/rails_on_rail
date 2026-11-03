@@ -2,8 +2,8 @@
   "formatVersion": 1,
   "metadata": {
     "name": "ベカソヴォ操車場",
-    "createdAt": "2026-11-03T10:00:52.723Z",
-    "updatedAt": "2026-11-03T10:00:52.723Z"
+    "createdAt": "2026-11-03T10:04:48.439Z",
+    "updatedAt": "2026-11-03T10:04:48.439Z"
   },
   "state": {
     "version": 11,
@@ -28,7 +28,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -63,7 +63,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -98,7 +98,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -133,7 +133,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -168,7 +168,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -203,7 +203,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -238,7 +238,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -273,7 +273,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -308,7 +308,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -343,7 +343,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -382,7 +382,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -421,7 +421,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -460,7 +460,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -499,7 +499,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -538,7 +538,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -577,7 +577,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -692,7 +692,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -719,11 +719,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814551,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -819,7 +819,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -846,11 +846,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814552,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -946,7 +946,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -973,11 +973,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.2363242881455,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1073,7 +1073,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1100,11 +1100,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814551,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1200,7 +1200,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1227,11 +1227,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814551,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1327,7 +1327,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1354,11 +1354,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1454,7 +1454,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1481,11 +1481,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814554,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1581,7 +1581,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1608,11 +1608,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814554,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -1632,7 +1632,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1667,7 +1667,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1706,7 +1706,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1745,7 +1745,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1784,7 +1784,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1823,7 +1823,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1862,7 +1862,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -1901,7 +1901,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2016,7 +2016,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2043,11 +2043,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814565,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2143,7 +2143,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2170,11 +2170,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814565,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2270,7 +2270,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2297,11 +2297,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814561,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2397,7 +2397,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2424,11 +2424,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2524,7 +2524,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2551,11 +2551,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814564,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2651,7 +2651,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2678,11 +2678,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814541,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2778,7 +2778,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2805,11 +2805,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814561,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -2905,7 +2905,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -2932,11 +2932,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.2363242881454,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -3032,7 +3032,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3055,11 +3055,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 45
+              "cantMm": 48
             },
             {
               "distanceM": 455.68100247496676,
-              "cantMm": 45
+              "cantMm": 48
             }
           ]
         }
@@ -3079,7 +3079,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3118,7 +3118,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3157,7 +3157,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3196,7 +3196,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3235,7 +3235,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3274,7 +3274,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3309,7 +3309,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3344,7 +3344,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3379,7 +3379,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3414,7 +3414,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3449,7 +3449,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3484,7 +3484,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3519,7 +3519,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3554,7 +3554,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3589,7 +3589,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3628,7 +3628,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3667,7 +3667,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3706,7 +3706,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3745,7 +3745,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3784,7 +3784,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3823,7 +3823,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3938,7 +3938,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -3965,11 +3965,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814534,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4065,7 +4065,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4092,11 +4092,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4192,7 +4192,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4219,11 +4219,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881459,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4319,7 +4319,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4346,11 +4346,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4446,7 +4446,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4473,11 +4473,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814535,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4573,7 +4573,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4600,11 +4600,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4700,7 +4700,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4727,11 +4727,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814592,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4827,7 +4827,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4854,11 +4854,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814548,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -4878,7 +4878,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4913,7 +4913,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4952,7 +4952,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -4991,7 +4991,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5030,7 +5030,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5069,7 +5069,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5108,7 +5108,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5147,7 +5147,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5262,7 +5262,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5289,11 +5289,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814531,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -5389,7 +5389,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5416,11 +5416,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881455,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -5516,7 +5516,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5543,11 +5543,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -5643,7 +5643,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5670,11 +5670,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814628,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -5770,7 +5770,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5797,11 +5797,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881453,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -5897,7 +5897,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -5924,11 +5924,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -6024,7 +6024,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6051,11 +6051,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -6151,7 +6151,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6178,11 +6178,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -6202,7 +6202,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6237,7 +6237,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6272,7 +6272,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6307,7 +6307,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6342,7 +6342,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6377,7 +6377,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6412,7 +6412,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6447,7 +6447,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6482,7 +6482,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6517,7 +6517,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6556,7 +6556,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6595,7 +6595,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6634,7 +6634,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6673,7 +6673,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6712,7 +6712,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6751,7 +6751,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6866,7 +6866,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -6893,11 +6893,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814538,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -6993,7 +6993,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7020,11 +7020,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7120,7 +7120,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7147,11 +7147,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814591,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7247,7 +7247,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7274,11 +7274,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7374,7 +7374,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7401,11 +7401,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7501,7 +7501,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7528,11 +7528,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7628,7 +7628,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7655,11 +7655,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814591,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7755,7 +7755,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7782,11 +7782,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814531,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -7806,7 +7806,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7841,7 +7841,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7880,7 +7880,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7919,7 +7919,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7958,7 +7958,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -7997,7 +7997,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8036,7 +8036,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8075,7 +8075,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8190,7 +8190,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8217,11 +8217,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814632,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8317,7 +8317,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8344,11 +8344,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8444,7 +8444,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8471,11 +8471,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8571,7 +8571,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8598,11 +8598,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8698,7 +8698,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8725,11 +8725,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814528,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8825,7 +8825,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8852,11 +8852,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814551,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -8952,7 +8952,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -8979,11 +8979,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814551,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -9079,7 +9079,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9106,11 +9106,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814625,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -9130,7 +9130,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9165,7 +9165,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9200,7 +9200,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9235,7 +9235,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9270,7 +9270,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9305,7 +9305,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9340,7 +9340,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9375,7 +9375,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9410,7 +9410,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9445,7 +9445,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9484,7 +9484,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9523,7 +9523,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9562,7 +9562,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9601,7 +9601,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9640,7 +9640,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9679,7 +9679,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9794,7 +9794,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9821,11 +9821,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -9921,7 +9921,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -9948,11 +9948,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10048,7 +10048,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10075,11 +10075,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814585,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10175,7 +10175,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10202,11 +10202,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10302,7 +10302,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10329,11 +10329,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10429,7 +10429,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10456,11 +10456,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881454,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10556,7 +10556,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10583,11 +10583,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814592,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10683,7 +10683,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10710,11 +10710,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -10734,7 +10734,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10769,7 +10769,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10808,7 +10808,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10847,7 +10847,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10886,7 +10886,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10925,7 +10925,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -10964,7 +10964,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11003,7 +11003,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11118,7 +11118,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11145,11 +11145,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881455,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11245,7 +11245,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11272,11 +11272,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881455,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11372,7 +11372,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11399,11 +11399,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814628,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11499,7 +11499,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11526,11 +11526,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814538,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11626,7 +11626,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11653,11 +11653,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11753,7 +11753,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11780,11 +11780,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -11880,7 +11880,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -11907,11 +11907,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -12007,7 +12007,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12034,11 +12034,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814533,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -12058,7 +12058,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12093,7 +12093,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12128,7 +12128,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12163,7 +12163,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12198,7 +12198,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12233,7 +12233,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12268,7 +12268,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12303,7 +12303,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12338,7 +12338,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12373,7 +12373,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12412,7 +12412,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12451,7 +12451,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12490,7 +12490,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12529,7 +12529,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12568,7 +12568,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12607,7 +12607,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12722,7 +12722,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12749,11 +12749,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -12849,7 +12849,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -12876,11 +12876,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814528,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -12976,7 +12976,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13003,11 +13003,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814585,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13103,7 +13103,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13130,11 +13130,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13230,7 +13230,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13257,11 +13257,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13357,7 +13357,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13384,11 +13384,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814582,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13484,7 +13484,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13511,11 +13511,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881459,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13611,7 +13611,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13638,11 +13638,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -13662,7 +13662,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13697,7 +13697,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13736,7 +13736,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13775,7 +13775,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13814,7 +13814,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13853,7 +13853,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13892,7 +13892,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -13931,7 +13931,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14046,7 +14046,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14073,11 +14073,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14173,7 +14173,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14200,11 +14200,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14300,7 +14300,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14327,11 +14327,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14427,7 +14427,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14454,11 +14454,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814534,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14554,7 +14554,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14581,11 +14581,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814543,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14681,7 +14681,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14708,11 +14708,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814535,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14808,7 +14808,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14835,11 +14835,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.2363242881463,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -14935,7 +14935,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -14962,11 +14962,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 27
+              "cantMm": 29
             },
             {
               "distanceM": 120.23632428814616,
-              "cantMm": 27
+              "cantMm": 29
             }
           ]
         }
@@ -15062,7 +15062,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15089,11 +15089,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 38
+              "cantMm": 40
             },
             {
               "distanceM": 633.9736801882849,
-              "cantMm": 38
+              "cantMm": 40
             }
           ]
         }
@@ -15189,7 +15189,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15216,11 +15216,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 38
+              "cantMm": 40
             },
             {
               "distanceM": 633.973680188285,
-              "cantMm": 38
+              "cantMm": 40
             }
           ]
         }
@@ -15316,7 +15316,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15343,11 +15343,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 28
+              "cantMm": 30
             },
             {
               "distanceM": 303.10732715762606,
-              "cantMm": 28
+              "cantMm": 30
             }
           ]
         }
@@ -15443,7 +15443,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15470,11 +15470,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 28
+              "cantMm": 30
             },
             {
               "distanceM": 303.10732715762623,
-              "cantMm": 28
+              "cantMm": 30
             }
           ]
         }
@@ -15494,7 +15494,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15529,7 +15529,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15568,7 +15568,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15607,7 +15607,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15722,7 +15722,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15749,11 +15749,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 74
+              "cantMm": 79
             },
             {
               "distanceM": 694.8093820195606,
-              "cantMm": 74
+              "cantMm": 79
             }
           ]
         }
@@ -15849,7 +15849,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -15876,11 +15876,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 74
+              "cantMm": 79
             },
             {
               "distanceM": 694.8093820195604,
-              "cantMm": 74
+              "cantMm": 79
             }
           ]
         }
@@ -15976,7 +15976,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16003,11 +16003,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 147
+              "cantMm": 156
             },
             {
               "distanceM": 344.9857306592528,
-              "cantMm": 147
+              "cantMm": 156
             }
           ]
         }
@@ -16103,7 +16103,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16130,11 +16130,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 147
+              "cantMm": 156
             },
             {
               "distanceM": 344.985730659253,
-              "cantMm": 147
+              "cantMm": 156
             }
           ]
         }
@@ -16230,7 +16230,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16253,11 +16253,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 54
+              "cantMm": 57
             },
             {
               "distanceM": 406.0246656453084,
-              "cantMm": 54
+              "cantMm": 57
             }
           ]
         }
@@ -16277,7 +16277,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16312,7 +16312,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16347,7 +16347,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16382,7 +16382,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16417,7 +16417,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16452,7 +16452,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16487,7 +16487,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16522,7 +16522,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16557,7 +16557,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16596,7 +16596,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16635,7 +16635,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16674,7 +16674,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16713,7 +16713,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16752,7 +16752,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16791,7 +16791,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16830,7 +16830,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16945,7 +16945,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -16972,11 +16972,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.2363242881452,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17072,7 +17072,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17099,11 +17099,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814535,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17199,7 +17199,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17226,11 +17226,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814632,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17326,7 +17326,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17353,11 +17353,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17453,7 +17453,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17480,11 +17480,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814547,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17580,7 +17580,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17607,11 +17607,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17707,7 +17707,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17734,11 +17734,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814544,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17834,7 +17834,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17861,11 +17861,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -17885,7 +17885,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17920,7 +17920,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17959,7 +17959,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -17998,7 +17998,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18037,7 +18037,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18076,7 +18076,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18115,7 +18115,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18154,7 +18154,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18269,7 +18269,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18296,11 +18296,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814535,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -18396,7 +18396,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18423,11 +18423,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.2363242881453,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -18523,7 +18523,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18550,11 +18550,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814548,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -18650,7 +18650,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18677,11 +18677,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -18777,7 +18777,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18804,11 +18804,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814635,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -18904,7 +18904,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -18931,11 +18931,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814545,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -19031,7 +19031,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -19058,11 +19058,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814534,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -19158,7 +19158,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -19185,11 +19185,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 88
+              "cantMm": 93
             },
             {
               "distanceM": 120.23632428814537,
-              "cantMm": 88
+              "cantMm": 93
             }
           ]
         }
@@ -19285,7 +19285,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -19308,11 +19308,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 17
+              "cantMm": 18
             },
             {
               "distanceM": 406.0246656453077,
-              "cantMm": 17
+              "cantMm": 18
             }
           ]
         }
@@ -19332,7 +19332,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -19371,7 +19371,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r50",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "standard-drained-roadbed"
@@ -19410,7 +19410,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19445,7 +19445,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19480,7 +19480,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19519,7 +19519,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19558,7 +19558,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19597,7 +19597,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19636,7 +19636,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19675,7 +19675,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19714,7 +19714,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19753,7 +19753,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19792,7 +19792,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19831,7 +19831,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19946,7 +19946,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -19973,11 +19973,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 18
+              "cantMm": 19
             },
             {
               "distanceM": 1370.8177486703278,
-              "cantMm": 18
+              "cantMm": 19
             }
           ]
         }
@@ -20073,7 +20073,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20100,11 +20100,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 17
+              "cantMm": 18
             },
             {
               "distanceM": 1586.1125748841737,
-              "cantMm": 17
+              "cantMm": 18
             }
           ]
         }
@@ -20200,7 +20200,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20227,11 +20227,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 67
+              "cantMm": 71
             },
             {
               "distanceM": 170.56273257000296,
-              "cantMm": 67
+              "cantMm": 71
             }
           ]
         }
@@ -20327,7 +20327,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20354,11 +20354,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 67
+              "cantMm": 71
             },
             {
               "distanceM": 170.56273257000169,
-              "cantMm": 67
+              "cantMm": 71
             }
           ]
         }
@@ -20378,7 +20378,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20413,7 +20413,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20448,7 +20448,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20487,7 +20487,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20526,7 +20526,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20565,7 +20565,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20604,7 +20604,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20643,7 +20643,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20682,7 +20682,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20721,7 +20721,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20836,7 +20836,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20863,11 +20863,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 67
+              "cantMm": 71
             },
             {
               "distanceM": 170.56273257000262,
-              "cantMm": 67
+              "cantMm": 71
             }
           ]
         }
@@ -20963,7 +20963,7 @@
         ],
         "resolvedPath": true,
         "specification": {
-          "gaugeId": "gauge-1435mm",
+          "gaugeId": "gauge-1520mm",
           "railProfileId": "gost-r65",
           "supportSystemId": "pc-sleeper-ballast",
           "roadbedId": "reinforced-roadbed"
@@ -20990,11 +20990,11 @@
           "cantProfile": [
             {
               "distanceM": 0,
-              "cantMm": 15
+              "cantMm": 16
             },
             {
               "distanceM": 3403.1223801698766,
-              "cantMm": 15
+              "cantMm": 16
             }
           ]
         }
