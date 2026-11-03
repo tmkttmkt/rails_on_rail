@@ -4,7 +4,6 @@ import type {
   CommercialStopType,
   Route,
   RouteLeg,
-  RouteLineSection,
   RouteStop,
 } from "./serviceModel";
 
@@ -15,83 +14,6 @@ export interface CreateRouteStopInput {
   stopPointIndex?: number;
   commercialType?: CommercialStopType;
   dwellSeconds?: number;
-}
-
-export interface CreateRouteLineSectionInput {
-  fromStopSequence: number;
-  toStopSequence: number;
-  lineId: string;
-  serviceSystemId?: string;
-}
-
-export function validateRouteLineSections(
-  lineSections: RouteLineSection[],
-  stops: RouteStop[],
-  lines: Record<string, any>,
-  serviceSystems: Record<string, any>
-): void {
-  if (stops.length < 2) return;
-  if (!lineSections || lineSections.length === 0) {
-    throw new Error("ERR_INVALID_ROUTE_SECTIONS: 経路には1つ以上の路線区間が必要です");
-  }
-
-  // Map stop IDs to sequences
-  const stopSeqMap = new Map(stops.map((s) => [s.id, s.sequence]));
-
-  for (const sec of lineSections) {
-    if (!sec.id) throw new Error("ERR_INVALID_ROUTE_SECTIONS: 区間IDが不正です");
-    const fromSeq = stopSeqMap.get(sec.fromStopId);
-    const toSeq = stopSeqMap.get(sec.toStopId);
-
-    if (fromSeq === undefined || toSeq === undefined) {
-      throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間端点の地点ID (${sec.fromStopId}, ${sec.toStopId}) が経路内に存在しません`);
-    }
-
-    if (fromSeq >= toSeq) {
-      throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間の順序が不正です (${fromSeq} -> ${toSeq})。始点は終点より前に設定してください`);
-    }
-
-    if (!lines[sec.lineId]) {
-      throw new Error(`ERR_LINE_NOT_FOUND: 区間路線 (${sec.lineId}) が存在しません`);
-    }
-
-    if (sec.serviceSystemId) {
-      const sys = serviceSystems[sec.serviceSystemId];
-      if (!sys) {
-        throw new Error(`ERR_SERVICE_SYSTEM_NOT_FOUND: 区間系統 (${sec.serviceSystemId}) が存在しません`);
-      }
-      if (sys.lineId !== sec.lineId) {
-        throw new Error(
-          `ERR_SYSTEM_LINE_MISMATCH: 系統「${sys.name}」の親路線 (${sys.lineId}) が区間路線 (${sec.lineId}) と一致しません`
-        );
-      }
-    }
-  }
-
-  // Sort sections by fromStop sequence and verify continuity from first stop (1) to last stop (stops.length)
-  const sorted = [...lineSections].sort((a, b) => stopSeqMap.get(a.fromStopId)! - stopSeqMap.get(b.fromStopId)!);
-
-  const firstFromSeq = stopSeqMap.get(sorted[0].fromStopId)!;
-  if (firstFromSeq !== 1) {
-    throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間の開始地点は経路の始発駅 (1) である必要があります (現在は ${firstFromSeq})`);
-  }
-
-  for (let i = 0; i < sorted.length - 1; i++) {
-    const curToSeq = stopSeqMap.get(sorted[i].toStopId)!;
-    const nextFromSeq = stopSeqMap.get(sorted[i + 1].fromStopId)!;
-
-    if (curToSeq < nextFromSeq) {
-      throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間 ${i + 1} と ${i + 2} の間に未指定の空白が存在します (${curToSeq} -> ${nextFromSeq})`);
-    }
-    if (curToSeq > nextFromSeq) {
-      throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間 ${i + 1} と ${i + 2} の範囲が重複しています (${curToSeq} > ${nextFromSeq})`);
-    }
-  }
-
-  const lastToSeq = stopSeqMap.get(sorted.at(-1)!.toStopId)!;
-  if (lastToSeq !== stops.length) {
-    throw new Error(`ERR_INVALID_ROUTE_SECTIONS: 区間の終了地点は経路の終着駅 (${stops.length}) である必要があります (現在は ${lastToSeq})`);
-  }
 }
 
 export function buildRouteStops(state: MapState, stopInputs: CreateRouteStopInput[]): RouteStop[] {
@@ -166,52 +88,20 @@ export function createRoute(
   payload: {
     id?: string;
     name: string;
-    directionName: string;
+    directionName?: string;
     stops: CreateRouteStopInput[];
-    lineSections?: CreateRouteLineSectionInput[];
   }
 ): { state: MapState; route: Route } {
   const name = payload.name.trim();
   if (!name) throw new Error("経路名を入力してください");
 
-  const directionName = payload.directionName.trim();
-  if (!directionName) throw new Error("方向名を入力してください");
+  const directionName = (payload.directionName ?? "下り").trim() || "下り";
 
   const id = payload.id || `route-${state.nextRouteId++}`;
   if (state.routes[id]) throw new Error(`経路ID ${id} は既に存在します`);
 
   const stops = buildRouteStops(state, payload.stops);
   const { legs, totalDistanceM } = computeRouteLegs(state, stops);
-
-  let lineSections: RouteLineSection[] = [];
-  if (payload.lineSections && payload.lineSections.length > 0) {
-    lineSections = payload.lineSections.map((sec, idx) => {
-      const fromStop = stops.find((s) => s.sequence === sec.fromStopSequence);
-      const toStop = stops.find((s) => s.sequence === sec.toStopSequence);
-      if (!fromStop || !toStop) throw new Error("区間の指定シーケンスが不正です");
-      return {
-        id: `sec-${idx + 1}-${id}`,
-        fromStopId: fromStop.id,
-        toStopId: toStop.id,
-        lineId: sec.lineId,
-        serviceSystemId: sec.serviceSystemId,
-      };
-    });
-  } else {
-    // Default to a single line section covering the entire route using first available line
-    const defaultLineId = Object.keys(state.lines)[0];
-    if (!defaultLineId) throw new Error("ERR_NO_LINES: 路線が存在しません。先に路線を作成してください");
-    lineSections = [
-      {
-        id: `sec-1-${id}`,
-        fromStopId: stops[0].id,
-        toStopId: stops.at(-1)!.id,
-        lineId: defaultLineId,
-      },
-    ];
-  }
-
-  validateRouteLineSections(lineSections, stops, state.lines, state.serviceSystems);
 
   const now = state.clock.currentTimeMs;
   const route: Route = {
@@ -220,7 +110,6 @@ export function createRoute(
     directionName,
     stops,
     legs,
-    lineSections,
     stationIds: stops.map((s) => s.stationId),
     totalDistanceM,
     lengthM: totalDistanceM,
@@ -240,7 +129,6 @@ export function updateRoute(
     name?: string;
     directionName?: string;
     stops?: CreateRouteStopInput[];
-    lineSections?: CreateRouteLineSectionInput[];
   }
 ): { state: MapState; route: Route; reviewRequiredOperationIds: string[] } {
   const route = state.routes[payload.id];
@@ -268,34 +156,6 @@ export function updateRoute(
     route.totalDistanceM = totalDistanceM;
     route.lengthM = totalDistanceM;
 
-    if (payload.lineSections) {
-      route.lineSections = payload.lineSections.map((sec, idx) => {
-        const fromStop = newStops.find((s) => s.sequence === sec.fromStopSequence);
-        const toStop = newStops.find((s) => s.sequence === sec.toStopSequence);
-        if (!fromStop || !toStop) throw new Error("区間の指定シーケンスが不正です");
-        return {
-          id: `sec-${idx + 1}-${route.id}`,
-          fromStopId: fromStop.id,
-          toStopId: toStop.id,
-          lineId: sec.lineId,
-          serviceSystemId: sec.serviceSystemId,
-        };
-      });
-    } else {
-      // Keep or adapt lineSections to new stop IDs
-      const defaultLineId = Object.keys(state.lines)[0];
-      route.lineSections = [
-        {
-          id: `sec-1-${route.id}`,
-          fromStopId: newStops[0].id,
-          toStopId: newStops.at(-1)!.id,
-          lineId: defaultLineId,
-        },
-      ];
-    }
-
-    validateRouteLineSections(route.lineSections, newStops, state.lines, state.serviceSystems);
-
     // Flag all dependent operations as requiring review
     for (const op of Object.values(state.operations || {})) {
       if (op.routeId === route.id) {
@@ -303,20 +163,6 @@ export function updateRoute(
         reviewRequiredOperationIds.push(op.id);
       }
     }
-  } else if (payload.lineSections) {
-    route.lineSections = payload.lineSections.map((sec, idx) => {
-      const fromStop = route.stops.find((s) => s.sequence === sec.fromStopSequence);
-      const toStop = route.stops.find((s) => s.sequence === sec.toStopSequence);
-      if (!fromStop || !toStop) throw new Error("区間の指定シーケンスが不正です");
-      return {
-        id: `sec-${idx + 1}-${route.id}`,
-        fromStopId: fromStop.id,
-        toStopId: toStop.id,
-        lineId: sec.lineId,
-        serviceSystemId: sec.serviceSystemId,
-      };
-    });
-    validateRouteLineSections(route.lineSections, route.stops, state.lines, state.serviceSystems);
   }
 
   route.updatedAtGameTimeMs = state.clock.currentTimeMs;
@@ -361,25 +207,9 @@ export function duplicateReverseRoute(
   const name = payload.name?.trim() || `${source.name} (復路)`;
   const directionName = payload.directionName?.trim() || (source.directionName === "下り" ? "上り" : "下り");
 
-  // Reverse lineSections sequence mapping
-  const totalStops = source.stops.length;
-  const stopSeqMap = new Map(source.stops.map((s) => [s.id, s.sequence]));
-
-  const reverseLineSectionsInput: CreateRouteLineSectionInput[] = [...source.lineSections].reverse().map((sec) => {
-    const origFromSeq = stopSeqMap.get(sec.fromStopId)!;
-    const origToSeq = stopSeqMap.get(sec.toStopId)!;
-    return {
-      fromStopSequence: totalStops - origToSeq + 1,
-      toStopSequence: totalStops - origFromSeq + 1,
-      lineId: sec.lineId,
-      serviceSystemId: sec.serviceSystemId,
-    };
-  });
-
   return createRoute(state, {
     name,
     directionName,
     stops: reverseStopsInput,
-    lineSections: reverseLineSectionsInput,
   });
 }

@@ -27,6 +27,8 @@ import {
   updateOperation,
   deleteOperation,
   duplicateOperation,
+  assignOperationClassification,
+  unassignOperationClassification,
 } from "./operationSchedule";
 import {
   createVehicleDuty,
@@ -352,6 +354,14 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
     case "operation.update": {
       const { operation } = updateOperation(next, command.payload);
       return { state: next, message: `運行「${operation.name}」を更新しました` };
+    }
+    case "operation.assignClassification": {
+      const { operation } = assignOperationClassification(next, command.payload);
+      return { state: next, message: `運行「${operation.name}」の路線・系統所属を設定しました` };
+    }
+    case "operation.unassignClassification": {
+      const { operation } = unassignOperationClassification(next, command.payload);
+      return { state: next, message: `運行「${operation.name}」の路線所属を解除しました` };
     }
     case "operation.delete": {
       const opName = next.operations[command.payload.id]?.name || command.payload.id;

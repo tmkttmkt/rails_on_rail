@@ -181,7 +181,7 @@ export function inspectOperationRoute(
   const errors: Array<{ code: string; message: string; field?: string }> = [];
   const warnings: Array<{ code: string; message: string }> = [];
 
-  const sp = state.servicePatterns?.[params.servicePatternId];
+  const sp = state.servicePatterns?.[params.servicePatternId] || state.serviceSystems?.[params.servicePatternId];
   if (!sp) {
     errors.push({ code: "ERR_SERVICE_PATTERN_NOT_FOUND", message: `指定された運行系統 (${params.servicePatternId}) が存在しません。` });
     return { valid: false, summary: null, errors, warnings };

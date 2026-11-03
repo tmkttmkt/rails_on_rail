@@ -76,14 +76,6 @@ describe("Service Planning UI Panels (v11)", () => {
         { stationId: "st-tokyo", trackId: "track-1", commercialType: "stop", dwellSeconds: 45 },
         { stationId: "st-shinagawa", trackId: "track-1", commercialType: "stop", dwellSeconds: 30 },
       ],
-      lineSections: [
-        {
-          fromStopSequence: 1,
-          toStopSequence: 2,
-          lineId: "line-tokaido",
-          serviceSystemId: "sys-acty",
-        },
-      ],
     });
     state = s3;
 
@@ -97,6 +89,12 @@ describe("Service Planning UI Panels (v11)", () => {
       stopTimes: [
         { routeStopId: route.stops[0].id, departureTime: "08:00:00", dayOffset: 0 },
         { routeStopId: route.stops[1].id, arrivalTime: "08:15:00", departureTime: "08:16:00", dayOffset: 0 },
+      ],
+      lineAssignments: [
+        {
+          lineId: "line-tokaido",
+          serviceSystemId: "sys-acty",
+        },
       ],
     });
     state = s4;

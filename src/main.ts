@@ -23,6 +23,7 @@ import { createInitialLineUiState, renderLineLeftPanel, renderLineRightPanel, ty
 import { createInitialRouteUiState, renderRouteLeftPanel, renderRouteRightPanel, type RouteUiState } from "./ui/routePanel";
 import { createInitialScheduleUiState, renderScheduleLeftPanel, renderScheduleRightPanel, type ScheduleUiState } from "./ui/schedulePanel";
 import { createInitialVehicleDutyUiState, renderVehicleDutyLeftPanel, renderVehicleDutyRightPanel, type VehicleDutyUiState } from "./ui/vehicleDutyPanel";
+import { getServiceSystemsByLine } from "./simulation/selectors";
 import { buildOperationRoute } from "./simulation/pathfinding";
 
 type Tool = "track" | "station" | "placement";
@@ -273,7 +274,16 @@ function setMode(next: AppMode): void {
   document.querySelectorAll<HTMLElement>("[data-mode]").forEach((btn) =>
     btn.classList.toggle("active", btn.dataset.mode === next),
   );
-  required<HTMLElement>("#tools-panel").hidden = !["construction", "vehicle", "route", "operation"].includes(next);
+  // The planning list containers live inside #tools-panel as well. Keep their
+  // parent visible in every mode that renders a left-hand management panel.
+  required<HTMLElement>("#tools-panel").hidden = ![
+    "construction",
+    "line",
+    "route",
+    "schedule",
+    "vehicleDuty",
+    "vehicle",
+  ].includes(next);
   updateUi();
 }
 
@@ -1547,6 +1557,7 @@ function attachFleetPanelEvents(): void {
 let lineUiState: LineUiState = createInitialLineUiState();
 let routeUiState: RouteUiState = createInitialRouteUiState();
 let scheduleUiState: ScheduleUiState = createInitialScheduleUiState();
+let returnToOperationAfterRouteCreate = false;
 let vehicleDutyUiState: VehicleDutyUiState = createInitialVehicleDutyUiState();
 
 function attachLinePanelEvents(): void {
@@ -1712,6 +1723,85 @@ function attachLinePanelEvents(): void {
       }
     });
   });
+
+  const lineCreateOpBtn = document.querySelector<HTMLButtonElement>("#line-create-op-btn");
+  if (lineCreateOpBtn) {
+    lineCreateOpBtn.addEventListener("click", () => {
+      const lineId = lineCreateOpBtn.dataset.lineId;
+      appMode = "schedule";
+      scheduleUiState.isCreatingOperation = true;
+      scheduleUiState.editingOperationId = undefined;
+      scheduleUiState.draftName = "";
+      scheduleUiState.draftOpNumber = "";
+      scheduleUiState.draftCalendar = { weekdays: [1, 2, 3, 4, 5] };
+      scheduleUiState.draftRouteId = undefined;
+      scheduleUiState.draftStopTimes = undefined;
+      scheduleUiState.draftLineAssignments = lineId ? [{ lineId }] : [];
+      updateUi();
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".sys-create-op-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const lineId = btn.dataset.lineId;
+      const serviceSystemId = btn.dataset.sysId;
+      if (lineId) {
+        appMode = "schedule";
+        scheduleUiState.isCreatingOperation = true;
+        scheduleUiState.editingOperationId = undefined;
+        scheduleUiState.draftName = "";
+        scheduleUiState.draftOpNumber = "";
+        scheduleUiState.draftCalendar = { weekdays: [1, 2, 3, 4, 5] };
+        scheduleUiState.draftRouteId = undefined;
+        scheduleUiState.draftStopTimes = undefined;
+        scheduleUiState.draftLineAssignments = [{ lineId, serviceSystemId: serviceSystemId || undefined }];
+        updateUi();
+      }
+    });
+  });
+
+  const lineAssignOpBtn = document.querySelector<HTMLButtonElement>("#line-assign-op-btn");
+  if (lineAssignOpBtn) {
+    lineAssignOpBtn.addEventListener("click", () => {
+      const lineId = lineAssignOpBtn.dataset.lineId;
+      const sel = document.querySelector<HTMLSelectElement>("#line-assign-op-select");
+      const opId = sel?.value;
+      if (lineId && opId) {
+        dispatch({
+          type: "operation.assignClassification",
+          payload: { operationId: opId, lineId },
+        });
+      }
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".sys-assign-op-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const lineId = btn.dataset.lineId;
+      const sysId = btn.dataset.sysId;
+      const sel = document.querySelector<HTMLSelectElement>(`.sys-assign-op-select[data-sys-id="${sysId}"]`);
+      const opId = sel?.value;
+      if (lineId && sysId && opId) {
+        dispatch({
+          type: "operation.assignClassification",
+          payload: { operationId: opId, lineId, serviceSystemId: sysId },
+        });
+      }
+    });
+  });
+
+  document.querySelectorAll<HTMLButtonElement>(".line-unassign-op-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const opId = btn.dataset.opId;
+      const lineId = btn.dataset.lineId;
+      if (opId && lineId) {
+        dispatch({
+          type: "operation.unassignClassification",
+          payload: { operationId: opId, lineId },
+        });
+      }
+    });
+  });
 }
 
 function attachRoutePanelEvents(): void {
@@ -1729,7 +1819,6 @@ function attachRoutePanelEvents(): void {
         commercialType: "stop",
         dwellSeconds: 30,
       }));
-      routeUiState.draftLineSections = [];
       updateUi();
     });
   }
@@ -1759,16 +1848,6 @@ function attachRoutePanelEvents(): void {
         commercialType: s.commercialType,
         dwellSeconds: s.dwellSeconds,
       }));
-      routeUiState.draftLineSections = r.lineSections.map((sec) => {
-        const fromStop = r.stops.find((s) => s.id === sec.fromStopId);
-        const toStop = r.stops.find((s) => s.id === sec.toStopId);
-        return {
-          fromStopSequence: fromStop?.sequence || 1,
-          toStopSequence: toStop?.sequence || r.stops.length,
-          lineId: sec.lineId,
-          serviceSystemId: sec.serviceSystemId,
-        };
-      });
       updateUi();
     });
   }
@@ -1904,7 +1983,6 @@ function attachRoutePanelEvents(): void {
             name,
             directionName,
             stops: formattedStops,
-            lineSections: routeUiState.draftLineSections.length > 0 ? routeUiState.draftLineSections : undefined,
           },
         });
       } else {
@@ -1914,7 +1992,6 @@ function attachRoutePanelEvents(): void {
             name,
             directionName,
             stops: formattedStops,
-            lineSections: routeUiState.draftLineSections.length > 0 ? routeUiState.draftLineSections : undefined,
           },
         });
       }
@@ -1923,6 +2000,13 @@ function attachRoutePanelEvents(): void {
         routeUiState.isCreatingRoute = false;
         routeUiState.editingRouteId = undefined;
         routeUiState.selectedRouteId = Object.keys(state.routes).at(-1);
+        if (returnToOperationAfterRouteCreate && scheduleUiState.editingOperationId && routeUiState.selectedRouteId) {
+          scheduleUiState.draftRouteId = routeUiState.selectedRouteId;
+          scheduleUiState.draftStopTimes = undefined;
+          returnToOperationAfterRouteCreate = false;
+          setMode("schedule");
+          return;
+        }
         updateUi();
       }
     });
@@ -1939,6 +2023,30 @@ function attachRoutePanelEvents(): void {
 }
 
 function attachSchedulePanelEvents(): void {
+  const routeShortcutBtns = document.querySelectorAll<HTMLButtonElement>("#op-create-route-shortcut");
+  routeShortcutBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (!scheduleUiState.editingOperationId) {
+        showMessage("先に経路未設定の運行を保存してください", true);
+        return;
+      }
+      returnToOperationAfterRouteCreate = true;
+      appMode = "route";
+      routeUiState.isCreatingRoute = true;
+      routeUiState.editingRouteId = undefined;
+      routeUiState.draftName = "";
+      routeUiState.draftDirectionName = "下り";
+      routeUiState.draftStops = state.stations.slice(0, 2).map((s) => ({
+        stationId: s.id,
+        trackId: s.stopPoints[0]?.trackId || "",
+        stopPointId: s.stopPoints[0]?.id,
+        commercialType: "stop",
+        dwellSeconds: 30,
+      }));
+      updateUi();
+    });
+  });
+
   const createOpBtn = document.querySelector<HTMLButtonElement>("#op-create-open");
   if (createOpBtn) {
     createOpBtn.addEventListener("click", () => {
@@ -1947,8 +2055,17 @@ function attachSchedulePanelEvents(): void {
       scheduleUiState.draftName = "";
       scheduleUiState.draftOpNumber = "";
       scheduleUiState.draftCalendar = { weekdays: [1, 2, 3, 4, 5] };
-      const routes = Object.values(state.routes);
-      scheduleUiState.draftRouteId = routes[0]?.id;
+      scheduleUiState.draftRouteId = undefined;
+      scheduleUiState.draftStopTimes = undefined;
+      scheduleUiState.draftLineAssignments = [];
+      updateUi();
+    });
+  }
+
+  const operationRouteSelect = document.querySelector<HTMLSelectElement>("#op-route-select");
+  if (operationRouteSelect) {
+    operationRouteSelect.addEventListener("change", () => {
+      scheduleUiState.draftRouteId = operationRouteSelect.value || undefined;
       scheduleUiState.draftStopTimes = undefined;
       updateUi();
     });
@@ -1975,6 +2092,34 @@ function attachSchedulePanelEvents(): void {
       scheduleUiState.draftRouteId = op.routeId;
       scheduleUiState.draftCalendar = { ...op.calendar };
       scheduleUiState.draftStopTimes = op.stopTimes.map((st) => ({ ...st }));
+      scheduleUiState.draftLineAssignments = op.lineAssignments ? op.lineAssignments.map((a) => ({ ...a })) : [];
+      updateUi();
+    });
+  }
+
+  const addOperationRouteBtn = document.querySelector<HTMLButtonElement>("#op-add-route-btn");
+  if (addOperationRouteBtn && scheduleUiState.selectedOperationId) {
+    addOperationRouteBtn.addEventListener("click", () => {
+      const op = state.operations[scheduleUiState.selectedOperationId!];
+      if (!op) return;
+      scheduleUiState.editingOperationId = op.id;
+      scheduleUiState.draftName = op.name;
+      scheduleUiState.draftOpNumber = op.operationNumber;
+      scheduleUiState.draftCalendar = { ...op.calendar };
+      scheduleUiState.draftLineAssignments = op.lineAssignments?.map((a) => ({ ...a })) || [];
+      returnToOperationAfterRouteCreate = true;
+      appMode = "route";
+      routeUiState.isCreatingRoute = true;
+      routeUiState.editingRouteId = undefined;
+      routeUiState.draftName = "";
+      routeUiState.draftDirectionName = "下り";
+      routeUiState.draftStops = state.stations.slice(0, 2).map((s) => ({
+        stationId: s.id,
+        trackId: s.stopPoints[0]?.trackId || "",
+        stopPointId: s.stopPoints[0]?.id,
+        commercialType: "stop",
+        dwellSeconds: 30,
+      }));
       updateUi();
     });
   }
@@ -2052,6 +2197,93 @@ function attachSchedulePanelEvents(): void {
     });
   }
 
+  // Draft classification selector
+  const draftLineSelect = document.querySelector<HTMLSelectElement>("#op-draft-line-select");
+  if (draftLineSelect) {
+    draftLineSelect.addEventListener("change", () => {
+      const sysSelect = document.querySelector<HTMLSelectElement>("#op-draft-sys-select");
+      if (sysSelect) {
+        const sysList = getServiceSystemsByLine(state, draftLineSelect.value);
+        sysSelect.innerHTML =
+          `<option value="">(系統なし・路線直属)</option>` +
+          sysList.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      }
+    });
+  }
+
+  const draftAssignBtn = document.querySelector<HTMLButtonElement>("#op-draft-assign-btn");
+  if (draftAssignBtn) {
+    draftAssignBtn.addEventListener("click", () => {
+      const lineSel = document.querySelector<HTMLSelectElement>("#op-draft-line-select");
+      const sysSel = document.querySelector<HTMLSelectElement>("#op-draft-sys-select");
+      const lineId = lineSel?.value;
+      const serviceSystemId = sysSel?.value || undefined;
+      if (!lineId) return;
+      if (!scheduleUiState.draftLineAssignments) scheduleUiState.draftLineAssignments = [];
+      const existingIdx = scheduleUiState.draftLineAssignments.findIndex((a) => a.lineId === lineId);
+      if (existingIdx >= 0) {
+        scheduleUiState.draftLineAssignments[existingIdx] = { lineId, serviceSystemId };
+      } else {
+        scheduleUiState.draftLineAssignments.push({ lineId, serviceSystemId });
+      }
+      updateUi();
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".op-draft-unassign-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const idx = Number(btn.dataset.index);
+      if (scheduleUiState.draftLineAssignments) {
+        scheduleUiState.draftLineAssignments.splice(idx, 1);
+        updateUi();
+      }
+    });
+  });
+
+  // Detail classification selectors
+  const detailLineSelect = document.querySelector<HTMLSelectElement>("#op-detail-assign-line-select");
+  if (detailLineSelect) {
+    detailLineSelect.addEventListener("change", () => {
+      const sysSelect = document.querySelector<HTMLSelectElement>("#op-detail-assign-sys-select");
+      if (sysSelect) {
+        const sysList = getServiceSystemsByLine(state, detailLineSelect.value);
+        sysSelect.innerHTML =
+          `<option value="">(系統なし・路線直属)</option>` +
+          sysList.map((s) => `<option value="${s.id}">${s.name}</option>`).join("");
+      }
+    });
+  }
+
+  const detailAssignBtn = document.querySelector<HTMLButtonElement>("#op-detail-assign-btn");
+  if (detailAssignBtn) {
+    detailAssignBtn.addEventListener("click", () => {
+      const opId = detailAssignBtn.dataset.opId;
+      const lineSel = document.querySelector<HTMLSelectElement>("#op-detail-assign-line-select");
+      const sysSel = document.querySelector<HTMLSelectElement>("#op-detail-assign-sys-select");
+      const lineId = lineSel?.value;
+      const serviceSystemId = sysSel?.value || undefined;
+      if (opId && lineId) {
+        dispatch({
+          type: "operation.assignClassification",
+          payload: { operationId: opId, lineId, serviceSystemId },
+        });
+      }
+    });
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".op-detail-unassign-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const opId = btn.dataset.opId;
+      const lineId = btn.dataset.lineId;
+      if (opId && lineId) {
+        dispatch({
+          type: "operation.unassignClassification",
+          payload: { operationId: opId, lineId },
+        });
+      }
+    });
+  });
+
   const saveOpSubmit = document.querySelector<HTMLButtonElement>("#op-save-submit");
   if (saveOpSubmit) {
     saveOpSubmit.addEventListener("click", () => {
@@ -2062,10 +2294,9 @@ function attachSchedulePanelEvents(): void {
       const name = nameInput?.value || "";
       const operationNumber = numInput?.value || undefined;
       const routeId = routeSelect?.value || scheduleUiState.draftRouteId || "";
-      const route = state.routes[routeId];
-      if (!route) return;
+      const route = routeId ? state.routes[routeId] : undefined;
 
-      const stopTimes = route.stops.map((st, idx) => {
+      const stopTimes = (route?.stops || []).map((st, idx) => {
         const arrInp = document.querySelector<HTMLInputElement>(`.op-arr-input[data-index="${idx}"]`);
         const depInp = document.querySelector<HTMLInputElement>(`.op-dep-input[data-index="${idx}"]`);
         const dayInp = document.querySelector<HTMLInputElement>(`.op-dayoffset-input[data-index="${idx}"]`);
@@ -2078,6 +2309,11 @@ function attachSchedulePanelEvents(): void {
         };
       });
 
+      const lineAssignments =
+        scheduleUiState.draftLineAssignments && scheduleUiState.draftLineAssignments.length > 0
+          ? scheduleUiState.draftLineAssignments
+          : undefined;
+
       let succeeded = false;
       if (scheduleUiState.editingOperationId) {
         succeeded = dispatch({
@@ -2086,9 +2322,10 @@ function attachSchedulePanelEvents(): void {
             id: scheduleUiState.editingOperationId,
             name,
             operationNumber,
-            routeId,
+            routeId: routeId || undefined,
             calendar: scheduleUiState.draftCalendar || { weekdays: [1, 2, 3, 4, 5] },
             stopTimes,
+            lineAssignments,
           },
         });
       } else {
@@ -2097,9 +2334,10 @@ function attachSchedulePanelEvents(): void {
           payload: {
             name,
             operationNumber,
-            routeId,
+            routeId: routeId || undefined,
             calendar: scheduleUiState.draftCalendar || { weekdays: [1, 2, 3, 4, 5] },
             stopTimes,
+            lineAssignments,
           },
         });
       }

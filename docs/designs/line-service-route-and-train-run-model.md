@@ -22,24 +22,24 @@ relations:
 ## 決定
 
 ```text
-Line ──1:N──> ServiceSystem
+Line ──1:N──> ServiceSystem (分類・集約用コンテナ)
 
-Route ──> RouteStop[] + PhysicalTraversal[] + RouteLineSection[] + directionName
-Operation ──> Route + ServiceCalendar + StopTime[]
+Route ──> RouteStop[] + PhysicalTraversal[] + directionName (物理経路のみ)
+Operation ──> Route + ServiceCalendar + StopTime[] + OperationLineAssignment[] (分類所属所有)
 VehicleDuty ──> ordered Operation[] + Formation
 ```
 
 ### Line / ServiceSystem
 
-`ServiceSystem` は必ず1つの `Line` に従属する。名称、略称、色、説明、表示順を持つが、停車駅・経路・時刻・編成は所有しない。単なる運行のまとめではなく、路線内の任意の系統アイデンティティである。
+`ServiceSystem` は必ず1つの `Line` に従属する。名称、略称、色、説明、表示順を持つ。路線・系統は運行を分類・グループ化するコンテナであり、正準データとしての所属関係は `Operation` が所有する。
 
 ### Route（経路）
 
-走行内容の正本であり、方向、停車・通過地点、番線・停止位置、物理走行列を所有する。路線・系統は `RouteLineSection` に区間単位で設定するため、1経路内で直通や再進入を表現できる。反対方向は別経路とする。
+物理走行内容の正本であり、方向、停車・通過地点、番線・停止位置、物理走行列を所有する。`RouteLineSection` は持たず、路線や系統が存在しなくても単独で作成・管理できる。反対方向は別経路とする。
 
 ### Operation（運行）
 
-1つの経路を、いつ走るかを表す。運行日・曜日・日付条件と、経路上の各地点に対応する着発時刻を所有する。経路を変更すれば参照する運行へ影響するため、確定済み運行がある経路編集は確認または拒否を行う。
+1つの経路を、いつ走るか、およびどの路線・系統に所属するかを表す。運行日・曜日・日付条件、経路上の各地点に対応する着発時刻、および路線・系統所属設定（`lineAssignments`）を所有する。未所属の運行も作成・運用できる。
 
 ### VehicleDuty（運用）
 
@@ -48,8 +48,8 @@ VehicleDuty ──> ordered Operation[] + Formation
 ## 重要な不変条件
 
 - 系統の `lineId` は必須。
-- 経路区間は経路全体を重複なく順序通りに覆う。
-- 区間の `serviceSystemId` は、その区間の `lineId` を親に持つ。
+- 運行の所属（`lineAssignments`）において、親路線あたり最大1系統を設定できる（直属も可）。
+- 運行の所属に指定された `lineId` および `serviceSystemId` は存在し、親路線関係と一致する。
 - 運行の時刻エントリは経路地点IDを参照し、経路順に矛盾しない。
 - 同一編成を時間が重なる複数運用へ割り当てない。
 - 施設編集は参照中経路を壊さない。

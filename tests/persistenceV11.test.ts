@@ -260,16 +260,17 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
     expect(migrated.serviceSystems["sp-1"].lineId).toBe("line-1");
     expect(migrated.serviceSystems["sp-1"].name).toBe("快速アクティー");
 
-    // Routes migrated with lineSections
+    // Routes migrated without lineSections
     expect(migrated.routes["route-1"]).toBeDefined();
     expect(migrated.routes["route-1"].stops).toHaveLength(2);
-    expect(migrated.routes["route-1"].lineSections).toHaveLength(1);
-    expect(migrated.routes["route-1"].lineSections[0].lineId).toBe("line-1");
-    expect(migrated.routes["route-1"].lineSections[0].serviceSystemId).toBe("sp-1");
+    expect((migrated.routes["route-1"] as unknown as Record<string, unknown>).lineSections).toBeUndefined();
 
-    // Operations migrated
+    // Operations migrated with lineAssignments
     expect(migrated.operations["op-1"]).toBeDefined();
     expect(migrated.operations["op-1"].routeId).toBe("route-1");
+    expect(migrated.operations["op-1"].lineAssignments).toEqual([
+      { lineId: "line-1", serviceSystemId: "sp-1" },
+    ]);
 
     // VehicleDuties migrated
     expect(migrated.vehicleDuties["duty-1"]).toBeDefined();
@@ -287,5 +288,83 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
 
     // Roundtrip validation
     validateMapState(migrated);
+  });
+
+  it("既存のv11形式（route.lineSections付き）を自動正規化し、operation.lineAssignmentsへ移行する", () => {
+    let state = createInitialState();
+    state = executeCommand(state, {
+      type: "track.create",
+      geometry: "straight",
+      points: [{ x: 0, y: 0 }, { x: 200, y: 0 }],
+    }).state;
+    state = executeCommand(state, {
+      type: "track.create",
+      geometry: "straight",
+      startConnectionTrackId: "track-1",
+      points: [{ x: 200, y: 0 }, { x: 400, y: 0 }],
+    }).state;
+    state = executeCommand(state, {
+      type: "station.createRange",
+      name: "A駅",
+      trackId: "track-1",
+      startPosition: { x: 20, y: 0 },
+      endPosition: { x: 80, y: 0 },
+    }).state;
+    state = executeCommand(state, {
+      type: "station.createRange",
+      name: "B駅",
+      trackId: "track-2",
+      startPosition: { x: 220, y: 0 },
+      endPosition: { x: 280, y: 0 },
+    }).state;
+    state = executeCommand(state, {
+      type: "line.create",
+      payload: { name: "路線1", color: "#FF0000" },
+    }).state;
+    const lineId = Object.keys(state.lines)[0];
+    state = executeCommand(state, {
+      type: "serviceSystem.create",
+      payload: { lineId, name: "系統1" },
+    }).state;
+    const sysId = Object.keys(state.serviceSystems)[0];
+    state = executeCommand(state, {
+      type: "route.create",
+      payload: {
+        name: "経路1",
+        stops: [
+          { stationId: "station-1", trackId: "track-1" },
+          { stationId: "station-2", trackId: "track-2" },
+        ],
+      },
+    }).state;
+    const routeId = Object.keys(state.routes)[0];
+    state = executeCommand(state, {
+      type: "operation.create",
+      payload: {
+        name: "運行1",
+        routeId,
+        calendar: { weekdays: [1, 2, 3, 4, 5] },
+        stopTimes: [
+          { routeStopId: state.routes[routeId].stops[0].id, departureTime: "08:00:00", dayOffset: 0 },
+          { routeStopId: state.routes[routeId].stops[1].id, arrivalTime: "08:10:00", dayOffset: 0 },
+        ],
+      },
+    }).state;
+    const opId = Object.keys(state.operations)[0];
+
+    // Simulate legacy v11 raw JSON with route.lineSections
+    const rawState = JSON.parse(JSON.stringify(state));
+    rawState.routes[routeId].lineSections = [
+      { fromStopSequence: 1, toStopSequence: 2, lineId, serviceSystemId: sysId },
+    ];
+    delete rawState.operations[opId].lineAssignments;
+
+    const normalized = parseMapState(JSON.stringify(rawState));
+    expect(normalized.version).toBe(11);
+    expect((normalized.routes[routeId] as unknown as Record<string, unknown>).lineSections).toBeUndefined();
+    expect(normalized.operations[opId].lineAssignments).toEqual([
+      { lineId, serviceSystemId: sysId },
+    ]);
+    validateMapState(normalized);
   });
 });

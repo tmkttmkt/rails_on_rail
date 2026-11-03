@@ -123,25 +123,12 @@ export function createOperationRoute(state: MapState, name: string, stationIds: 
     };
   });
 
-  const defaultLineId = Object.keys(state.lines)[0] || "line-default";
-  const defaultSystemId = Object.keys(state.serviceSystems)[0] || undefined;
-  const lineSections = [
-    {
-      id: `sec-1-route-${state.nextRouteId}`,
-      fromStopId: routeStops[0].id,
-      toStopId: routeStops.at(-1)!.id,
-      lineId: defaultLineId,
-      serviceSystemId: defaultSystemId,
-    },
-  ];
-
   return {
     id: `route-${state.nextRouteId}`,
     name: normalized,
     directionName: "下り",
     stops: routeStops,
     legs,
-    lineSections,
     stationIds,
     totalDistanceM: lengthM,
     lengthM,

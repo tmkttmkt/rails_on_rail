@@ -69,7 +69,7 @@ describe("Service Domain Full Flow (v11 Integration)", () => {
     const sysId = Object.keys(state.serviceSystems)[0];
     expect(sysId).toBeDefined();
 
-    // 4. Create Route with sections via commands
+    // 4. Create Route via commands (without lineSections)
     const rRoute = executeCommand(state, {
       type: "route.create",
       payload: {
@@ -80,17 +80,14 @@ describe("Service Domain Full Flow (v11 Integration)", () => {
           { stationId: "st-tokyo", trackId: "track-1", commercialType: "stop", dwellSeconds: 30 },
           { stationId: "st-yokohama", trackId: "track-1", commercialType: "stop", dwellSeconds: 30 },
         ],
-        lineSections: [
-          { fromStopSequence: 1, toStopSequence: 2, lineId: "line-jt", serviceSystemId: sysId },
-        ],
       },
     });
     state = rRoute.state;
     const route = state.routes["route-tokyo-yokohama"];
     expect(route).toBeDefined();
-    expect(route.lineSections).toHaveLength(1);
+    expect(route.stops).toHaveLength(2);
 
-    // 5. Create Operation with multi-day stop times
+    // 5. Create Operation with classification assignments and multi-day stop times
     const rOp = executeCommand(state, {
       type: "operation.create",
       payload: {
@@ -102,11 +99,15 @@ describe("Service Domain Full Flow (v11 Integration)", () => {
           { routeStopId: route.stops[0].id, departureTime: "08:00:00", dayOffset: 0 },
           { routeStopId: route.stops[1].id, arrivalTime: "08:30:00", dayOffset: 0 },
         ],
+        lineAssignments: [
+          { lineId: "line-jt", serviceSystemId: sysId },
+        ],
       },
     });
     state = rOp.state;
     const op = state.operations["op-101m"];
     expect(op).toBeDefined();
+    expect(op.lineAssignments).toEqual([{ lineId: "line-jt", serviceSystemId: sysId }]);
 
     // 6. Create VehicleDuty with continuity and default formation
     const rDuty = executeCommand(state, {

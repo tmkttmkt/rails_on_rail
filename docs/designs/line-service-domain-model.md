@@ -57,7 +57,14 @@ interface Route {
   directionName: string;
   stops: RouteStop[];
   legs: RouteLeg[];
-  lineSections: RouteLineSection[];
+  totalDistanceM: number;
+  lengthM: number;
+  status: "active" | "draft" | "archived";
+}
+
+interface OperationLineAssignment {
+  lineId: string;
+  serviceSystemId?: string;
 }
 
 interface ServiceCalendar {
@@ -79,9 +86,10 @@ interface Operation {
   id: string;
   name: string;
   operationNumber?: string;
-  routeId: string;
+  routeId?: string; // 未設定時は計画下書き。運用割当・発車不可
   calendar: ServiceCalendar;
   stopTimes: OperationStopTime[];
+  lineAssignments?: OperationLineAssignment[]; // 路線・系統への所属設定（任意）
   description?: string;
 }
 
@@ -113,25 +121,24 @@ interface VehicleDutyExecution {
 
 | 所有者 | 所有する情報 | 所有しない情報 |
 |---|---|---|
-| 系統 | 表示メタデータ、親路線 | 停車駅、方向、経路、時刻、編成 |
-| 経路 | 地点、方向、物理経路、区間別路線・系統 | 日時、編成 |
-| 運行 | 経路参照、日付条件、着発時刻 | 物理経路、編成 |
+| 路線/系統 | 分類・集約メタデータ、親路線従属関係 | 運行所属（Operation側で保持）、停車駅、方向、経路、時刻、編成 |
+| 経路 | 地点、方向、物理走行経路 | 路線・系統所属、日時、編成 |
+| 運行 | 経路参照、路線・系統所属設定、日付条件、着発時刻 | 物理走行経路の内部構造、編成 |
 | 運用 | 運行順序、編成割り当て | 停車駅、経路、時刻の複製 |
 
 ## 検証規則
 
 1. `RouteStop.sequence` と `VehicleDutyAssignment.sequence` は重複せず連続する。
-2. `RouteLineSection` の境界は同じ経路の地点を参照し、逆転・空白・不正重複を持たない。
-3. `serviceSystemId` を持つ区間では `serviceSystem.lineId === section.lineId` とする。
-4. `OperationStopTime.routeStopId` は参照経路に存在し、停車地点には必要な着発時刻を設定する。
-5. 時刻比較は `dayOffset + HH:mm:ss` の絶対順序で行う。`dayOffset` は0以上の整数で、複数日をまたげる。後続地点が前地点より前にならない。
-6. 運用内の運行は `serviceDayOffset` を含む時刻順に並べる。当面、前運行の終着と次運行の始発は同一駅・同一番線であることを必須とし、異番線移動や回送補完は扱わない。
-7. 編成割り当てが未指定の運用も計画として保存できるが、発車予約には編成が必要。当日の `VehicleDutyExecution.formationId` で通常編成を上書きできる。
+2. `Operation.lineAssignments` の `lineId` は `state.lines` に実在し、親路線あたり最大1つの系統設定（`serviceSystem.lineId === lineId`）を持つ。未所属（空配列/未指定）も許可される。
+3. `OperationStopTime.routeStopId` は参照経路に存在し、停車地点には必要な着発時刻を設定する。
+4. 時刻比較は `dayOffset + HH:mm:ss` の絶対順序で行う。`dayOffset` は0以上の整数で、複数日をまたげる。後続地点が前地点より前にならない。
+5. 運用内の運行は `serviceDayOffset` を含む時刻順に並べる。当面、前運行の終着と次運行の始発は同一駅・同一番線であることを必須とし、異番線移動や回送補完は扱わない。
+6. 編成割り当てが未指定の運用も計画として保存できるが、発車予約には編成が必要。当日の `VehicleDutyExecution.formationId` で通常編成を上書きできる。
 
 ## 導出値
 
 - 系統の表示色: `serviceSystem.color ?? parentLine.color`
-- 経路が使用する路線: `route.lineSections` から順序を維持して導出
+- 運行が所属する路線・系統: `operation.lineAssignments` から導出
 - 運行の始発条件: 参照経路の先頭地点・先頭legから導出
 - 運行の実施日時: カレンダー、複数日対応の `dayOffset`、運用内の `serviceDayOffset` から生成
 - 運用実施編成: `execution.formationId ?? duty.defaultFormationId`

@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { executeCommand } from "../src/simulation/commands";
-import { createLine } from "../src/simulation/lineServiceSystem";
 import { createInitialState } from "../src/simulation/model";
 import { createOperation } from "../src/simulation/operationSchedule";
 import { createRoute, duplicateReverseRoute } from "../src/simulation/routeDomain";
@@ -54,8 +53,6 @@ function setupDutyTestEnvironment() {
     endPosition: { x: 280, y: 0 },
   }).state;
 
-  const { line } = createLine(state, { name: "本線", color: "#FF0000" });
-
   const { route: routeDown } = createRoute(state, {
     name: "下り本線",
     directionName: "下り",
@@ -63,7 +60,6 @@ function setupDutyTestEnvironment() {
       { stationId: "station-1", trackId: "track-1", commercialType: "stop" },
       { stationId: "station-2", trackId: "track-2", commercialType: "stop" },
     ],
-    lineSections: [{ fromStopSequence: 1, toStopSequence: 2, lineId: line.id }],
   });
 
   const { route: routeUp } = duplicateReverseRoute(state, {

@@ -58,10 +58,7 @@ export interface RouteTraversalLeg {
 
 export type RouteLeg = RouteTraversalLeg;
 
-export interface RouteLineSection {
-  id: string;
-  fromStopId: string;
-  toStopId: string;
+export interface OperationLineAssignment {
   lineId: string;
   serviceSystemId?: string;
 }
@@ -72,7 +69,6 @@ export interface Route {
   directionName: string; // e.g. "下り", "上り", or custom
   stops: RouteStop[];
   legs: RouteLeg[];
-  lineSections: RouteLineSection[];
   totalDistanceM?: number;
   lengthM?: number;
   status?: "active" | "invalid";
@@ -102,9 +98,11 @@ export interface Operation {
   id: string;
   name: string;
   operationNumber?: string;
-  routeId: string;
+  /** Undefined while the operation is saved as an unusable planning draft. */
+  routeId?: string;
   calendar: ServiceCalendar;
   stopTimes: OperationStopTime[];
+  lineAssignments?: OperationLineAssignment[];
   description?: string;
   requiresReview?: boolean; // Set true when route stop topology changes
   createdAtGameTimeMs?: number;

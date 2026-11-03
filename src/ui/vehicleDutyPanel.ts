@@ -75,7 +75,7 @@ export function renderVehicleDutyRightPanel(
     const editingDuty = uiState.editingDutyId ? state.vehicleDuties[uiState.editingDutyId] : undefined;
 
     const assignments = uiState.draftAssignments;
-    const operations = getOperations(state);
+    const operations = getOperations(state).filter((op) => Boolean(op.routeId && state.routes[op.routeId]));
     const formations = state.fleet.formations;
 
     // Preflight inspection
@@ -111,7 +111,7 @@ export function renderVehicleDutyRightPanel(
     const assignmentRowsHtml = assignments
       .map((a, idx) => {
         const op = state.operations[a.operationId];
-        const route = op ? state.routes[op.routeId] : undefined;
+        const route = op?.routeId ? state.routes[op.routeId] : undefined;
         const startStop = route?.stops[0];
         const endStop = route?.stops.at(-1);
 
@@ -139,7 +139,7 @@ export function renderVehicleDutyRightPanel(
       .join("");
 
     const opAddOptionsHtml = operations
-      .map((op) => `<option value="${op.id}">${op.name} (${state.routes[op.routeId]?.name || op.routeId})</option>`)
+      .map((op) => `<option value="${op.id}">${op.name} (${op.routeId ? state.routes[op.routeId]?.name || op.routeId : "経路未設定"})</option>`)
       .join("");
 
     return `
@@ -204,7 +204,7 @@ export function renderVehicleDutyRightPanel(
   const assignmentsListHtml = selectedDuty.assignments
     .map((a) => {
       const op = state.operations[a.operationId];
-      const route = op ? state.routes[op.routeId] : undefined;
+      const route = op?.routeId ? state.routes[op.routeId] : undefined;
       return `
         <tr style="border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 11px;">
           <td style="padding: 4px;">${a.sequence}</td>

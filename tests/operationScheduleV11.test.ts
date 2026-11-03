@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { executeCommand } from "../src/simulation/commands";
-import { createLine } from "../src/simulation/lineServiceSystem";
 import { createInitialState } from "../src/simulation/model";
 import {
   createOperation,
@@ -66,8 +65,6 @@ function setupOperationTestEnvironment() {
     endPosition: { x: 480, y: 0 },
   }).state;
 
-  const { line } = createLine(state, { name: "東海道本線", color: "#E65A00" });
-
   const { route } = createRoute(state, {
     name: "東海道下り本線",
     directionName: "下り",
@@ -76,13 +73,23 @@ function setupOperationTestEnvironment() {
       { stationId: "station-2", trackId: "track-2", commercialType: "stop" },
       { stationId: "station-3", trackId: "track-3", commercialType: "stop" },
     ],
-    lineSections: [{ fromStopSequence: 1, toStopSequence: 3, lineId: line.id }],
   });
 
   return { state, route };
 }
 
 describe("P3: 運行・複数日ダイヤ (Operation & Multi-Day Scheduling) 単体・統合テスト", () => {
+  it("経路なしの運行を使用不可の下書きとして保存できる", () => {
+    const state = createInitialState();
+    const { operation } = createOperation(state, {
+      id: "op-draft",
+      name: "経路未設定運行",
+      calendar: { weekdays: [1, 2, 3, 4, 5] },
+    });
+
+    expect(operation.routeId).toBeUndefined();
+    expect(operation.stopTimes).toEqual([]);
+  });
   it("UT-OP-01: 運行の経路参照、運行日条件 (カレンダー)、各地点着発時刻が正常に保存される", () => {
     const { state, route } = setupOperationTestEnvironment();
 

@@ -126,18 +126,6 @@ export function buildOperationRoute(
   }
 
   const routeId = payload.id || `route-${state.nextRouteId++}`;
-  const defaultLineId = Object.keys(state.lines)[0] || "line-default";
-  const defaultSystemId = Object.keys(state.serviceSystems)[0] || undefined;
-  const lineSections = [
-    {
-      id: `sec-1-${routeId}`,
-      fromStopId: routeStops[0].id,
-      toStopId: routeStops.at(-1)!.id,
-      lineId: defaultLineId,
-      serviceSystemId: defaultSystemId,
-    },
-  ];
-
   const now = state.clock.currentTimeMs;
   const route: Route = {
     id: routeId,
@@ -145,7 +133,6 @@ export function buildOperationRoute(
     directionName: payload.directionName || "下り",
     stops: routeStops,
     legs,
-    lineSections,
     stationIds: routeStops.map((s) => s.stationId),
     servicePatternId: payload.servicePatternId,
     directionId: payload.directionId,

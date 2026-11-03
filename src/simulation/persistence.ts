@@ -83,6 +83,7 @@ function coerceMapState(value: unknown): MapState {
   if (value.version === 8) return migrateVersion8(value);
   if (value.version === 9) return migrateVersion9(value);
   if (value.version === 10) return migrateVersion10(value);
+  if (value.version === 11) return normalizeVersion11(value);
   validateMapState(value);
   return structuredClone(value);
 }
@@ -233,7 +234,7 @@ export function validateMapState(value: unknown): asserts value is MapState {
   }
 
   for (const [routeId, route] of Object.entries(value.routes)) {
-    if (!isRecord(route) || route.id !== routeId || typeof route.name !== "string" || typeof route.directionName !== "string" || !Array.isArray(route.stops) || !Array.isArray(route.legs) || !Array.isArray(route.lineSections)) {
+    if (!isRecord(route) || route.id !== routeId || typeof route.name !== "string" || typeof route.directionName !== "string" || !Array.isArray(route.stops) || !Array.isArray(route.legs)) {
       throw new Error(`経路 ${routeId} の構造が正しくありません`);
     }
     const stopIds = new Set<string>();
@@ -251,25 +252,15 @@ export function validateMapState(value: unknown): asserts value is MapState {
         }
       }
     }
-    for (const sec of route.lineSections) {
-      if (!isRecord(sec) || typeof sec.id !== "string" || !stopIds.has(sec.fromStopId) || !stopIds.has(sec.toStopId)) {
-        throw new Error(`経路 ${routeId} の路線区間情報が正しくありません`);
-      }
-      if (lineIds.size > 0 && !lineIds.has(sec.lineId)) {
-        throw new Error(`経路 ${routeId} の路線区間情報が正しくありません`);
-      }
-      if (sec.serviceSystemId && !serviceSystemIds.has(sec.serviceSystemId)) {
-        throw new Error(`経路 ${routeId} の区間系統 ${sec.serviceSystemId} が存在しません`);
-      }
-      if (sec.serviceSystemId && value.serviceSystems[sec.serviceSystemId] && value.serviceSystems[sec.serviceSystemId].lineId !== sec.lineId) {
-        throw new Error(`経路 ${routeId} の区間系統と路線が一致しません`);
-      }
-    }
   }
 
   for (const [opId, op] of Object.entries(value.operations)) {
-    if (!isRecord(op) || op.id !== opId || typeof op.name !== "string" || typeof op.routeId !== "string" || !routeIds.has(op.routeId) || !isRecord(op.calendar) || !Array.isArray(op.stopTimes)) {
+    if (!isRecord(op) || op.id !== opId || typeof op.name !== "string" || (op.routeId !== undefined && (typeof op.routeId !== "string" || !routeIds.has(op.routeId))) || !isRecord(op.calendar) || !Array.isArray(op.stopTimes)) {
       throw new Error(`運行 ${opId} の構造が正しくありません`);
+    }
+    if (op.routeId === undefined) {
+      if (op.stopTimes.length !== 0) throw new Error(`経路未設定の運行 ${opId} に停車時刻が設定されています`);
+      continue;
     }
     const route = value.routes[op.routeId];
     const routeStopIds = new Set(route.stops.map((s: any) => s.id));
@@ -283,6 +274,27 @@ export function validateMapState(value: unknown): asserts value is MapState {
         throw new Error(`運行 ${opId} の着発時刻順が不正です`);
       }
       prevSec = curSec;
+    }
+    if (op.lineAssignments !== undefined) {
+      if (!Array.isArray(op.lineAssignments)) {
+        throw new Error(`運行 ${opId} の路線所属情報が正しくありません`);
+      }
+      const seenOpLines = new Set<string>();
+      for (const a of op.lineAssignments) {
+        if (!isRecord(a) || typeof a.lineId !== "string" || !lineIds.has(a.lineId) || seenOpLines.has(a.lineId)) {
+          throw new Error(`運行 ${opId} の所属路線情報が正しくありません`);
+        }
+        seenOpLines.add(a.lineId);
+        if (a.serviceSystemId !== undefined) {
+          if (typeof a.serviceSystemId !== "string" || !serviceSystemIds.has(a.serviceSystemId)) {
+            throw new Error(`運行 ${opId} の所属系統情報が存在しません: ${a.serviceSystemId}`);
+          }
+          const sys = value.serviceSystems[a.serviceSystemId];
+          if (sys.lineId !== a.lineId) {
+            throw new Error(`運行 ${opId} の所属系統と親路線が一致しません`);
+          }
+        }
+      }
     }
   }
 
@@ -826,26 +838,12 @@ function migrateVersion10(value: Record<string, any>): MapState {
       dwellSeconds: st.dwellSeconds ?? 5,
     }));
 
-    const primaryLineId = sp?.lineIds?.[0] || defaultLineId;
-    const primarySystemId = state.serviceSystems[oldRoute.servicePatternId] ? oldRoute.servicePatternId : undefined;
-
-    const lineSections = stops.length >= 2 ? [
-      {
-        id: `sec-1-${routeId}`,
-        fromStopId: stops[0].id,
-        toStopId: stops.at(-1)!.id,
-        lineId: primaryLineId,
-        serviceSystemId: primarySystemId,
-      },
-    ] : [];
-
     state.routes[routeId] = {
       id: routeId,
       name: oldRoute.name || `経路 ${routeId}`,
       directionName,
       stops,
       legs: oldRoute.legs || [],
-      lineSections,
       totalDistanceM: oldRoute.totalDistanceM ?? oldRoute.lengthM ?? 0,
       lengthM: oldRoute.totalDistanceM ?? oldRoute.lengthM ?? 0,
       status: oldRoute.status || "active",
@@ -860,6 +858,14 @@ function migrateVersion10(value: Record<string, any>): MapState {
     const route = state.routes[run.routeId];
     if (!route) continue;
     const opId = `op-${runId.replace(/^run-/, "")}`;
+    const oldRoute = legacyOpRoutes[run.routeId];
+    const sp = oldRoute ? legacyServicePatterns[oldRoute.servicePatternId || ""] : undefined;
+    const primaryLineId = sp?.lineIds?.[0] || defaultLineId;
+    const primarySystemId = (oldRoute && state.serviceSystems[oldRoute.servicePatternId]) ? oldRoute.servicePatternId : undefined;
+    const lineAssignments = primaryLineId ? [{
+      lineId: primaryLineId,
+      serviceSystemId: primarySystemId,
+    }] : undefined;
 
     // Create stopTimes from scheduledDepartureTimeMs
     const stopTimes = (route?.stops || []).map((st: any, idx: number) => {
@@ -882,6 +888,7 @@ function migrateVersion10(value: Record<string, any>): MapState {
       routeId: run.routeId,
       calendar: { weekdays: [0, 1, 2, 3, 4, 5, 6] },
       stopTimes,
+      lineAssignments,
       requiresReview: false,
       createdAtGameTimeMs: run.createdAtGameTimeMs ?? now,
       updatedAtGameTimeMs: now,
@@ -939,6 +946,7 @@ function migrateVersion10(value: Record<string, any>): MapState {
         routeId: rId,
         calendar: { weekdays: [0, 1, 2, 3, 4, 5, 6] },
         stopTimes,
+        lineAssignments: [{ lineId: defaultLineId, serviceSystemId: defaultSystemId }],
         requiresReview: false,
         createdAtGameTimeMs: now,
         updatedAtGameTimeMs: now,
@@ -967,6 +975,40 @@ function migrateVersion10(value: Record<string, any>): MapState {
   state.nextVehicleDutyExecutionId = 1;
   state.nextOperationExecutionId = Math.max(Object.keys(state.operationExecutions).length + 1, 1);
 
+  validateMapState(state);
+  return state as MapState;
+}
+
+function normalizeVersion11(raw: Record<string, any>): MapState {
+  const state = structuredClone(raw);
+  if (isRecord(state.routes) && isRecord(state.operations)) {
+    for (const [, op] of Object.entries(state.operations) as [string, any][]) {
+      if ((!op.lineAssignments || op.lineAssignments.length === 0) && op.routeId && state.routes[op.routeId]?.lineSections) {
+        const sections = state.routes[op.routeId].lineSections;
+        if (Array.isArray(sections)) {
+          const assignmentMap = new Map<string, { lineId: string; serviceSystemId?: string }>();
+          for (const sec of sections) {
+            if (sec && sec.lineId) {
+              if (!assignmentMap.has(sec.lineId)) {
+                assignmentMap.set(sec.lineId, {
+                  lineId: sec.lineId,
+                  serviceSystemId: sec.serviceSystemId || undefined,
+                });
+              } else if (sec.serviceSystemId && !assignmentMap.get(sec.lineId)!.serviceSystemId) {
+                assignmentMap.get(sec.lineId)!.serviceSystemId = sec.serviceSystemId;
+              }
+            }
+          }
+          if (assignmentMap.size > 0) {
+            op.lineAssignments = Array.from(assignmentMap.values());
+          }
+        }
+      }
+    }
+    for (const route of Object.values(state.routes) as any[]) {
+      delete route.lineSections;
+    }
+  }
   validateMapState(state);
   return state as MapState;
 }

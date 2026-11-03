@@ -18,10 +18,9 @@ AIとUIは同じコマンド・検証器を使用する。変更系コマンド�
 ## 作成順序
 
 ```text
-line.create
-  -> serviceSystem.create
-  -> route.create
-  -> operation.create
+route.create (路線非依存)
+  -> line.create / serviceSystem.create (任意)
+  -> operation.create (路線・系統所属は任意)
   -> vehicleDuty.create / vehicleDuty.assignFormation
 ```
 
@@ -45,11 +44,11 @@ interface InspectionResult {
 
 ### 経路確認
 
-線路単位の接続可否、接線整合、各legの距離・最小半径、経路全体の最小半径、停車地点、区間ごとの路線・系統、参照施設を返す。束単位だけの結果にはしない。
+線路単位の接続可否、接線整合、各legの距離・最小半径、経路全体の最小半径、停車地点、参照施設を返す。束単位だけの結果にはしない。路線や系統の存在を前提としない。
 
 ### 運行確認
 
-経路参照、適用日、複数日越しを含む着発時刻順、停車時間不足、同一条件の重複運行候補を返す。`dayOffset` を翌日までに制限しない。
+経路参照、適用日、複数日越しを含む着発時刻順、停車時間不足、路線・系統所属設定の妥当性、同一条件の重複運行候補を返す。`dayOffset` を翌日までに制限しない。未所属運行も事前確認可能。
 
 ### 運用確認
 

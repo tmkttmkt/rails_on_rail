@@ -1,7 +1,12 @@
 import type { MapState, Route } from "../simulation/model";
-import { getOperations, getRoutes } from "../simulation/selectors";
+import { getLines, getOperations, getRoutes, getServiceSystemsByLine } from "../simulation/selectors";
 import { getOperationPreflightInspection } from "./uiHelpers";
-import { formatTimeWithDayOffset, type OperationStopTime, type ServiceCalendar } from "../simulation/serviceModel";
+import {
+  formatTimeWithDayOffset,
+  type OperationLineAssignment,
+  type OperationStopTime,
+  type ServiceCalendar,
+} from "../simulation/serviceModel";
 
 export interface ScheduleUiState {
   selectedOperationId?: string;
@@ -12,9 +17,9 @@ export interface ScheduleUiState {
   draftRouteId?: string;
   draftCalendar?: ServiceCalendar;
   draftStopTimes?: OperationStopTime[];
+  draftLineAssignments?: OperationLineAssignment[];
   duplicateShiftMinutes?: number;
 }
-
 export function createInitialScheduleUiState(): ScheduleUiState {
   return {
     isCreatingOperation: false,
@@ -27,13 +32,12 @@ export function renderScheduleLeftPanel(
   uiState: ScheduleUiState
 ): string {
   const operations = getOperations(state);
-
   const weekdayNames = ["日", "月", "火", "水", "木", "金", "土"];
 
   const opCardsHtml = operations
     .map((op) => {
       const isActive = op.id === uiState.selectedOperationId ? "active" : "";
-      const route = state.routes[op.routeId];
+      const route = op.routeId ? state.routes[op.routeId] : undefined;
       const firstStop = op.stopTimes[0];
       const lastStop = op.stopTimes.at(-1);
 
@@ -44,6 +48,22 @@ export function renderScheduleLeftPanel(
         .map((d) => `<span class="badge" style="font-size: 9px; padding: 1px 3px; margin-right: 1px;">${weekdayNames[d]}</span>`)
         .join("");
 
+      const classificationBadges = op.lineAssignments && op.lineAssignments.length > 0
+        ? op.lineAssignments
+            .map((a) => {
+              const line = state.lines[a.lineId];
+              const sys = a.serviceSystemId ? state.serviceSystems[a.serviceSystemId] : undefined;
+              const color = sys?.color || line?.color || "#4b5563";
+              const label = sys ? `${line?.name || a.lineId} (${sys.name})` : (line?.name || a.lineId);
+              return `
+                <span class="badge" style="background: ${color}22; color: ${color}; border: 1px solid ${color}44; font-size: 9px; margin-right: 2px;">
+                  ${label}
+                </span>
+              `;
+            })
+            .join("")
+        : `<span class="badge" style="background: rgba(156,163,175,0.15); color: #9ca3af; font-size: 9px;">未所属</span>`;
+
       return `
         <div class="card clickable ${isActive}" data-operation-id="${op.id}" data-testid="operation-card-${op.id}" style="margin-bottom: 8px; padding: 8px 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -51,10 +71,13 @@ export function renderScheduleLeftPanel(
             ${op.requiresReview ? `<span class="badge danger" style="font-size: 9px;">要確認</span>` : ""}
           </div>
           <div style="font-size: 11px; color: #9ca3af; margin: 3px 0 1px 0;">
-            経路: ${route?.name || op.routeId}
+            経路: ${route?.name || "未設定（使用不可）"}
           </div>
           <div style="font-size: 10px; color: #6b7280; margin-bottom: 4px;">
-            時刻: ${firstTimeStr} → ${lastTimeStr} (${op.stopTimes.length}駅)
+            時刻: ${op.routeId ? `${firstTimeStr} → ${lastTimeStr} (${op.stopTimes.length}駅)` : "経路設定後に入力"}
+          </div>
+          <div style="display: flex; flex-wrap: wrap; gap: 2px; margin-bottom: 4px;">
+            ${classificationBadges}
           </div>
           <div style="display: flex; flex-wrap: wrap;">
             ${daysBadges}
@@ -86,12 +109,14 @@ export function renderScheduleRightPanel(
     const isEdit = !!uiState.editingOperationId;
     const editingOp = uiState.editingOperationId ? state.operations[uiState.editingOperationId] : undefined;
     const routes = getRoutes(state);
+    const lines = getLines(state);
 
-    const selectedRouteId = uiState.draftRouteId || editingOp?.routeId || (routes[0]?.id ?? "");
+    const selectedRouteId = uiState.draftRouteId || editingOp?.routeId || "";
     const selectedRoute = state.routes[selectedRouteId];
 
     const calendar = uiState.draftCalendar || editingOp?.calendar || { weekdays: [1, 2, 3, 4, 5] };
     const stopTimes = uiState.draftStopTimes || (editingOp ? editingOp.stopTimes : (selectedRoute ? defaultStopTimesFromRoute(selectedRoute) : []));
+    const lineAssignments = uiState.draftLineAssignments || editingOp?.lineAssignments || [];
 
     // Preflight inspection
     let preflightHtml = "";
@@ -100,6 +125,7 @@ export function renderScheduleRightPanel(
         routeId: selectedRoute.id,
         calendar,
         stopTimes,
+        lineAssignments: lineAssignments.length > 0 ? lineAssignments : undefined,
       });
 
       if (inspection.valid && inspection.details?.type === "operation") {
@@ -119,9 +145,9 @@ export function renderScheduleRightPanel(
       }
     }
 
-    const routeOptionsHtml = routes
+    const routeOptionsHtml = [`<option value="">未設定（保存できますが使用できません）</option>`, ...routes
       .map((r) => `<option value="${r.id}" ${r.id === selectedRouteId ? "selected" : ""}>${r.name} (${r.directionName})</option>`)
-      .join("");
+    ].join("");
 
     const weekdayLabels = [
       { day: 1, label: "月" },
@@ -171,6 +197,24 @@ export function renderScheduleRightPanel(
       })
       .join("");
 
+    // Classification Assignments Rows
+    const assignmentsRowsHtml = lineAssignments
+      .map((a, idx) => {
+        const line = state.lines[a.lineId];
+        const sys = a.serviceSystemId ? state.serviceSystems[a.serviceSystemId] : undefined;
+        return `
+          <div class="card" style="margin-bottom: 4px; padding: 4px 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+            <span>${line?.name || a.lineId} ${sys ? `(${sys.name})` : "(直属)"}</span>
+            <button class="danger op-draft-unassign-btn" data-index="${idx}" style="font-size: 9px; padding: 1px 4px;">✕</button>
+          </div>
+        `;
+      })
+      .join("");
+
+    const lineSelectOptionsHtml = lines
+      .map((l) => `<option value="${l.id}">${l.name}</option>`)
+      .join("");
+
     return `
       <div class="panel-section" style="max-height: calc(100vh - 120px); overflow-y: auto;">
         <p class="eyebrow">${isEdit ? `運行編集: ${editingOp?.name}` : "新規運行作成"}</p>
@@ -187,10 +231,39 @@ export function renderScheduleRightPanel(
         </div>
 
         <div class="form-group" style="margin-bottom: 8px;">
-          <label style="font-size: 11px;">参照経路 <span style="color: #ef4444;">*</span></label>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <label style="font-size: 11px;">参照経路 <span style="color: #ef4444;">*</span></label>
+            <button id="op-create-route-shortcut" class="ghost" ${isEdit ? "" : "disabled title=\"先に運行を保存してください\""} style="font-size: 10px; padding: 1px 6px;">${isEdit ? "＋ 経路追加" : "保存後に経路追加"}</button>
+          </div>
           <select id="op-route-select" data-testid="op-route-select" style="width: 100%; font-size: 11px; margin-top: 2px;">
             ${routeOptionsHtml}
           </select>
+        </div>
+
+        ${!selectedRoute ? `<div class="card" style="margin-bottom: 10px; padding: 8px; border: 1px solid #89959c; background: #eef1f2; color: #30383d; font-size: 11px; line-height: 1.5;"><strong>経路未設定</strong><br>この状態でも運行を保存できます。経路と時刻を設定するまでは、運用への登録や発車には使用できません。</div>` : ""}
+
+        <!-- Classification Assignment Form Group -->
+        <div class="form-group" style="margin-bottom: 12px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 4px;">
+          <label style="font-size: 11px; font-weight: bold; display: block; margin-bottom: 4px;">路線・系統 所属設定 (任意)</label>
+          <div style="margin-bottom: 6px;">
+            ${lineAssignments.length === 0 ? `<p class="muted" style="font-size: 10px; margin: 2px 0;">未所属（後から設定可能）</p>` : assignmentsRowsHtml}
+          </div>
+          ${
+            lines.length > 0
+              ? `
+            <div style="display: flex; gap: 4px; align-items: center;">
+              <select id="op-draft-line-select" style="font-size: 10px; flex: 1;">
+                ${lineSelectOptionsHtml}
+              </select>
+              <select id="op-draft-sys-select" style="font-size: 10px; flex: 1;">
+                <option value="">(系統なし・路線直属)</option>
+                ${(lines[0] ? getServiceSystemsByLine(state, lines[0].id) : []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("")}
+              </select>
+              <button id="op-draft-assign-btn" class="ghost" style="font-size: 10px; padding: 2px 6px;">所属追加</button>
+            </div>
+          `
+              : `<p class="muted" style="font-size: 10px; margin: 0;">路線が未作成です</p>`
+          }
         </div>
 
         <div class="form-group" style="margin-bottom: 12px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 4px;">
@@ -241,7 +314,37 @@ export function renderScheduleRightPanel(
     `;
   }
 
-  const route = state.routes[selectedOp.routeId];
+  const route = selectedOp.routeId ? state.routes[selectedOp.routeId] : undefined;
+  const lines = getLines(state);
+
+  const classificationBadges = selectedOp.lineAssignments && selectedOp.lineAssignments.length > 0
+    ? selectedOp.lineAssignments
+        .map((a) => {
+          const line = state.lines[a.lineId];
+          const sys = a.serviceSystemId ? state.serviceSystems[a.serviceSystemId] : undefined;
+          const color = sys?.color || line?.color || "#4b5563";
+          const label = sys ? `${line?.name || a.lineId} (${sys.name})` : (line?.name || a.lineId);
+          return `
+            <span class="badge" style="background: ${color}22; color: ${color}; border: 1px solid ${color}44; font-size: 10px; margin-right: 4px;">
+              ${label}
+            </span>
+          `;
+        })
+        .join("")
+    : `<span class="badge" style="background: rgba(156,163,175,0.15); color: #9ca3af; font-size: 10px;">未所属</span>`;
+
+  const assignmentsDetailHtml = (selectedOp.lineAssignments || [])
+    .map((a) => {
+      const line = state.lines[a.lineId];
+      const sys = a.serviceSystemId ? state.serviceSystems[a.serviceSystemId] : undefined;
+      return `
+        <div class="card" style="margin-bottom: 4px; padding: 4px 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;">
+          <span><strong>${line?.name || a.lineId}</strong> ${sys ? `(${sys.name})` : "(路線直属)"}</span>
+          <button class="ghost op-detail-unassign-btn" data-op-id="${selectedOp.id}" data-line-id="${a.lineId}" style="font-size: 10px; padding: 1px 6px;">所属解除</button>
+        </div>
+      `;
+    })
+    .join("");
 
   const stopTimesTableHtml = selectedOp.stopTimes
     .map((st) => {
@@ -259,13 +362,15 @@ export function renderScheduleRightPanel(
     .join("");
 
   return `
-    <div class="panel-section">
+    <div class="panel-section" style="max-height: calc(100vh - 120px); overflow-y: auto;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.08);">
         <div>
           <h3 style="margin: 0; font-size: 15px;">${selectedOp.name} ${selectedOp.operationNumber ? `(${selectedOp.operationNumber})` : ""}</h3>
-          <span style="font-size: 11px; color: #9ca3af;">経路: ${route?.name || selectedOp.routeId}</span>
+          <div style="font-size: 11px; color: #596168; margin-top: 2px;">経路: ${route?.name || "未設定（使用不可）"}</div>
+          <div style="margin-top: 4px; display: flex; flex-wrap: wrap; gap: 2px;">${classificationBadges}</div>
         </div>
         <div style="display: flex; gap: 4px;">
+          ${!route ? `<button id="op-add-route-btn" data-testid="op-add-route-btn" class="flat-action" style="font-size: 11px; padding: 3px 8px;">＋ 経路追加</button>` : ""}
           <button id="op-duplicate-btn" data-testid="op-duplicate-btn" class="ghost" style="font-size: 11px; padding: 3px 8px;">運行複製</button>
           <button id="op-edit-btn" data-testid="op-edit-btn" class="ghost" style="font-size: 11px; padding: 3px 8px;">編集</button>
           <button id="op-delete-btn" data-testid="op-delete-btn" class="danger" style="font-size: 11px; padding: 3px 8px;">削除</button>
@@ -284,6 +389,30 @@ export function renderScheduleRightPanel(
       `
           : ""
       }
+
+      <!-- Classification detail section -->
+      <div style="margin-bottom: 12px; background: rgba(0,0,0,0.15); padding: 8px; border-radius: 4px;">
+        <p class="eyebrow" style="margin: 0 0 6px 0;">路線・系統 所属一覧</p>
+        <div style="margin-bottom: 6px;">
+          ${assignmentsDetailHtml || `<p class="muted" style="font-size: 10px; margin: 2px 0;">所属路線・系統なし</p>`}
+        </div>
+        ${
+          lines.length > 0
+            ? `
+          <div style="display: flex; gap: 4px; align-items: center;">
+            <select id="op-detail-assign-line-select" style="font-size: 10px; flex: 1;">
+              ${lines.map((l) => `<option value="${l.id}">${l.name}</option>`).join("")}
+            </select>
+            <select id="op-detail-assign-sys-select" style="font-size: 10px; flex: 1;">
+              <option value="">(系統なし・路線直属)</option>
+              ${(lines[0] ? getServiceSystemsByLine(state, lines[0].id) : []).map((s) => `<option value="${s.id}">${s.name}</option>`).join("")}
+            </select>
+            <button id="op-detail-assign-btn" data-op-id="${selectedOp.id}" class="ghost" style="font-size: 10px; padding: 2px 6px;">所属追加</button>
+          </div>
+        `
+            : ""
+        }
+      </div>
 
       <p class="eyebrow" style="margin-bottom: 6px;">各駅時刻表</p>
       <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px;">

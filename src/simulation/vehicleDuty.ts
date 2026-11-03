@@ -30,6 +30,9 @@ export function validateDutyContinuity(
     if (!op) {
       throw new Error(`ERR_OPERATION_NOT_FOUND: 運行 (${sorted[i].operationId}) が存在しません`);
     }
+    if (!op.routeId) {
+      throw new Error(`ERR_OPERATION_INCOMPLETE: 運行「${op.name}」には経路が設定されていません`);
+    }
     const route = routes[op.routeId];
     if (!route) {
       throw new Error(`ERR_ROUTE_NOT_FOUND: 運行の参照経路 (${op.routeId}) が存在しません`);
@@ -44,8 +47,8 @@ export function validateDutyContinuity(
     const curOp = operations[curAssign.operationId];
     const nextOp = operations[nextAssign.operationId];
 
-    const curRoute = routes[curOp.routeId];
-    const nextRoute = routes[nextOp.routeId];
+    const curRoute = routes[curOp.routeId!];
+    const nextRoute = routes[nextOp.routeId!];
 
     const curLastStop = curRoute.stops.at(-1)!;
     const nextFirstStop = nextRoute.stops[0];

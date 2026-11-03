@@ -1,5 +1,6 @@
 import type {
   CommercialStopType,
+  OperationLineAssignment,
   OperationStopTime,
   ServiceCalendar,
   VehicleDutyAssignment,
@@ -10,15 +11,8 @@ export interface CreateRouteStopPayload {
   trackId: string;
   stopPointId?: string;
   stopPointIndex?: number;
-  commercialType: CommercialStopType;
+  commercialType?: CommercialStopType;
   dwellSeconds?: number;
-}
-
-export interface CreateRouteLineSectionPayload {
-  fromStopSequence: number;
-  toStopSequence: number;
-  lineId: string;
-  serviceSystemId?: string;
 }
 
 export type ServiceDomainCommand =
@@ -54,9 +48,8 @@ export type ServiceDomainCommand =
       payload: {
         id?: string;
         name: string;
-        directionName: string;
+        directionName?: string;
         stops: CreateRouteStopPayload[];
-        lineSections?: CreateRouteLineSectionPayload[];
       };
     }
   | {
@@ -66,7 +59,6 @@ export type ServiceDomainCommand =
         name?: string;
         directionName?: string;
         stops?: CreateRouteStopPayload[];
-        lineSections?: CreateRouteLineSectionPayload[];
       };
     }
   | { type: "route.delete"; payload: { id: string } }
@@ -84,9 +76,10 @@ export type ServiceDomainCommand =
         id?: string;
         name: string;
         operationNumber?: string;
-        routeId: string;
+        routeId?: string;
         calendar: ServiceCalendar;
-        stopTimes: OperationStopTime[];
+        stopTimes?: OperationStopTime[];
+        lineAssignments?: OperationLineAssignment[];
         description?: string;
       };
     }
@@ -99,8 +92,24 @@ export type ServiceDomainCommand =
         routeId?: string;
         calendar?: ServiceCalendar;
         stopTimes?: OperationStopTime[];
+        lineAssignments?: OperationLineAssignment[];
         description?: string;
         markReviewed?: boolean;
+      };
+    }
+  | {
+      type: "operation.assignClassification";
+      payload: {
+        operationId: string;
+        lineId: string;
+        serviceSystemId?: string;
+      };
+    }
+  | {
+      type: "operation.unassignClassification";
+      payload: {
+        operationId: string;
+        lineId: string;
       };
     }
   | { type: "operation.delete"; payload: { id: string } }

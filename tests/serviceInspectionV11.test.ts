@@ -60,15 +60,12 @@ function setupInspectionTestNetwork() {
 
 describe("P7: AI・事前確認 (Preflight & AI Inspection) 単体テスト", () => {
   it("PT-AI-01: 経路作成の事前確認で接線整合性、各区間距離、最小半径を返す", () => {
-    const { state, line, serviceSystem } = setupInspectionTestNetwork();
+    const { state } = setupInspectionTestNetwork();
 
     const inspection = inspectRouteCreation(state, {
       stops: [
         { stationId: "station-1", trackId: "track-1" },
         { stationId: "station-2", trackId: "track-2" },
-      ],
-      lineSections: [
-        { fromStopSequence: 1, toStopSequence: 2, lineId: line.id, serviceSystemId: serviceSystem.id },
       ],
     });
 
@@ -83,7 +80,7 @@ describe("P7: AI・事前確認 (Preflight & AI Inspection) 単体テスト", ()
   });
 
   it("PT-AI-02: 運行作成の事前確認でカレンダー・着発時刻順を検証する", () => {
-    const { state, line, serviceSystem } = setupInspectionTestNetwork();
+    const { state } = setupInspectionTestNetwork();
 
     const { route } = createRoute(state, {
       name: "本線各停",
@@ -91,9 +88,6 @@ describe("P7: AI・事前確認 (Preflight & AI Inspection) 単体テスト", ()
       stops: [
         { stationId: "station-1", trackId: "track-1" },
         { stationId: "station-2", trackId: "track-2" },
-      ],
-      lineSections: [
-        { fromStopSequence: 1, toStopSequence: 2, lineId: line.id, serviceSystemId: serviceSystem.id },
       ],
     });
 
@@ -122,7 +116,7 @@ describe("P7: AI・事前確認 (Preflight & AI Inspection) 単体テスト", ()
   });
 
   it("PT-AI-03: 発車実行適合性検査で編成配置と始発条件を検証する", () => {
-    const { state, line } = setupInspectionTestNetwork();
+    const { state } = setupInspectionTestNetwork();
 
     const { route } = createRoute(state, {
       name: "本線経路",
@@ -131,7 +125,6 @@ describe("P7: AI・事前確認 (Preflight & AI Inspection) 単体テスト", ()
         { stationId: "station-1", trackId: "track-1" },
         { stationId: "station-2", trackId: "track-2" },
       ],
-      lineSections: [{ fromStopSequence: 1, toStopSequence: 2, lineId: line.id }],
     });
 
     const { operation } = createOperation(state, {

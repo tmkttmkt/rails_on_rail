@@ -1,13 +1,12 @@
 import type { MapState } from "../simulation/model";
 import { inspectExecutionEligibility, inspectOperationCreation, inspectRouteCreation, inspectVehicleDutyCreation, type InspectionResult } from "../simulation/serviceInspection";
-import type { CreateRouteLineSectionInput, CreateRouteStopInput } from "../simulation/routeDomain";
-import type { OperationStopTime, ServiceCalendar, VehicleDutyAssignment } from "../simulation/serviceModel";
+import type { CreateRouteStopInput } from "../simulation/routeDomain";
+import type { OperationLineAssignment, OperationStopTime, ServiceCalendar, VehicleDutyAssignment } from "../simulation/serviceModel";
 
 export function getRoutePreflightInspection(
   state: MapState,
   params: {
     stops: CreateRouteStopInput[];
-    lineSections?: CreateRouteLineSectionInput[];
   }
 ): InspectionResult {
   return inspectRouteCreation(state, params);
@@ -19,6 +18,7 @@ export function getOperationPreflightInspection(
     routeId: string;
     calendar: ServiceCalendar;
     stopTimes: OperationStopTime[];
+    lineAssignments?: OperationLineAssignment[];
   }
 ): InspectionResult {
   return inspectOperationCreation(state, params);

@@ -2,8 +2,8 @@
   "formatVersion": 1,
   "metadata": {
     "name": "運行計画UIレビューマップ",
-    "createdAt": "2026-08-19T05:58:48.522Z",
-    "updatedAt": "2026-08-19T05:58:48.522Z"
+    "createdAt": "2026-08-23T10:34:13.395Z",
+    "updatedAt": "2026-08-23T10:34:13.395Z"
   },
   "state": {
     "version": 11,
@@ -490,22 +490,6 @@
             "totalDistanceM": 800
           }
         ],
-        "lineSections": [
-          {
-            "id": "sec-1-route-aoba-kaihin-down",
-            "fromStopId": "rstop-1-station-1",
-            "toStopId": "rstop-3-station-3",
-            "lineId": "line-aoba",
-            "serviceSystemId": "system-local"
-          },
-          {
-            "id": "sec-2-route-aoba-kaihin-down",
-            "fromStopId": "rstop-3-station-3",
-            "toStopId": "rstop-4-station-4",
-            "lineId": "line-kaihin",
-            "serviceSystemId": "system-through"
-          }
-        ],
         "stationIds": [
           "station-1",
           "station-2",
@@ -636,22 +620,6 @@
             "totalDistanceM": 700
           }
         ],
-        "lineSections": [
-          {
-            "id": "sec-1-route-1",
-            "fromStopId": "rstop-1-station-4",
-            "toStopId": "rstop-2-station-3",
-            "lineId": "line-kaihin",
-            "serviceSystemId": "system-through"
-          },
-          {
-            "id": "sec-2-route-1",
-            "fromStopId": "rstop-2-station-3",
-            "toStopId": "rstop-4-station-1",
-            "lineId": "line-aoba",
-            "serviceSystemId": "system-local"
-          }
-        ],
         "stationIds": [
           "station-4",
           "station-3",
@@ -704,6 +672,16 @@
             "dayOffset": 0
           }
         ],
+        "lineAssignments": [
+          {
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          },
+          {
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
+          }
+        ],
         "requiresReview": false,
         "createdAtGameTimeMs": -2208967200000,
         "updatedAtGameTimeMs": -2208967200000
@@ -744,6 +722,16 @@
             "routeStopId": "rstop-4-station-1",
             "arrivalTime": "10:10:00",
             "dayOffset": 0
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-aoba",
+            "serviceSystemId": "system-local"
+          },
+          {
+            "lineId": "line-kaihin",
+            "serviceSystemId": "system-through"
           }
         ],
         "requiresReview": false,
@@ -1052,22 +1040,6 @@
             "totalDistanceM": 800
           }
         ],
-        "lineSections": [
-          {
-            "id": "sec-1-route-aoba-kaihin-down",
-            "fromStopId": "rstop-1-station-1",
-            "toStopId": "rstop-3-station-3",
-            "lineId": "line-aoba",
-            "serviceSystemId": "system-local"
-          },
-          {
-            "id": "sec-2-route-aoba-kaihin-down",
-            "fromStopId": "rstop-3-station-3",
-            "toStopId": "rstop-4-station-4",
-            "lineId": "line-kaihin",
-            "serviceSystemId": "system-through"
-          }
-        ],
         "stationIds": [
           "station-1",
           "station-2",
@@ -1196,22 +1168,6 @@
             ],
             "junctionIds": [],
             "totalDistanceM": 700
-          }
-        ],
-        "lineSections": [
-          {
-            "id": "sec-1-route-1",
-            "fromStopId": "rstop-1-station-4",
-            "toStopId": "rstop-2-station-3",
-            "lineId": "line-kaihin",
-            "serviceSystemId": "system-through"
-          },
-          {
-            "id": "sec-2-route-1",
-            "fromStopId": "rstop-2-station-3",
-            "toStopId": "rstop-4-station-1",
-            "lineId": "line-aoba",
-            "serviceSystemId": "system-local"
           }
         ],
         "stationIds": [

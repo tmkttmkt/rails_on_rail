@@ -1,7 +1,7 @@
 import type { MapState } from "../simulation/model";
-import { getLines, getRoutes, getServiceSystemsByLine } from "../simulation/selectors";
+import { getRoutes } from "../simulation/selectors";
 import { getRoutePreflightInspection, getExactStopPointOptions } from "./uiHelpers";
-import type { CreateRouteLineSectionInput, CreateRouteStopInput } from "../simulation/routeDomain";
+import type { CreateRouteStopInput } from "../simulation/routeDomain";
 
 export interface RouteUiState {
   selectedRouteId?: string;
@@ -10,14 +10,12 @@ export interface RouteUiState {
   draftName?: string;
   draftDirectionName?: string;
   draftStops: CreateRouteStopInput[];
-  draftLineSections: CreateRouteLineSectionInput[];
 }
 
 export function createInitialRouteUiState(): RouteUiState {
   return {
     isCreatingRoute: false,
     draftStops: [],
-    draftLineSections: [],
   };
 }
 
@@ -32,20 +30,6 @@ export function renderRouteLeftPanel(
       const isActive = route.id === uiState.selectedRouteId ? "active" : "";
       const stopNames = route.stops.map((st) => state.stations.find((s) => s.id === st.stationId)?.name || st.stationId).join(" → ");
 
-      const sectionsBadges = route.lineSections
-        .map((sec) => {
-          const line = state.lines[sec.lineId];
-          const sys = sec.serviceSystemId ? state.serviceSystems[sec.serviceSystemId] : undefined;
-          const color = sys?.color || line?.color || "#4b5563";
-          const label = sys ? `${line?.name || sec.lineId} (${sys.name})` : (line?.name || sec.lineId);
-          return `
-            <span class="badge" style="background: ${color}22; color: ${color}; border: 1px solid ${color}44; font-size: 10px; margin-right: 4px;">
-              ${label}
-            </span>
-          `;
-        })
-        .join("");
-
       return `
         <div class="card clickable ${isActive}" data-route-id="${route.id}" data-testid="route-card-${route.id}" style="margin-bottom: 8px; padding: 8px 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -53,11 +37,8 @@ export function renderRouteLeftPanel(
             <span class="badge" style="font-size: 10px;">${route.directionName}</span>
           </div>
           <div style="font-size: 11px; color: #9ca3af; margin: 4px 0 2px 0;">${stopNames}</div>
-          <div style="font-size: 10px; color: #6b7280; margin-bottom: 4px;">
+          <div style="font-size: 10px; color: #6b7280;">
             延長: ${Math.round(route.totalDistanceM ?? (route as any).lengthM ?? 0)} m · ${route.stops.length} 駅 (${route.legs.length} 区間)
-          </div>
-          <div style="display: flex; flex-wrap: wrap; gap: 2px;">
-            ${sectionsBadges}
           </div>
         </div>
       `;
@@ -87,15 +68,12 @@ export function renderRouteRightPanel(
     const editingRoute = uiState.editingRouteId ? state.routes[uiState.editingRouteId] : undefined;
 
     const stops = uiState.draftStops;
-    const sections = uiState.draftLineSections;
-    const lines = getLines(state);
 
     // Preflight inspection
     let preflightHtml = "";
     if (stops.length >= 2) {
       const inspection = getRoutePreflightInspection(state, {
         stops,
-        lineSections: sections.length > 0 ? sections : undefined,
       });
 
       if (inspection.valid && inspection.details?.type === "route") {
@@ -161,31 +139,6 @@ export function renderRouteRightPanel(
       .map((s) => `<option value="${s.id}">${s.name}</option>`)
       .join("");
 
-    // Line Sections Rows
-    const sectionsRowsHtml = sections
-      .map((sec, idx) => {
-        const availableSystems = getServiceSystemsByLine(state, sec.lineId);
-        const lineOptions = lines.map((l) => `<option value="${l.id}" ${l.id === sec.lineId ? "selected" : ""}>${l.name}</option>`).join("");
-        const systemOptions = [
-          `<option value="">(系統なし)</option>`,
-          ...availableSystems.map((s) => `<option value="${s.id}" ${s.id === sec.serviceSystemId ? "selected" : ""}>${s.name}</option>`),
-        ].join("");
-
-        return `
-          <div class="card" style="margin-bottom: 4px; padding: 6px 8px; font-size: 11px; display: flex; gap: 4px; align-items: center;">
-            <span>${sec.fromStopSequence}番駅 → ${sec.toStopSequence}番駅</span>
-            <select class="route-sec-line-select" data-index="${idx}" style="font-size: 10px; flex: 1;">
-              ${lineOptions}
-            </select>
-            <select class="route-sec-sys-select" data-index="${idx}" style="font-size: 10px; flex: 1;">
-              ${systemOptions}
-            </select>
-            <button class="danger route-sec-remove" data-index="${idx}" style="padding: 1px 4px; font-size: 9px;">✕</button>
-          </div>
-        `;
-      })
-      .join("");
-
     return `
       <div class="panel-section" style="max-height: calc(100vh - 120px); overflow-y: auto;">
         <p class="eyebrow">${isEdit ? `経路編集: ${editingRoute?.name}` : "新規経路作成"}</p>
@@ -193,7 +146,7 @@ export function renderRouteRightPanel(
         <div style="display: flex; gap: 8px; margin-bottom: 8px;">
           <div style="flex: 2;">
             <label style="font-size: 11px;">経路名 <span style="color: #ef4444;">*</span></label>
-            <input id="route-name-input" data-testid="route-name-input" type="text" value="${uiState.draftName || editingRoute?.name || ""}" placeholder="例: 東海道本線 下り快速" style="width: 100%; margin-top: 2px;" />
+            <input id="route-name-input" data-testid="route-name-input" type="text" value="${uiState.draftName || editingRoute?.name || ""}" placeholder="例: 本線下り快速" style="width: 100%; margin-top: 2px;" />
           </div>
           <div style="flex: 1;">
             <label style="font-size: 11px;">方向名</label>
@@ -215,16 +168,6 @@ export function renderRouteRightPanel(
               ${stationAddOptionsHtml}
             </select>
             <button id="route-station-add-btn" class="ghost" style="font-size: 11px; padding: 2px 8px;">地点追加</button>
-          </div>
-        </div>
-
-        <div style="margin-bottom: 12px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-            <label style="font-size: 11px; font-weight: bold;">路線・系統区間設定</label>
-            <button id="route-sec-add-btn" class="ghost" style="font-size: 10px; padding: 1px 6px;">＋ 区間分割</button>
-          </div>
-          <div style="max-height: 120px; overflow-y: auto;">
-            ${sections.length === 0 ? `<p class="muted" style="font-size: 10px;">既定路線区間が自動適用されます</p>` : sectionsRowsHtml}
           </div>
         </div>
 

@@ -95,8 +95,8 @@ function setupTrackNetwork() {
 }
 
 describe("P2: 経路・物理経路 (Route & Physical Path) 単体・統合テスト", () => {
-  it("UT-ROUTE-01: 経路の地点順・方向・legs・区間が正常に構築・保存される", () => {
-    const { state, lineA, sysA1 } = setupTrackNetwork();
+  it("UT-ROUTE-01: 経路の地点順・方向・legsが正常に構築・保存される（路線非依存）", () => {
+    const { state } = setupTrackNetwork();
 
     const { route } = createRoute(state, {
       name: "A-C各駅停車",
@@ -106,9 +106,6 @@ describe("P2: 経路・物理経路 (Route & Physical Path) 単体・統合テ�
         { stationId: "station-2", trackId: "track-2", commercialType: "stop", dwellSeconds: 15 },
         { stationId: "station-3", trackId: "track-3", commercialType: "stop", dwellSeconds: 30 },
       ],
-      lineSections: [
-        { fromStopSequence: 1, toStopSequence: 3, lineId: lineA.id, serviceSystemId: sysA1.id },
-      ],
     });
 
     expect(route.id).toBe("route-1");
@@ -116,76 +113,86 @@ describe("P2: 経路・物理経路 (Route & Physical Path) 単体・統合テ�
     expect(route.directionName).toBe("下り");
     expect(route.stops).toHaveLength(3);
     expect(route.legs).toHaveLength(2);
-    expect(route.lineSections).toHaveLength(1);
     expect(route.totalDistanceM).toBeGreaterThan(0);
     expect(route.status).toBe("active");
   });
 
-  it("UT-ROUTE-02: 系統の親路線と区間路線の不一致を拒否する (ERR_SYSTEM_LINE_MISMATCH)", () => {
-    const { state, lineA, sysB1 } = setupTrackNetwork();
+  it("UT-ROUTE-02: 経路作成は路線・系統が存在しなくても単独で実行できる", () => {
+    let emptyState: any = createInitialState();
+    emptyState.lines = {};
+    emptyState.serviceSystems = {};
+    emptyState.routes = {};
+    emptyState.operations = {};
+    emptyState = executeCommand(emptyState, {
+      type: "track.create",
+      geometry: "straight",
+      points: [{ x: 0, y: 0 }, { x: 200, y: 0 }],
+    }).state;
+    emptyState = executeCommand(emptyState, {
+      type: "track.create",
+      geometry: "straight",
+      startConnectionTrackId: "track-1",
+      points: [{ x: 200, y: 0 }, { x: 400, y: 0 }],
+    }).state;
+    emptyState = executeCommand(emptyState, {
+      type: "station.createRange",
+      name: "X駅",
+      trackId: "track-1",
+      startPosition: { x: 20, y: 0 },
+      endPosition: { x: 80, y: 0 },
+    }).state;
+    emptyState = executeCommand(emptyState, {
+      type: "station.createRange",
+      name: "Y駅",
+      trackId: "track-2",
+      startPosition: { x: 220, y: 0 },
+      endPosition: { x: 280, y: 0 },
+    }).state;
 
-    expect(() =>
-      createRoute(state, {
-        name: "不整合経路",
-        directionName: "下り",
-        stops: [
-          { stationId: "station-1", trackId: "track-1" },
-          { stationId: "station-2", trackId: "track-2" },
-        ],
-        lineSections: [
-          // lineId is line-A, but sysB1 belongs to line-B!
-          { fromStopSequence: 1, toStopSequence: 2, lineId: lineA.id, serviceSystemId: sysB1.id },
-        ],
-      })
-    ).toThrow("ERR_SYSTEM_LINE_MISMATCH");
+    const { route } = createRoute(emptyState, {
+      name: "単独経路",
+      directionName: "下り",
+      stops: [
+        { stationId: "station-1", trackId: "track-1" },
+        { stationId: "station-2", trackId: "track-2" },
+      ],
+    });
+
+    expect(route).toBeDefined();
+    expect(route.name).toBe("単独経路");
+    expect(route.stops).toHaveLength(2);
   });
 
-  it("UT-ROUTE-03: 区間の空白・逆転・不正重複を拒否する (ERR_INVALID_ROUTE_SECTIONS)", () => {
-    const { state, lineA, sysA1 } = setupTrackNetwork();
+  it("UT-ROUTE-03: 経路の連続同駅指定や2駅未満の指定を拒否する", () => {
+    const { state } = setupTrackNetwork();
 
-    // Gap between section 1->2 and section 3->4 (stop 2 to 3 missing)
+    // Less than 2 stops
     expect(() =>
       createRoute(state, {
-        name: "空白区間経路",
+        name: "1駅経路",
+        directionName: "下り",
+        stops: [{ stationId: "station-1", trackId: "track-1" }],
+      })
+    ).toThrow("2駅以上");
+
+    // Same station consecutive
+    expect(() =>
+      createRoute(state, {
+        name: "同駅連続経路",
         directionName: "下り",
         stops: [
           { stationId: "station-1", trackId: "track-1" },
-          { stationId: "station-2", trackId: "track-2" },
-          { stationId: "station-3", trackId: "track-3" },
-          { stationId: "station-4", trackId: "track-4" },
-        ],
-        lineSections: [
-          { fromStopSequence: 1, toStopSequence: 2, lineId: lineA.id, serviceSystemId: sysA1.id },
-          { fromStopSequence: 3, toStopSequence: 4, lineId: lineA.id, serviceSystemId: sysA1.id },
-        ],
-      })
-    ).toThrow("ERR_INVALID_ROUTE_SECTIONS");
-
-    // Overlap: 1->3 and 2->4
-    expect(() =>
-      createRoute(state, {
-        name: "重複区間経路",
-        directionName: "下り",
-        stops: [
           { stationId: "station-1", trackId: "track-1" },
-          { stationId: "station-2", trackId: "track-2" },
-          { stationId: "station-3", trackId: "track-3" },
-          { stationId: "station-4", trackId: "track-4" },
-        ],
-        lineSections: [
-          { fromStopSequence: 1, toStopSequence: 3, lineId: lineA.id, serviceSystemId: sysA1.id },
-          { fromStopSequence: 2, toStopSequence: 4, lineId: lineA.id, serviceSystemId: sysA1.id },
         ],
       })
-    ).toThrow("ERR_INVALID_ROUTE_SECTIONS");
+    ).toThrow("同じ駅を連続して指定");
   });
 
-  it("IT-DIRECT-01: A線A系統からB線B系統へ直通する経路を正常に作成・保存できる", () => {
-    const { state, lineA, lineB, sysA1, sysB1 } = setupTrackNetwork();
+  it("IT-DIRECT-01: 4駅跨ぎの経路を正常に作成し、復路複製できる", () => {
+    const { state } = setupTrackNetwork();
 
-    // Direct route from Station 1 (A線) to Station 4 (B線), with transfer at Station 2
     const { route } = createRoute(state, {
-      name: "A線・B線直通快速",
+      name: "直通快速",
       directionName: "下り",
       stops: [
         { stationId: "station-1", trackId: "track-1", commercialType: "stop" },
@@ -193,22 +200,15 @@ describe("P2: 経路・物理経路 (Route & Physical Path) 単体・統合テ�
         { stationId: "station-3", trackId: "track-3", commercialType: "pass" },
         { stationId: "station-4", trackId: "track-4", commercialType: "stop" },
       ],
-      lineSections: [
-        { fromStopSequence: 1, toStopSequence: 2, lineId: lineA.id, serviceSystemId: sysA1.id },
-        { fromStopSequence: 2, toStopSequence: 4, lineId: lineB.id, serviceSystemId: sysB1.id },
-      ],
     });
 
     expect(route.stops).toHaveLength(4);
     expect(route.stops[2].commercialType).toBe("pass");
-    expect(route.lineSections).toHaveLength(2);
-    expect(route.lineSections[0].lineId).toBe(lineA.id);
-    expect(route.lineSections[1].lineId).toBe(lineB.id);
 
     // Duplicate reverse route
     const { route: revRoute } = duplicateReverseRoute(state, {
       sourceRouteId: route.id,
-      name: "A線・B線直通快速 (上り)",
+      name: "直通快速 (上り)",
       directionName: "上り",
     });
 
@@ -216,8 +216,6 @@ describe("P2: 経路・物理経路 (Route & Physical Path) 単体・統合テ�
     expect(revRoute.stops[0].stationId).toBe("station-4");
     expect(revRoute.stops[3].stationId).toBe("station-1");
     expect(revRoute.directionName).toBe("上り");
-    expect(revRoute.lineSections[0].lineId).toBe(lineB.id);
-    expect(revRoute.lineSections[1].lineId).toBe(lineA.id);
   });
 
   it("経路変更時に参照中の運行を「要確認 (requiresReview)」に設定する", () => {

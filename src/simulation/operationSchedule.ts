@@ -2,10 +2,13 @@ import type { MapState } from "./model";
 import {
   formatTimeWithDayOffset,
   getAbsoluteTimeSeconds,
+  type Line,
   type Operation,
+  type OperationLineAssignment,
   type OperationStopTime,
   type Route,
   type ServiceCalendar,
+  type ServiceSystem,
 } from "./serviceModel";
 
 export function validateServiceCalendar(calendar: ServiceCalendar): void {
@@ -28,6 +31,42 @@ export function validateServiceCalendar(calendar: ServiceCalendar): void {
   }
   if (calendar.startDate && calendar.endDate && calendar.startDate > calendar.endDate) {
     throw new Error("ERR_INVALID_CALENDAR: 開始日は終了日以前である必要があります");
+  }
+}
+
+export function validateOperationLineAssignments(
+  assignments: OperationLineAssignment[] | undefined,
+  lines: Record<string, Line>,
+  serviceSystems: Record<string, ServiceSystem>
+): void {
+  if (!assignments || assignments.length === 0) return;
+
+  const seenLineIds = new Set<string>();
+  for (const a of assignments) {
+    if (!a || typeof a !== "object" || !a.lineId) {
+      throw new Error("ERR_INVALID_ASSIGNMENT: 路線IDが不正です");
+    }
+    if (seenLineIds.has(a.lineId)) {
+      throw new Error(`ERR_DUPLICATE_LINE_ASSIGNMENT: 路線 (${a.lineId}) への重複所属はできません`);
+    }
+    seenLineIds.add(a.lineId);
+
+    const line = lines[a.lineId];
+    if (!line) {
+      throw new Error(`ERR_LINE_NOT_FOUND: 所属先路線 (${a.lineId}) が存在しません`);
+    }
+
+    if (a.serviceSystemId) {
+      const sys = serviceSystems[a.serviceSystemId];
+      if (!sys) {
+        throw new Error(`ERR_SERVICE_SYSTEM_NOT_FOUND: 所属先系統 (${a.serviceSystemId}) が存在しません`);
+      }
+      if (sys.lineId !== a.lineId) {
+        throw new Error(
+          `ERR_SYSTEM_LINE_MISMATCH: 系統「${sys.name}」の親路線 (${sys.lineId}) が指定路線 (${a.lineId}) と一致しません`
+        );
+      }
+    }
   }
 }
 
@@ -122,22 +161,25 @@ export function createOperation(
     id?: string;
     name: string;
     operationNumber?: string;
-    routeId: string;
+    routeId?: string;
     calendar: ServiceCalendar;
-    stopTimes: OperationStopTime[];
+    stopTimes?: OperationStopTime[];
+    lineAssignments?: OperationLineAssignment[];
     description?: string;
   }
 ): { state: MapState; operation: Operation } {
   const name = payload.name.trim();
   if (!name) throw new Error("運行名を入力してください");
 
-  const route = state.routes[payload.routeId];
-  if (!route) {
-    throw new Error(`ERR_ROUTE_NOT_FOUND: 指定された経路 (${payload.routeId}) が存在しません`);
-  }
-
   validateServiceCalendar(payload.calendar);
-  validateOperationStopTimes(payload.stopTimes, route);
+  if (payload.routeId) {
+    const route = state.routes[payload.routeId];
+    if (!route) throw new Error(`ERR_ROUTE_NOT_FOUND: 指定された経路 (${payload.routeId}) が存在しません`);
+    validateOperationStopTimes(payload.stopTimes || [], route);
+  } else if (payload.stopTimes && payload.stopTimes.length > 0) {
+    throw new Error("ERR_ROUTE_REQUIRED: 経路未設定の運行には時刻を設定できません");
+  }
+  validateOperationLineAssignments(payload.lineAssignments, state.lines, state.serviceSystems);
 
   const id = payload.id || `op-${state.nextOperationId++}`;
   if (state.operations[id]) throw new Error(`運行ID ${id} は既に存在します`);
@@ -149,7 +191,8 @@ export function createOperation(
     operationNumber: payload.operationNumber?.trim() || undefined,
     routeId: payload.routeId,
     calendar: structuredClone(payload.calendar),
-    stopTimes: structuredClone(payload.stopTimes),
+    stopTimes: structuredClone(payload.stopTimes || []),
+    lineAssignments: payload.lineAssignments ? structuredClone(payload.lineAssignments) : undefined,
     description: payload.description?.trim() || undefined,
     requiresReview: false,
     createdAtGameTimeMs: now,
@@ -169,6 +212,7 @@ export function updateOperation(
     routeId?: string;
     calendar?: ServiceCalendar;
     stopTimes?: OperationStopTime[];
+    lineAssignments?: OperationLineAssignment[];
     description?: string;
     markReviewed?: boolean;
   }
@@ -179,8 +223,8 @@ export function updateOperation(
   }
 
   const targetRouteId = payload.routeId ?? operation.routeId;
-  const route = state.routes[targetRouteId];
-  if (!route) {
+  const route = targetRouteId ? state.routes[targetRouteId] : undefined;
+  if (targetRouteId && !route) {
     throw new Error(`ERR_ROUTE_NOT_FOUND: 指定された経路 (${targetRouteId}) が存在しません`);
   }
 
@@ -203,16 +247,74 @@ export function updateOperation(
     operation.calendar = structuredClone(payload.calendar);
   }
   if (payload.stopTimes !== undefined) {
+    if (!route) throw new Error("ERR_ROUTE_REQUIRED: 時刻設定には経路が必要です");
     validateOperationStopTimes(payload.stopTimes, route);
     operation.stopTimes = structuredClone(payload.stopTimes);
   } else if (payload.routeId !== undefined) {
+    if (!route) throw new Error("ERR_ROUTE_REQUIRED: 経路が必要です");
     validateOperationStopTimes(operation.stopTimes, route);
+  }
+  if (payload.lineAssignments !== undefined) {
+    validateOperationLineAssignments(payload.lineAssignments, state.lines, state.serviceSystems);
+    operation.lineAssignments = structuredClone(payload.lineAssignments);
   }
 
   if (payload.markReviewed === true) {
     operation.requiresReview = false;
   }
 
+  operation.updatedAtGameTimeMs = state.clock.currentTimeMs;
+  return { state, operation };
+}
+
+export function assignOperationClassification(
+  state: MapState,
+  payload: {
+    operationId: string;
+    lineId: string;
+    serviceSystemId?: string;
+  }
+): { state: MapState; operation: Operation } {
+  const operation = state.operations[payload.operationId];
+  if (!operation) {
+    throw new Error(`ERR_OPERATION_NOT_FOUND: 指定された運行 (${payload.operationId}) が存在しません`);
+  }
+  const currentAssignments = operation.lineAssignments ? [...operation.lineAssignments] : [];
+  const existingIdx = currentAssignments.findIndex((a) => a.lineId === payload.lineId);
+  if (existingIdx >= 0) {
+    currentAssignments[existingIdx] = {
+      lineId: payload.lineId,
+      serviceSystemId: payload.serviceSystemId,
+    };
+  } else {
+    currentAssignments.push({
+      lineId: payload.lineId,
+      serviceSystemId: payload.serviceSystemId,
+    });
+  }
+  validateOperationLineAssignments(currentAssignments, state.lines, state.serviceSystems);
+  operation.lineAssignments = currentAssignments;
+  operation.updatedAtGameTimeMs = state.clock.currentTimeMs;
+  return { state, operation };
+}
+
+export function unassignOperationClassification(
+  state: MapState,
+  payload: {
+    operationId: string;
+    lineId: string;
+  }
+): { state: MapState; operation: Operation } {
+  const operation = state.operations[payload.operationId];
+  if (!operation) {
+    throw new Error(`ERR_OPERATION_NOT_FOUND: 指定された運行 (${payload.operationId}) が存在しません`);
+  }
+  if (operation.lineAssignments) {
+    operation.lineAssignments = operation.lineAssignments.filter((a) => a.lineId !== payload.lineId);
+    if (operation.lineAssignments.length === 0) {
+      operation.lineAssignments = undefined;
+    }
+  }
   operation.updatedAtGameTimeMs = state.clock.currentTimeMs;
   return { state, operation };
 }
@@ -283,6 +385,7 @@ export function duplicateOperation(
     routeId: source.routeId,
     calendar: structuredClone(source.calendar),
     stopTimes: shiftedStopTimes,
+    lineAssignments: source.lineAssignments ? structuredClone(source.lineAssignments) : undefined,
     description: source.description,
   });
 }

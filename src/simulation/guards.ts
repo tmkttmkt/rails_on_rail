@@ -60,24 +60,18 @@ export function assertLineCanBeDeleted(state: MapState, lineId: string): void {
   for (const exec of Object.values(state.operationExecutions || {})) {
     if (exec.status === "reserved" || exec.status === "operating") {
       const op = state.operations[exec.operationId];
-      const route = op ? state.routes[op.routeId] : undefined;
-      if (route?.lineSections?.some((sec) => sec.lineId === lineId)) {
+      if (op?.lineAssignments?.some((a) => a.lineId === lineId)) {
         throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 路線「${line.name}」は予約中・運行中の列車実行「${exec.id}」から参照されているため削除できません。`);
       }
     }
   }
+
+  // Legacy trainRun protection
   for (const run of Object.values(state.trainRuns || {})) {
     if (run.status === "reserved" || run.status === "operating") {
       const sp = state.servicePatterns?.[run.servicePatternId];
-      if (sp?.lineIds?.includes(lineId) || run.lineId === lineId) {
-        throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 路線「${line.name}」は予約中・運行中の列車運行「${run.id}」から参照されているため削除できません。`);
-      }
-      const route = state.routes[run.routeId] || state.operationRoutes?.[run.routeId];
-      if (
-        route?.lineSections?.some((sec: any) => sec.lineId === lineId) ||
-        (route?.servicePatternId && state.servicePatterns?.[route.servicePatternId]?.lineIds?.includes(lineId))
-      ) {
-        throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 路線「${line.name}」は予約中・運行中の列車運行「${run.id}」から参照されているため削除できません。`);
+      if (sp?.lineIds?.includes(lineId)) {
+        throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 路線「${line.name}」は予約中・運行中の列車「${run.id}」から参照されているため削除できません。`);
       }
     }
   }
@@ -87,39 +81,39 @@ export function assertLineCanBeDeleted(state: MapState, lineId: string): void {
     throw new Error(`ERR_LINE_HAS_CHILD_SYSTEMS: 路線「${line.name}」には所属系統が存在するため削除できません。`);
   }
 
-  for (const route of Object.values(state.routes || {})) {
-    if (route.lineSections?.some((sec) => sec.lineId === lineId)) {
-      throw new Error(`ERR_REFERENCED_BY_ROUTE: 路線「${line.name}」は経路「${route.name}」の区間に参照されているため削除できません。`);
+  for (const op of Object.values(state.operations || {})) {
+    if (op.lineAssignments?.some((a) => a.lineId === lineId)) {
+      throw new Error(`ERR_REFERENCED_BY_OPERATION: 路線「${line.name}」は運行「${op.name}」から参照されているため削除できません。`);
     }
   }
 }
 
 export function assertServicePatternCanBeDeleted(state: MapState, serviceSystemId: string): void {
-  const sys = state.serviceSystems?.[serviceSystemId];
+  const sp = state.servicePatterns?.[serviceSystemId];
+  const sys = state.serviceSystems?.[serviceSystemId] || sp;
 
   // Active execution / train run protection
   for (const exec of Object.values(state.operationExecutions || {})) {
     if (exec.status === "reserved" || exec.status === "operating") {
       const op = state.operations[exec.operationId];
-      const route = op ? state.routes[op.routeId] : undefined;
-      if (route?.lineSections?.some((sec) => sec.serviceSystemId === serviceSystemId)) {
+      if (op?.lineAssignments?.some((a) => a.serviceSystemId === serviceSystemId)) {
         throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 系統「${sys?.name || serviceSystemId}」は予約中・運行中の列車実行「${exec.id}」から参照されているため削除できません。`);
       }
     }
   }
+
+  // Legacy trainRun protection
   for (const run of Object.values(state.trainRuns || {})) {
-    if (run.status === "reserved" || run.status === "operating") {
-      if (run.servicePatternId === serviceSystemId) {
-        throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 運行系統「${serviceSystemId}」は予約中・運行中の列車運行「${run.id}」から参照されているため削除できません。`);
-      }
+    if ((run.status === "reserved" || run.status === "operating") && run.servicePatternId === serviceSystemId) {
+      throw new Error(`ERR_REFERENCED_BY_ACTIVE_RUN: 系統「${sys?.name || serviceSystemId}」は予約中・運行中の列車「${run.id}」から参照されているため削除できません。`);
     }
   }
 
-  if (sys) {
-    for (const route of Object.values(state.routes || {})) {
-      if (route.lineSections?.some((sec) => sec.serviceSystemId === serviceSystemId)) {
-        throw new Error(`ERR_REFERENCED_BY_ROUTE: 系統「${sys.name}」は経路「${route.name}」の区間に参照されているため削除できません。`);
-      }
+  for (const op of Object.values(state.operations || {})) {
+    if (op.lineAssignments?.some((a) => a.serviceSystemId === serviceSystemId)) {
+      throw new Error(`ERR_REFERENCED_BY_OPERATION: 系統「${sys?.name || serviceSystemId}」は運行「${op.name}」から参照されているため削除できません。`);
     }
   }
 }
+
+export const assertServiceSystemCanBeDeleted = assertServicePatternCanBeDeleted;

@@ -35,6 +35,9 @@ export function validateOperationExecutionReservation(
     throw new Error(`ERR_OPERATION_NOT_FOUND: 指定された運行 (${input.operationId}) が存在しません。`);
   }
 
+  if (!operation.routeId) {
+    throw new Error("ERR_OPERATION_INCOMPLETE: 運行に経路が設定されていません。");
+  }
   const route = state.routes[operation.routeId];
   if (!route) {
     throw new Error(`ERR_ROUTE_NOT_FOUND: 指定された経路 (${operation.routeId}) が存在しません。`);
@@ -216,6 +219,9 @@ export function revalidateOperationExecutionDeparture(
     throw new Error(`ERR_OPERATION_NOT_FOUND: 運行 (${exec.operationId}) が存在しません。`);
   }
 
+  if (!op.routeId) {
+    throw new Error("ERR_OPERATION_INCOMPLETE: 運行に経路が設定されていません。");
+  }
   const route = state.routes[op.routeId];
   if (!route || route.status !== "active") {
     throw new Error(`ERR_ROUTE_NOT_FOUND: 経路 (${op.routeId}) が存在しないか無効です。`);

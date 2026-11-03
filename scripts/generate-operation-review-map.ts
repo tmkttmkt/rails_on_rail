@@ -90,10 +90,6 @@ run({
       { stationId: "station-3", trackId: "track-3", commercialType: "pass" },
       { stationId: "station-4", trackId: "track-4", commercialType: "stop", dwellSeconds: 30 },
     ],
-    lineSections: [
-      { fromStopSequence: 1, toStopSequence: 3, lineId: "line-aoba", serviceSystemId: "system-local" },
-      { fromStopSequence: 3, toStopSequence: 4, lineId: "line-kaihin", serviceSystemId: "system-through" },
-    ],
   },
 });
 run({
@@ -123,6 +119,10 @@ run({
       { routeStopId: down.stops[2].id, arrivalTime: "08:40:00", departureTime: "08:40:00", dayOffset: 0 },
       { routeStopId: down.stops[3].id, arrivalTime: "09:00:00", dayOffset: 0 },
     ],
+    lineAssignments: [
+      { lineId: "line-aoba", serviceSystemId: "system-local" },
+      { lineId: "line-kaihin", serviceSystemId: "system-through" },
+    ],
   },
 });
 run({
@@ -138,6 +138,10 @@ run({
       { routeStopId: up.stops[1].id, arrivalTime: "09:30:00", departureTime: "09:30:00", dayOffset: 0 },
       { routeStopId: up.stops[2].id, arrivalTime: "09:49:00", departureTime: "09:50:00", dayOffset: 0 },
       { routeStopId: up.stops[3].id, arrivalTime: "10:10:00", dayOffset: 0 },
+    ],
+    lineAssignments: [
+      { lineId: "line-aoba", serviceSystemId: "system-local" },
+      { lineId: "line-kaihin", serviceSystemId: "system-through" },
     ],
   },
 });

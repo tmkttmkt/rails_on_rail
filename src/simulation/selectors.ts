@@ -73,6 +73,24 @@ export function getOperationsByRoute(state: MapState, routeId: string): Operatio
   return Object.values(state.operations || {}).filter((op) => op.routeId === routeId);
 }
 
+export function getOperationsByLine(state: MapState, lineId: string): Operation[] {
+  return Object.values(state.operations || {}).filter((op) =>
+    op.lineAssignments?.some((a) => a.lineId === lineId)
+  );
+}
+
+export function getOperationsByServiceSystem(state: MapState, serviceSystemId: string): Operation[] {
+  return Object.values(state.operations || {}).filter((op) =>
+    op.lineAssignments?.some((a) => a.serviceSystemId === serviceSystemId)
+  );
+}
+
+export function getUnassignedOperations(state: MapState): Operation[] {
+  return Object.values(state.operations || {}).filter((op) =>
+    !op.lineAssignments || op.lineAssignments.length === 0
+  );
+}
+
 export function getVehicleDuties(state: MapState): VehicleDuty[] {
   return Object.values(state.vehicleDuties || {});
 }
@@ -141,6 +159,9 @@ export const selectors = {
   getOperations,
   getOperationById,
   getOperationsByRoute,
+  getOperationsByLine,
+  getOperationsByServiceSystem,
+  getUnassignedOperations,
   getVehicleDuties,
   getVehicleDutyById,
   getEligibleRoutesForPlacement,

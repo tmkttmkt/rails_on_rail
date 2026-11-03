@@ -1,18 +1,23 @@
 import type { MapState } from "./model";
 import {
   computeRouteLegs,
-  validateRouteLineSections,
   buildRouteStops,
   type CreateRouteStopInput,
-  type CreateRouteLineSectionInput,
 } from "./routeDomain";
 import {
+  validateOperationLineAssignments,
   validateOperationStopTimes,
   validateServiceCalendar,
 } from "./operationSchedule";
 import { validateDutyContinuity } from "./vehicleDuty";
 import { analyzeLine, sampleTrack } from "./geometry";
-import { formatTimeWithDayOffset, type OperationStopTime, type ServiceCalendar, type VehicleDutyAssignment } from "./serviceModel";
+import {
+  formatTimeWithDayOffset,
+  type OperationLineAssignment,
+  type OperationStopTime,
+  type ServiceCalendar,
+  type VehicleDutyAssignment,
+} from "./serviceModel";
 
 export interface InspectionIssue {
   code: string;
@@ -30,7 +35,6 @@ export interface RouteInspectionDetails {
   legCount: number;
   minimumRadiusM: number | null;
   stopsCount: number;
-  sectionsCount: number;
   tangentValid: boolean;
 }
 
@@ -75,7 +79,6 @@ export function inspectRouteCreation(
   state: MapState,
   params: {
     stops: CreateRouteStopInput[];
-    lineSections?: CreateRouteLineSectionInput[];
   }
 ): InspectionResult {
   const errors: InspectionIssue[] = [];
@@ -105,23 +108,6 @@ export function inspectRouteCreation(
 
     const minRadiusM = allRadii.length > 0 ? Math.min(...allRadii) : null;
 
-    let lineSectionsCount = 1;
-    if (params.lineSections && params.lineSections.length > 0) {
-      const dummySections = params.lineSections.map((sec, idx) => {
-        const fromStop = stops.find((s) => s.sequence === sec.fromStopSequence);
-        const toStop = stops.find((s) => s.sequence === sec.toStopSequence);
-        return {
-          id: `sec-${idx + 1}`,
-          fromStopId: fromStop?.id || "",
-          toStopId: toStop?.id || "",
-          lineId: sec.lineId,
-          serviceSystemId: sec.serviceSystemId,
-        };
-      });
-      validateRouteLineSections(dummySections, stops, state.lines, state.serviceSystems);
-      lineSectionsCount = dummySections.length;
-    }
-
     effects.push({
       type: "route.created",
       description: `全長 ${Math.round(totalDistanceM)} m、${stops.length} 駅の接線適合経路を生成します`,
@@ -139,7 +125,6 @@ export function inspectRouteCreation(
           legCount: legs.length,
           minimumRadiusM: minRadiusM,
           stopsCount: stops.length,
-          sectionsCount: lineSectionsCount,
           tangentValid: true,
         },
       },
@@ -159,6 +144,7 @@ export function inspectOperationCreation(
     routeId: string;
     calendar: ServiceCalendar;
     stopTimes: OperationStopTime[];
+    lineAssignments?: OperationLineAssignment[];
   }
 ): InspectionResult {
   const errors: InspectionIssue[] = [];
@@ -174,6 +160,7 @@ export function inspectOperationCreation(
   try {
     validateServiceCalendar(params.calendar);
     validateOperationStopTimes(params.stopTimes, route);
+    validateOperationLineAssignments(params.lineAssignments, state.lines, state.serviceSystems);
 
     const maxDayOffset = Math.max(...params.stopTimes.map((st) => st.dayOffset));
     const firstStop = params.stopTimes[0];
@@ -287,6 +274,10 @@ export function inspectExecutionEligibility(
     return { valid: false, errors, warnings, effects };
   }
 
+  if (!op.routeId) {
+    errors.push({ code: "ERR_OPERATION_INCOMPLETE", message: "運行に経路が設定されていません" });
+    return { valid: false, errors, warnings, effects };
+  }
   const route = state.routes[op.routeId];
   if (!route) {
     errors.push({ code: "ERR_ROUTE_NOT_FOUND", message: `運行の参照経路 (${op.routeId}) が存在しません` });
