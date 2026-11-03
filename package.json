@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "test": "vitest run",
-    "generate:operation-review-map": "vite-node scripts/generate-operation-review-map.ts"
+    "generate:operation-review-map": "vite-node scripts/generate-operation-review-map.ts",
+    "generate:large-operation-review-map": "vite-node scripts/generate-large-operation-review-map.ts"
   },
   "devDependencies": {
     "typescript": "^5.9.2",

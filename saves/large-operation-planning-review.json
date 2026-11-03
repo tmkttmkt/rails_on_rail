@@ -1,0 +1,3781 @@
+{
+  "formatVersion": 1,
+  "metadata": {
+    "name": "大規模運行計画レビューマップ",
+    "createdAt": "2026-08-23T11:21:44.459Z",
+    "updatedAt": "2026-08-23T11:21:44.459Z"
+  },
+  "state": {
+    "version": 11,
+    "clock": {
+      "currentTimeMs": 1787463900000,
+      "paused": true,
+      "speedMultiplier": 1
+    },
+    "tracks": [
+      {
+        "id": "track-1",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -3000,
+            "y": 0
+          },
+          {
+            "x": -2500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-2",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -2500,
+            "y": 0
+          },
+          {
+            "x": -2000,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-1",
+          "junctionId": "junction-1"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-3",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -2000,
+            "y": 0
+          },
+          {
+            "x": -1500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-2",
+          "junctionId": "junction-2"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-4",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1500,
+            "y": 0
+          },
+          {
+            "x": -1000,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-3",
+          "junctionId": "junction-3"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-5",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1000,
+            "y": 0
+          },
+          {
+            "x": -500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-4",
+          "junctionId": "junction-4"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-6",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -500,
+            "y": 0
+          },
+          {
+            "x": 0,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-5",
+          "junctionId": "junction-5"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-7",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-6",
+          "junctionId": "junction-6"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-8",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 500,
+            "y": 0
+          },
+          {
+            "x": 1000,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-7",
+          "junctionId": "junction-7"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-9",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 1000,
+            "y": 0
+          },
+          {
+            "x": 1500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-8",
+          "junctionId": "junction-8"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-10",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 1500,
+            "y": 0
+          },
+          {
+            "x": 2000,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-9",
+          "junctionId": "junction-9"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-11",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 2000,
+            "y": 0
+          },
+          {
+            "x": 2500,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-10",
+          "junctionId": "junction-10"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-12",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 2500,
+            "y": 0
+          },
+          {
+            "x": 3000,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "startConnection": {
+          "trackId": "track-11",
+          "junctionId": "junction-11"
+        },
+        "engineering": {
+          "designSpeedKmh": 80,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 500,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-13",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 450
+          },
+          {
+            "x": -800,
+            "y": 450
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-14",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 505
+          },
+          {
+            "x": -800,
+            "y": 505
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-15",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 560
+          },
+          {
+            "x": -800,
+            "y": 560
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-16",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 615
+          },
+          {
+            "x": -800,
+            "y": 615
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-17",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 670
+          },
+          {
+            "x": -800,
+            "y": 670
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-18",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 725
+          },
+          {
+            "x": -800,
+            "y": 725
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-19",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 780
+          },
+          {
+            "x": -800,
+            "y": 780
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-20",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 835
+          },
+          {
+            "x": -800,
+            "y": 835
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-21",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 890
+          },
+          {
+            "x": -800,
+            "y": 890
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-22",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": -1800,
+            "y": 945
+          },
+          {
+            "x": -800,
+            "y": 945
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1000,
+              "cantMm": 0
+            }
+          ]
+        }
+      }
+    ],
+    "trackGroups": [],
+    "junctions": [
+      {
+        "id": "junction-1",
+        "position": {
+          "x": -2500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-2",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-1",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-2",
+        "position": {
+          "x": -2000,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-3",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-2",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-3",
+        "position": {
+          "x": -1500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-4",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-3",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-4",
+        "position": {
+          "x": -1000,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-5",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-4",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-5",
+        "position": {
+          "x": -500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-6",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-5",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-6",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-7",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-6",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-7",
+        "position": {
+          "x": 500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-8",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-7",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-8",
+        "position": {
+          "x": 1000,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-9",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-8",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-9",
+        "position": {
+          "x": 1500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-10",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-9",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-10",
+        "position": {
+          "x": 2000,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-11",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-10",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      },
+      {
+        "id": "junction-11",
+        "position": {
+          "x": 2500,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-12",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-11",
+            "location": "end",
+            "distanceM": 500
+          }
+        ]
+      }
+    ],
+    "stations": [
+      {
+        "id": "station-1",
+        "name": "中央北",
+        "position": {
+          "x": -750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-1-sp-1",
+            "trackId": "track-5",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": -920,
+              "y": 0
+            },
+            "endPosition": {
+              "x": -580,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-2",
+        "name": "中央南",
+        "position": {
+          "x": -250,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-2-sp-1",
+            "trackId": "track-6",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": -420,
+              "y": 0
+            },
+            "endPosition": {
+              "x": -80,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-3",
+        "name": "東環状",
+        "position": {
+          "x": 750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-3-sp-1",
+            "trackId": "track-8",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": 580,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 920,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-4",
+        "name": "西環状",
+        "position": {
+          "x": -1750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-4-sp-1",
+            "trackId": "track-3",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": -1920,
+              "y": 0
+            },
+            "endPosition": {
+              "x": -1580,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-5",
+        "name": "北新都心",
+        "position": {
+          "x": -2750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-5-sp-1",
+            "trackId": "track-1",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": -2920,
+              "y": 0
+            },
+            "endPosition": {
+              "x": -2580,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-6",
+        "name": "空港",
+        "position": {
+          "x": 1750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-6-sp-1",
+            "trackId": "track-10",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": 1580,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 1920,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      },
+      {
+        "id": "station-7",
+        "name": "貨物ターミナル",
+        "position": {
+          "x": 2750,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-7-sp-1",
+            "trackId": "track-12",
+            "startDistanceM": 80,
+            "endDistanceM": 420,
+            "startPosition": {
+              "x": 2580,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 2920,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      }
+    ],
+    "lines": {
+      "line-loop": {
+        "id": "line-loop",
+        "name": "中央環状線",
+        "code": "CL",
+        "color": "#2563eb",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "line-north": {
+        "id": "line-north",
+        "name": "北部線",
+        "code": "NB",
+        "color": "#16a34a",
+        "displayOrder": 2,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "line-airport": {
+        "id": "line-airport",
+        "name": "空港線",
+        "code": "AP",
+        "color": "#ea580c",
+        "displayOrder": 3,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "line-freight": {
+        "id": "line-freight",
+        "name": "臨港貨物線",
+        "code": "FR",
+        "color": "#64748b",
+        "displayOrder": 4,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "serviceSystems": {
+      "sys-loop-local": {
+        "id": "sys-loop-local",
+        "lineId": "line-loop",
+        "name": "環状各停",
+        "shortName": "各停",
+        "color": "#60a5fa",
+        "description": "環状各停の確認用系統",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "sys-loop-rapid": {
+        "id": "sys-loop-rapid",
+        "lineId": "line-loop",
+        "name": "環状快速",
+        "shortName": "快速",
+        "color": "#1d4ed8",
+        "description": "環状快速の確認用系統",
+        "displayOrder": 2,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "sys-north-local": {
+        "id": "sys-north-local",
+        "lineId": "line-north",
+        "name": "北部各停",
+        "shortName": "各停",
+        "color": "#4ade80",
+        "description": "北部各停の確認用系統",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "sys-north-through": {
+        "id": "sys-north-through",
+        "lineId": "line-north",
+        "name": "環状直通",
+        "shortName": "直通",
+        "color": "#15803d",
+        "description": "環状直通の確認用系統",
+        "displayOrder": 2,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "sys-airport-rapid": {
+        "id": "sys-airport-rapid",
+        "lineId": "line-airport",
+        "name": "空港快速",
+        "shortName": "空快",
+        "color": "#fb923c",
+        "description": "空港快速の確認用系統",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "sys-freight": {
+        "id": "sys-freight",
+        "lineId": "line-freight",
+        "name": "臨港貨物",
+        "shortName": "貨物",
+        "color": "#94a3b8",
+        "description": "臨港貨物の確認用系統",
+        "displayOrder": 1,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "routes": {
+      "route-loop-east": {
+        "id": "route-loop-east",
+        "name": "中央環状 東行",
+        "directionName": "外回り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-3",
+            "sequence": 3,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-5",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 500
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-2",
+          "station-3"
+        ],
+        "totalDistanceM": 1500,
+        "lengthM": 1500,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-loop-west": {
+        "id": "route-loop-west",
+        "name": "中央環状 西行",
+        "directionName": "内回り",
+        "stops": [
+          {
+            "id": "rstop-1-station-3",
+            "sequence": 1,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-1",
+            "sequence": 3,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-5",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 500
+          }
+        ],
+        "stationIds": [
+          "station-3",
+          "station-2",
+          "station-1"
+        ],
+        "totalDistanceM": 1500,
+        "lengthM": 1500,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-north-in": {
+        "id": "route-north-in",
+        "name": "北新都心・中央北",
+        "directionName": "上り",
+        "stops": [
+          {
+            "id": "rstop-1-station-5",
+            "sequence": 1,
+            "stationId": "station-5",
+            "trackId": "track-1",
+            "stopPointId": "station-5-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-4",
+            "sequence": 2,
+            "stationId": "station-4",
+            "trackId": "track-3",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-1",
+            "sequence": 3,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-1",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-4",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-5",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-5",
+          "station-4",
+          "station-1"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-north-out": {
+        "id": "route-north-out",
+        "name": "中央北・北新都心",
+        "directionName": "下り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-4",
+            "sequence": 2,
+            "stationId": "station-4",
+            "trackId": "track-3",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-5",
+            "sequence": 3,
+            "stationId": "station-5",
+            "trackId": "track-1",
+            "stopPointId": "station-5-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-5",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-4",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-1",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-4",
+          "station-5"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-airport-out": {
+        "id": "route-airport-out",
+        "name": "中央南・空港",
+        "directionName": "空港方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-2",
+            "sequence": 1,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-6",
+            "sequence": 3,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-2",
+          "station-3",
+          "station-6"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-airport-in": {
+        "id": "route-airport-in",
+        "name": "空港・中央南",
+        "directionName": "都心方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-6",
+            "sequence": 1,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-6",
+          "station-3",
+          "station-2"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-freight-out": {
+        "id": "route-freight-out",
+        "name": "中央南・貨物ターミナル",
+        "directionName": "臨港方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-2",
+            "sequence": 1,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-2-station-6",
+            "sequence": 2,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-7",
+            "sequence": 3,
+            "stationId": "station-7",
+            "trackId": "track-12",
+            "stopPointId": "station-7-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-9",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 2000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-11",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-12",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-2",
+          "station-6",
+          "station-7"
+        ],
+        "totalDistanceM": 3000,
+        "lengthM": 3000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-freight-in": {
+        "id": "route-freight-in",
+        "name": "貨物ターミナル・中央南",
+        "directionName": "都心方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-7",
+            "sequence": 1,
+            "stationId": "station-7",
+            "trackId": "track-12",
+            "stopPointId": "station-7-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-6",
+            "sequence": 2,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-12",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-11",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 2000
+          }
+        ],
+        "stationIds": [
+          "station-7",
+          "station-6",
+          "station-2"
+        ],
+        "totalDistanceM": 3000,
+        "lengthM": 3000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "operations": {
+      "op-loop-101": {
+        "id": "op-loop-101",
+        "name": "環状東回り101",
+        "operationNumber": "101",
+        "routeId": "route-loop-east",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-1",
+            "dayOffset": 0,
+            "departureTime": "06:00:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-2",
+            "dayOffset": 0,
+            "arrivalTime": "06:18:00",
+            "departureTime": "06:19:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-3",
+            "dayOffset": 0,
+            "arrivalTime": "06:38:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-loop",
+            "serviceSystemId": "sys-loop-local"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-loop-102": {
+        "id": "op-loop-102",
+        "name": "環状西回り102",
+        "operationNumber": "102",
+        "routeId": "route-loop-west",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-3",
+            "dayOffset": 0,
+            "departureTime": "06:45:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-2",
+            "dayOffset": 0,
+            "arrivalTime": "07:03:00",
+            "departureTime": "07:04:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-1",
+            "dayOffset": 0,
+            "arrivalTime": "07:22:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-loop",
+            "serviceSystemId": "sys-loop-local"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-north-201": {
+        "id": "op-north-201",
+        "name": "北部直通201",
+        "operationNumber": "201",
+        "routeId": "route-north-in",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-5",
+            "dayOffset": 0,
+            "departureTime": "07:10:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-4",
+            "dayOffset": 0,
+            "arrivalTime": "07:30:00",
+            "departureTime": "07:31:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-1",
+            "dayOffset": 0,
+            "arrivalTime": "07:52:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-north",
+            "serviceSystemId": "sys-north-through"
+          },
+          {
+            "lineId": "line-loop",
+            "serviceSystemId": "sys-loop-rapid"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-north-202": {
+        "id": "op-north-202",
+        "name": "北部各停202",
+        "operationNumber": "202",
+        "routeId": "route-north-out",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-1",
+            "dayOffset": 0,
+            "departureTime": "08:00:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-4",
+            "dayOffset": 0,
+            "arrivalTime": "08:20:00",
+            "departureTime": "08:21:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-5",
+            "dayOffset": 0,
+            "arrivalTime": "08:42:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-north",
+            "serviceSystemId": "sys-north-local"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-airport-301": {
+        "id": "op-airport-301",
+        "name": "空港快速301",
+        "operationNumber": "301",
+        "routeId": "route-airport-out",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-2",
+            "dayOffset": 0,
+            "departureTime": "09:00:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-3",
+            "dayOffset": 0,
+            "arrivalTime": "09:12:00",
+            "departureTime": "09:12:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-6",
+            "dayOffset": 0,
+            "arrivalTime": "09:24:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-airport",
+            "serviceSystemId": "sys-airport-rapid"
+          },
+          {
+            "lineId": "line-loop"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-airport-302": {
+        "id": "op-airport-302",
+        "name": "空港快速302",
+        "operationNumber": "302",
+        "routeId": "route-airport-in",
+        "calendar": {
+          "weekdays": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-6",
+            "dayOffset": 0,
+            "departureTime": "09:35:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-3",
+            "dayOffset": 0,
+            "arrivalTime": "09:47:00",
+            "departureTime": "09:47:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-2",
+            "dayOffset": 0,
+            "arrivalTime": "09:59:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-airport",
+            "serviceSystemId": "sys-airport-rapid"
+          },
+          {
+            "lineId": "line-loop"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-freight-501": {
+        "id": "op-freight-501",
+        "name": "臨港貨物501",
+        "operationNumber": "501",
+        "routeId": "route-freight-out",
+        "calendar": {
+          "weekdays": [
+            1,
+            3,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-2",
+            "dayOffset": 0,
+            "departureTime": "22:40:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-6",
+            "dayOffset": 0,
+            "arrivalTime": "23:00:00",
+            "departureTime": "23:00:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-7",
+            "dayOffset": 0,
+            "arrivalTime": "23:15:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-freight",
+            "serviceSystemId": "sys-freight"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-freight-502": {
+        "id": "op-freight-502",
+        "name": "臨港貨物502",
+        "operationNumber": "502",
+        "routeId": "route-freight-in",
+        "calendar": {
+          "weekdays": [
+            1,
+            3,
+            5
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-7",
+            "dayOffset": 0,
+            "departureTime": "23:30:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-6",
+            "dayOffset": 0,
+            "arrivalTime": "23:45:00",
+            "departureTime": "23:45:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-2",
+            "dayOffset": 1,
+            "arrivalTime": "00:05:00"
+          }
+        ],
+        "lineAssignments": [
+          {
+            "lineId": "line-freight",
+            "serviceSystemId": "sys-freight"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "op-unassigned-901": {
+        "id": "op-unassigned-901",
+        "name": "未所属耐久試験901",
+        "operationNumber": "901",
+        "routeId": "route-loop-east",
+        "calendar": {
+          "weekdays": [
+            6
+          ]
+        },
+        "stopTimes": [
+          {
+            "routeStopId": "rstop-1-station-1",
+            "dayOffset": 0,
+            "departureTime": "23:50:00"
+          },
+          {
+            "routeStopId": "rstop-2-station-2",
+            "dayOffset": 1,
+            "arrivalTime": "12:00:00",
+            "departureTime": "12:10:00"
+          },
+          {
+            "routeStopId": "rstop-3-station-3",
+            "dayOffset": 2,
+            "arrivalTime": "01:30:00"
+          }
+        ],
+        "requiresReview": false,
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "vehicleDuties": {
+      "duty-loop-a01": {
+        "id": "duty-loop-a01",
+        "name": "環状A01運用",
+        "assignments": [
+          {
+            "sequence": 1,
+            "operationId": "op-loop-101",
+            "serviceDayOffset": 0
+          },
+          {
+            "sequence": 2,
+            "operationId": "op-loop-102",
+            "serviceDayOffset": 0
+          }
+        ],
+        "defaultFormationId": "formation-1",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "duty-airport-a03": {
+        "id": "duty-airport-a03",
+        "name": "空港A03運用",
+        "assignments": [
+          {
+            "sequence": 1,
+            "operationId": "op-airport-301",
+            "serviceDayOffset": 0
+          },
+          {
+            "sequence": 2,
+            "operationId": "op-airport-302",
+            "serviceDayOffset": 0
+          }
+        ],
+        "defaultFormationId": "formation-3",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "duty-test-901": {
+        "id": "duty-test-901",
+        "name": "複数日試験901運用",
+        "assignments": [
+          {
+            "sequence": 1,
+            "operationId": "op-unassigned-901",
+            "serviceDayOffset": 0
+          }
+        ],
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "vehicleDutyExecutions": {
+      "duty-exec-1": {
+        "id": "duty-exec-1",
+        "vehicleDutyId": "duty-loop-a01",
+        "serviceDate": "2026-08-23",
+        "formationId": "formation-4",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "operationExecutions": {},
+    "operatingTrains": [],
+    "fleet": {
+      "operatorClasses": [
+        {
+          "id": "class-1",
+          "operatorId": "op-default",
+          "className": "テスト用仮想機関車",
+          "baseVehicleDesignId": "test-virtual-locomotive"
+        },
+        {
+          "id": "class-2",
+          "operatorId": "op-default",
+          "className": "汎用軽便二軸客車",
+          "baseVehicleDesignId": "generic-light-two-axle-coach"
+        }
+      ],
+      "vehicleUnits": [
+        {
+          "id": "vehicle-1",
+          "operatorClassId": "class-1",
+          "operatorNumber": "1"
+        },
+        {
+          "id": "vehicle-2",
+          "operatorClassId": "class-2",
+          "operatorNumber": "2"
+        },
+        {
+          "id": "vehicle-3",
+          "operatorClassId": "class-2",
+          "operatorNumber": "3"
+        },
+        {
+          "id": "vehicle-4",
+          "operatorClassId": "class-1",
+          "operatorNumber": "4"
+        },
+        {
+          "id": "vehicle-5",
+          "operatorClassId": "class-2",
+          "operatorNumber": "5"
+        },
+        {
+          "id": "vehicle-6",
+          "operatorClassId": "class-2",
+          "operatorNumber": "6"
+        },
+        {
+          "id": "vehicle-7",
+          "operatorClassId": "class-1",
+          "operatorNumber": "7"
+        },
+        {
+          "id": "vehicle-8",
+          "operatorClassId": "class-2",
+          "operatorNumber": "8"
+        },
+        {
+          "id": "vehicle-9",
+          "operatorClassId": "class-2",
+          "operatorNumber": "9"
+        },
+        {
+          "id": "vehicle-10",
+          "operatorClassId": "class-1",
+          "operatorNumber": "10"
+        },
+        {
+          "id": "vehicle-11",
+          "operatorClassId": "class-2",
+          "operatorNumber": "11"
+        },
+        {
+          "id": "vehicle-12",
+          "operatorClassId": "class-2",
+          "operatorNumber": "12"
+        }
+      ],
+      "formations": [
+        {
+          "id": "formation-1",
+          "name": "環状01編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-1",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-2",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-3",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "id": "formation-2",
+          "name": "北部02編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-4",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-5",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-6",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "id": "formation-3",
+          "name": "空港03編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-7",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-8",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-9",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        },
+        {
+          "id": "formation-4",
+          "name": "予備99編成",
+          "vehicles": [
+            {
+              "vehicleId": "vehicle-10",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-11",
+              "orientation": "forward"
+            },
+            {
+              "vehicleId": "vehicle-12",
+              "orientation": "forward"
+            }
+          ],
+          "warnings": []
+        }
+      ],
+      "trains": []
+    },
+    "vehiclePlacements": [
+      {
+        "id": "placement-formation-1",
+        "formationId": "formation-1",
+        "stationId": "station-1",
+        "trackId": "track-5",
+        "centerDistanceM": 250,
+        "occupiedStartDistanceM": 237.5,
+        "occupiedEndDistanceM": 262.5,
+        "orientation": "forward"
+      },
+      {
+        "id": "placement-formation-2",
+        "formationId": "formation-2",
+        "stationId": "station-5",
+        "trackId": "track-1",
+        "centerDistanceM": 250,
+        "occupiedStartDistanceM": 237.5,
+        "occupiedEndDistanceM": 262.5,
+        "orientation": "forward"
+      },
+      {
+        "id": "placement-formation-3",
+        "formationId": "formation-3",
+        "stationId": "station-2",
+        "trackId": "track-6",
+        "centerDistanceM": 250,
+        "occupiedStartDistanceM": 237.5,
+        "occupiedEndDistanceM": 262.5,
+        "orientation": "forward"
+      },
+      {
+        "id": "placement-formation-4",
+        "formationId": "formation-4",
+        "stationId": "station-4",
+        "trackId": "track-3",
+        "centerDistanceM": 250,
+        "occupiedStartDistanceM": 237.5,
+        "occupiedEndDistanceM": 262.5,
+        "orientation": "reversed"
+      }
+    ],
+    "operationRoutes": {
+      "route-loop-east": {
+        "id": "route-loop-east",
+        "name": "中央環状 東行",
+        "directionName": "外回り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-3",
+            "sequence": 3,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-5",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 500
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-2",
+          "station-3"
+        ],
+        "totalDistanceM": 1500,
+        "lengthM": 1500,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-loop-west": {
+        "id": "route-loop-west",
+        "name": "中央環状 西行",
+        "directionName": "内回り",
+        "stops": [
+          {
+            "id": "rstop-1-station-3",
+            "sequence": 1,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-2",
+            "sequence": 2,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-1",
+            "sequence": 3,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-5",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 500
+          }
+        ],
+        "stationIds": [
+          "station-3",
+          "station-2",
+          "station-1"
+        ],
+        "totalDistanceM": 1500,
+        "lengthM": 1500,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-north-in": {
+        "id": "route-north-in",
+        "name": "北新都心・中央北",
+        "directionName": "上り",
+        "stops": [
+          {
+            "id": "rstop-1-station-5",
+            "sequence": 1,
+            "stationId": "station-5",
+            "trackId": "track-1",
+            "stopPointId": "station-5-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-4",
+            "sequence": 2,
+            "stationId": "station-4",
+            "trackId": "track-3",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-1",
+            "sequence": 3,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-1",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-2",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-4",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-5",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-5",
+          "station-4",
+          "station-1"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-north-out": {
+        "id": "route-north-out",
+        "name": "中央北・北新都心",
+        "directionName": "下り",
+        "stops": [
+          {
+            "id": "rstop-1-station-1",
+            "sequence": 1,
+            "stationId": "station-1",
+            "trackId": "track-5",
+            "stopPointId": "station-1-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-4",
+            "sequence": 2,
+            "stationId": "station-4",
+            "trackId": "track-3",
+            "stopPointId": "station-4-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-3-station-5",
+            "sequence": 3,
+            "stationId": "station-5",
+            "trackId": "track-1",
+            "stopPointId": "station-5-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-5",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-4",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-3",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-2",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-1",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-1",
+          "station-4",
+          "station-5"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-airport-out": {
+        "id": "route-airport-out",
+        "name": "中央南・空港",
+        "directionName": "空港方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-2",
+            "sequence": 1,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-6",
+            "sequence": 3,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-2",
+          "station-3",
+          "station-6"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-airport-in": {
+        "id": "route-airport-in",
+        "name": "空港・中央南",
+        "directionName": "都心方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-6",
+            "sequence": 1,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-3",
+            "sequence": 2,
+            "stationId": "station-3",
+            "trackId": "track-8",
+            "stopPointId": "station-3-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-6",
+          "station-3",
+          "station-2"
+        ],
+        "totalDistanceM": 2000,
+        "lengthM": 2000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-freight-out": {
+        "id": "route-freight-out",
+        "name": "中央南・貨物ターミナル",
+        "directionName": "臨港方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-2",
+            "sequence": 1,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-2-station-6",
+            "sequence": 2,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-7",
+            "sequence": 3,
+            "stationId": "station-7",
+            "trackId": "track-12",
+            "stopPointId": "station-7-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-6",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-7",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-9",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 2000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "forward",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-11",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-12",
+                "direction": "forward",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          }
+        ],
+        "stationIds": [
+          "station-2",
+          "station-6",
+          "station-7"
+        ],
+        "totalDistanceM": 3000,
+        "lengthM": 3000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      },
+      "route-freight-in": {
+        "id": "route-freight-in",
+        "name": "貨物ターミナル・中央南",
+        "directionName": "都心方面",
+        "stops": [
+          {
+            "id": "rstop-1-station-7",
+            "sequence": 1,
+            "stationId": "station-7",
+            "trackId": "track-12",
+            "stopPointId": "station-7-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "stop",
+            "dwellSeconds": 30
+          },
+          {
+            "id": "rstop-2-station-6",
+            "sequence": 2,
+            "stationId": "station-6",
+            "trackId": "track-10",
+            "stopPointId": "station-6-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          },
+          {
+            "id": "rstop-3-station-2",
+            "sequence": 3,
+            "stationId": "station-2",
+            "trackId": "track-6",
+            "stopPointId": "station-2-sp-1",
+            "stopPointIndex": 0,
+            "distanceM": 250,
+            "commercialType": "pass",
+            "dwellSeconds": 0
+          }
+        ],
+        "legs": [
+          {
+            "fromStopSequence": 1,
+            "toStopSequence": 2,
+            "tracks": [
+              {
+                "trackId": "track-12",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-11",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 1000
+          },
+          {
+            "fromStopSequence": 2,
+            "toStopSequence": 3,
+            "tracks": [
+              {
+                "trackId": "track-10",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 250,
+                "lengthM": 250
+              },
+              {
+                "trackId": "track-9",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-8",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-7",
+                "direction": "reversed",
+                "startDistanceM": 0,
+                "endDistanceM": 500,
+                "lengthM": 500
+              },
+              {
+                "trackId": "track-6",
+                "direction": "reversed",
+                "startDistanceM": 250,
+                "endDistanceM": 500,
+                "lengthM": 250
+              }
+            ],
+            "junctionIds": [],
+            "totalDistanceM": 2000
+          }
+        ],
+        "stationIds": [
+          "station-7",
+          "station-6",
+          "station-2"
+        ],
+        "totalDistanceM": 3000,
+        "lengthM": 3000,
+        "status": "active",
+        "createdAtGameTimeMs": -2208967200000,
+        "updatedAtGameTimeMs": -2208967200000
+      }
+    },
+    "servicePatterns": {},
+    "stopPatterns": {},
+    "trainRuns": {},
+    "nextOperationRouteId": 1,
+    "nextServicePatternId": 1,
+    "nextStopPatternId": 1,
+    "nextTrainRunId": 1,
+    "nextTrackId": 23,
+    "nextTrackGroupId": 1,
+    "nextJunctionId": 12,
+    "nextStationId": 8,
+    "nextLineId": 1,
+    "nextServiceSystemId": 1,
+    "nextRouteId": 1,
+    "nextOperationId": 1,
+    "nextVehicleDutyId": 1,
+    "nextVehicleDutyExecutionId": 2,
+    "nextOperationExecutionId": 1,
+    "nextOperatingTrainId": 1,
+    "nextOperatorClassId": 3,
+    "nextVehicleUnitId": 13,
+    "nextFormationId": 5
+  }
+}
