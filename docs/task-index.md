@@ -13,6 +13,7 @@ updated: 2026-11-05
 
 | Status | Task | Epic |
 |---|---|---|
+| `review` | [OSMの鉄道データからマップを生成する](tasks/2026-11-05_import-osm-railway-data.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [転てつ器を一級の実体として導入する](tasks/2026-11-05_introduce-turnout-entity.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [大規模な運行計画レビューマップを用意する](tasks/2026-08-23_create-large-operation-planning-review-map.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [路線・系統・経路・運行・運用を再構築する](tasks/2026-08-16_structure-lines-service-systems-and-operations.md) | [Phase -1](epics/phase-minus-one.md) |

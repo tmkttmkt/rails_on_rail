@@ -2,3 +2,6 @@ node_modules/
 dist/
 *.log
 .claude/
+
+# OSM由来の生成物（ODbL継承義務を避けるためコミットしない）
+saves/osm-*.json
