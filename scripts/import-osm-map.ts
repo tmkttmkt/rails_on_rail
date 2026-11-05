@@ -520,7 +520,10 @@ const DEPOT_MIN_TOTAL_LENGTH_M = 300;
 const DEPOT_MIN_TRACK_LENGTH_M = 50;
 // 留置する部分は線路が並列している区間である。引上線や本線へ戻る首の部分は
 // 単独で伸びるため、横に仲間がいる区間だけを停車地点にする。
-const DEPOT_PARALLEL_LATERAL_M = 30;  // 仲間とみなす横方向の距離
+const DEPOT_PARALLEL_LATERAL_M = 20;  // 仲間とみなす横方向の距離
+// 連絡線や引上線も数本が並んで走るため、隣に1本あるだけでは留置線と区別できない。
+// 留置線群は多数が密に並ぶので、一定本数以上の隣接を求める。
+const DEPOT_MIN_NEIGHBOURS = 3;
 const DEPOT_SAMPLE_STEP_M = 10;
 const DEPOT_MIN_SPAN_M = 40;          // これ未満の並列区間は留置に使わない
 
@@ -535,7 +538,12 @@ function stablingSpan(points: Point[], others: Point[][]): { startM: number; end
   for (let index = 0; index <= steps; index += 1) {
     const alongM = (total * index) / steps;
     const sample = pointAlong(points, alongM);
-    const parallel = others.some((other) => nearestOnTrack(other, sample).distance <= DEPOT_PARALLEL_LATERAL_M);
+    let neighbours = 0;
+    for (const other of others) {
+      if (nearestOnTrack(other, sample).distance <= DEPOT_PARALLEL_LATERAL_M) neighbours += 1;
+      if (neighbours >= DEPOT_MIN_NEIGHBOURS) break;
+    }
+    const parallel = neighbours >= DEPOT_MIN_NEIGHBOURS;
     if (parallel) {
       if (runStart === undefined) runStart = alongM;
       if (alongM - runStart > bestEnd - bestStart) { bestStart = runStart; bestEnd = alongM; }
