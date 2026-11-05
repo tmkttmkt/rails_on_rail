@@ -3,6 +3,9 @@ import type { MapState, Point, Track, TrackJunctionPortLocation } from "./model"
 const CURVE_STEPS_PER_SEGMENT = 20;
 
 export const TANGENT_ANGLE_TOLERANCE_RAD = (5 * Math.PI) / 180; // 5 degrees tolerance for tangent continuity
+// 転てつ器が受け持つ接続点の許容角。カタログで最も急な6番（約9.5度）に
+// 上記の許容を足した値。診断用の上限であり、番数ごとの判定はコマンド層で行う。
+export const TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD = Math.atan(1 / 6) + TANGENT_ANGLE_TOLERANCE_RAD;
 
 export function calculateTangentAngleDifferenceRad(tangent1: Point, tangent2: Point): number {
   const u1 = normalize(tangent1);

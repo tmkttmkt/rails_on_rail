@@ -1,4 +1,4 @@
-import { analyzeLine, calculateTangentAngleDifferenceRad, closestPointOnSegment, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
+import { analyzeLine, TANGENT_ANGLE_TOLERANCE_RAD, TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD, calculateTangentAngleDifferenceRad, closestPointOnSegment, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
 import type { MapState, Point, TrackJunctionPortLocation } from "./model";
 import { buildOperationRoute } from "./pathfinding";
 
@@ -42,7 +42,7 @@ export interface MapTopologyInspection {
   invalidConnections: InvalidConnectionDetail[];
 }
 
-export function inspectTrackRadii(state: Pick<MapState, "tracks">): MapRadiusInspection {
+export function inspectTrackRadii(state: Pick<MapState, "tracks" | "junctions" | "turnouts">): MapRadiusInspection {
   const tracks = state.tracks.map((track): TrackRadiusInspection => ({
     trackId: track.id,
     geometry: track.geometry,
@@ -52,11 +52,23 @@ export function inspectTrackRadii(state: Pick<MapState, "tracks">): MapRadiusIns
   return {
     tracks,
     minimumRadiusM: finiteRadii.length > 0 ? Math.min(...finiteRadii) : null,
-    topology: inspectTopology(state as Pick<MapState, "tracks" | "junctions">),
+    topology: inspectTopology(state),
   };
 }
 
-function inspectTopology(state: Pick<MapState, "tracks" | "junctions">): MapTopologyInspection {
+// 転てつ器が受け持つ接続点では角度変化を許容する。平坦な継目の5度制限は
+// 角度を扱う装置が無いことを前提としており、転てつ器はその装置そのものである。
+//
+// ここでは最も急な番数を包含する一律の許容を使う。番数ごとの精密な判定は
+// 転てつ器カタログを持つコマンド層（turnout.attach）が行う。検査層を
+// カタログから切り離すのは、vite.config.ts がこのモジュールを取り込んでおり
+// YAML依存を持ち込めないためでもある。
+function junctionToleranceRad(state: Pick<MapState, "turnouts">, junctionId: string): number {
+  const governed = (state.turnouts ?? []).some((item) => item.junctionId === junctionId);
+  return governed ? TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD : TANGENT_ANGLE_TOLERANCE_RAD;
+}
+
+function inspectTopology(state: Pick<MapState, "tracks" | "junctions" | "turnouts">): MapTopologyInspection {
   const adjacency = new Map(state.tracks.map((track) => [track.id, new Set<string>()]));
   const connectedEnds = new Set<string>();
   const invalidConnections: InvalidConnectionDetail[] = [];
@@ -79,7 +91,7 @@ function inspectTopology(state: Pick<MapState, "tracks" | "junctions">): MapTopo
           const tangent2 = getTrackPortTangent(track2, other.location, other.distanceM);
           const angleDiffRad = calculateTangentAngleDifferenceRad(tangent1, tangent2);
           angleDiffDeg = angleDiffRad * (180 / Math.PI);
-          isContinuous = isTangentContinuous(tangent1, tangent2);
+          isContinuous = isTangentContinuous(tangent1, tangent2, junctionToleranceRad(state, junction.id));
         }
 
         if (isContinuous) {

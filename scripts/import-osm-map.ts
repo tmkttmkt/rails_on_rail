@@ -152,7 +152,7 @@ for (const [nodeId, list] of edgesAtNode) {
 }
 
 // ---- 辺を直進で連鎖させ「通し経路」にまとめる ---------------------------
-interface Route { id: number; nodes: number[] }
+interface Route { id: number; nodes: number[]; edgeIds: number[] }
 const routeOfEdge = new Map<number, number>();
 const routes: Route[] = [];
 for (const seed of edges) {
@@ -187,7 +187,7 @@ for (const seed of edges) {
     const sequence = forward ? edge.nodes : [...edge.nodes].reverse();
     for (const id of sequence) if (nodes[nodes.length - 1] !== id) nodes.push(id);
   }
-  const route: Route = { id: routes.length, nodes };
+  const route: Route = { id: routes.length, nodes, edgeIds: chain.map((c) => c.edge.id) };
   routes.push(route);
   for (const { edge } of chain) routeOfEdge.set(edge.id, route.id);
 }
@@ -197,34 +197,26 @@ const branchNodeCount = [...divergingAt.values()].filter((list) => list.length >
 console.log(`OSM: way=${osmWays.length} node=${osmNodes.size}`);
 console.log(`分解: 辺=${edges.length} 通し経路=${routes.length} キーノード=${keyNodeCount} 分岐を持つ節点=${branchNodeCount}`);
 
-// ---- 転てつ器形式の選定 -------------------------------------------------
-// デジタイズされた発散角に最も近い番数を選ぶ。
-const turnoutTypes = [...trackCatalog.turnoutTypes].sort((a, b) => a.frogNumber - b.frogNumber);
-function chooseTurnoutType(divergenceDeg: number): string {
-  let best = turnoutTypes[0];
-  let bestGap = Infinity;
-  for (const type of turnoutTypes) {
-    const typeAngle = (Math.atan(1 / type.frogNumber) * 180) / Math.PI;
-    const gap = Math.abs(typeAngle - divergenceDeg);
-    if (gap < bestGap) { bestGap = gap; best = type; }
+// ---- 線形の組み立て -----------------------------------------------------
+// 辺ごとに簡略化して連結する。キーノード（分岐・終端）は辺の境界なので
+// 必ず頂点として残り、接続の転記で位置がずれない。
+function routePolyline(route: Route): Point[] {
+  const points: Point[] = [];
+  let cursor = 0;
+  for (const nodeId of route.nodes) void nodeId;
+  // route.nodes を辺の境界で切り分ける
+  for (const edgeId of route.edgeIds) {
+    const edge = edges[edgeId];
+    const span = edge.nodes.length;
+    const slice = route.nodes.slice(cursor, cursor + span);
+    cursor += span - 1;
+    const simplified = simplify(slice.map(project), SIMPLIFY_TOLERANCE_M);
+    for (const point of simplified) {
+      const last = points[points.length - 1];
+      if (!last || Math.hypot(point.x - last.x, point.y - last.y) > 0.01) points.push(point);
+    }
   }
-  return best.id;
-}
-
-// ---- 線路の構築 ---------------------------------------------------------
-let state: MapState = createInitialState();
-const run = (command: MapCommand): void => { state = executeCommand(state, command).state; };
-
-const trackIdOfRoute = new Map<number, string>();
-const placedRoutes = new Set<number>();
-const stats = { tracks: 0, turnouts: 0, turnoutFailed: 0, routeFailed: 0, cycleSkipped: 0, curveFallback: 0, implausible: 0, attachGaveUp: 0 };
-
-function routePoints(route: Route, dropFrom: Point | undefined, dropRadiusM: number): Point[] {
-  const points = route.nodes.map(project);
-  if (!dropFrom) return points;
-  let index = 0;
-  while (index < points.length - 1 && Math.hypot(points[index].x - dropFrom.x, points[index].y - dropFrom.y) < dropRadiusM) index += 1;
-  return points.slice(index);
+  return points;
 }
 
 function polylineLength(points: Point[]): number {
@@ -235,138 +227,99 @@ function polylineLength(points: Point[]): number {
   return total;
 }
 
-// 生成された線形が入力ポリラインから大きく外れていないか検査する。
-function isPlausible(trackId: string, inputLengthM: number): boolean {
-  const track = state.tracks.find((item) => item.id === trackId);
-  if (!track) return false;
-  if (polylineLength(track.points) > inputLengthM * MAX_LENGTH_RATIO + 1) return false;
-  const radius = track.engineering.builtMinimumRadiusM;
-  return radius === null || radius >= MIN_PLAUSIBLE_RADIUS_M;
-}
+let state: MapState = createInitialState();
+const run = (command: MapCommand): void => { state = executeCommand(state, command).state; };
+const stats = {
+  tracks: 0, trackFailed: 0, implausible: 0,
+  joints: 0, turnouts: 0, jointFailed: 0, turnoutFailed: 0, passingSkipped: 0,
+};
 
-function tryCreate(points: Point[], geometry: "straight" | "curve", attachTrackId: string | undefined): string | undefined {
+// ---- Phase 1: 幾何だけを全線敷設する（接続は付けない） -----------------
+const trackIdOfRoute = new Map<number, string>();
+for (const route of routes) {
+  const points = routePolyline(route);
+  if (points.length < 2) { stats.trackFailed += 1; continue; }
   const id = `track-${state.nextTrackId}`;
   try {
-    run({
-      type: "track.create",
-      geometry,
-      points,
-      specification: SPECIFICATION,
-      designSpeedKmh: DEFAULT_SPEED_KMH,
-      ...(attachTrackId ? { startConnectionTrackId: attachTrackId } : {}),
-    });
+    run({ type: "track.create", geometry: "straight", points, specification: SPECIFICATION, designSpeedKmh: DEFAULT_SPEED_KMH });
   } catch {
-    return undefined;
+    stats.trackFailed += 1;
+    continue;
   }
-  if (isPlausible(id, polylineLength(points))) return id;
-  // 破綻した線形は残さず撤去する
-  try { run({ type: "track.delete", trackId: id }); } catch { /* 撤去できなければそのまま */ }
-  stats.implausible += 1;
-  return undefined;
-}
-
-function createRouteTrack(route: Route, attachTrackId: string | undefined, startPoint: Point | undefined, reversed: boolean): boolean {
-  const ordered = reversed ? { ...route, nodes: [...route.nodes].reverse() } : route;
-  const tail = routePoints(ordered, startPoint, 1);
-  const raw = startPoint ? [startPoint, ...tail.filter((p) => Math.hypot(p.x - startPoint.x, p.y - startPoint.y) > 1)] : tail;
-  const points = simplify(raw, SIMPLIFY_TOLERANCE_M);
-  if (points.length < 2) return false;
-
-  // 1) ポリラインをそのまま残す straight で取り付ける
-  // 2) 駄目なら curve（接線を自動採用）。ただし妥当性検査を通る場合のみ
-  // 3) それも駄目なら接続せずに敷設する。形を壊すより接続を諦める
-  let id = attachTrackId ? tryCreate(points, "straight", attachTrackId) : undefined;
-  if (!id && attachTrackId) {
-    id = tryCreate(points, "curve", attachTrackId);
-    if (id) stats.curveFallback += 1;
+  const created = state.tracks.find((item) => item.id === id);
+  const radius = created?.engineering.builtMinimumRadiusM ?? null;
+  if (created && radius !== null && radius < MIN_PLAUSIBLE_RADIUS_M) {
+    try { run({ type: "track.delete", trackId: id }); } catch { /* noop */ }
+    stats.implausible += 1;
+    continue;
   }
-  if (!id) {
-    id = tryCreate(points, "straight", undefined);
-    if (id && attachTrackId) stats.attachGaveUp += 1;
-  }
-  if (!id) return false;
-
   trackIdOfRoute.set(route.id, id);
-  placedRoutes.add(route.id);
   stats.tracks += 1;
-  return true;
 }
+console.log(`Phase 1 敷設: 線路=${stats.tracks} 失敗=${stats.trackFailed} 半径不足で撤去=${stats.implausible}`);
 
-// 経路の端ノード集合（分岐を探すため）
-const routesByNode = new Map<number, number[]>();
+// ---- Phase 2: 共有ノードごとに接続を転記する ---------------------------
+// OSM側は共有ノードで接続を持っているので、復元ではなく転記である。
+const routesAtNode = new Map<number, number[]>();
 for (const route of routes) {
   for (const nodeId of route.nodes) {
     if (!isKeyNode(nodeId)) continue;
-    if (!routesByNode.has(nodeId)) routesByNode.set(nodeId, []);
-    if (!routesByNode.get(nodeId)!.includes(route.id)) routesByNode.get(nodeId)!.push(route.id);
+    if (!routesAtNode.has(nodeId)) routesAtNode.set(nodeId, []);
+    const list = routesAtNode.get(nodeId)!;
+    if (!list.includes(route.id)) list.push(route.id);
   }
 }
 
-// 幅優先で、置いた経路の上の分岐ノードから次の経路を生やす
-const queue: number[] = [];
-const seedOrder = [...routes].sort((a, b) => b.nodes.length - a.nodes.length);
-for (const seed of seedOrder) {
-  if (placedRoutes.has(seed.id)) continue;
-  if (!createRouteTrack(seed, undefined, undefined, false)) { stats.routeFailed += 1; continue; }
-  queue.push(seed.id);
+const isEndpointOf = (route: Route, nodeId: number): boolean =>
+  route.nodes[0] === nodeId || route.nodes[route.nodes.length - 1] === nodeId;
 
-  while (queue.length > 0) {
-    const currentId = queue.shift()!;
-    const current = routes[currentId];
-    const baseTrackId = trackIdOfRoute.get(currentId)!;
+for (const [nodeId, routeIds] of routesAtNode) {
+  const present = routeIds.filter((id) => trackIdOfRoute.has(id));
+  if (present.length < 2) continue;
+  const position = project(nodeId);
 
-    for (const nodeId of current.nodes) {
-      const diverging = divergingAt.get(nodeId);
-      if (!diverging || diverging.length === 0) continue;
-      const nodePoint = project(nodeId);
+  // 途中を通る経路があればそれを基準線にする。無ければ最初の経路を基準にする。
+  const passing = present.filter((id) => !isEndpointOf(routes[id], nodeId));
+  const baseRouteId = passing[0] ?? present[0];
+  const baseTrackId = trackIdOfRoute.get(baseRouteId)!;
 
-      for (const edgeId of diverging) {
-        const targetRouteId = routeOfEdge.get(edgeId);
-        if (targetRouteId === undefined || targetRouteId === currentId) continue;
-        if (placedRoutes.has(targetRouteId)) { stats.cycleSkipped += 1; continue; }
-        const target = routes[targetRouteId];
-        const reversed = target.nodes[0] !== nodeId;
-        if (reversed && target.nodes[target.nodes.length - 1] !== nodeId) continue;
+  for (const otherId of present) {
+    if (otherId === baseRouteId) continue;
+    if (!isEndpointOf(routes[otherId], nodeId)) { stats.passingSkipped += 1; continue; }
+    const otherTrackId = trackIdOfRoute.get(otherId)!;
 
-        // 分岐の向きと鋭さを測り、転てつ器を置く
-        const baseDirection = edgeDirectionAt(edges[edgeId], nodeId);
-        const partnerEdges = (edgesAtNode.get(nodeId) ?? []).filter((id) => id !== edgeId);
-        if (partnerEdges.length === 0) continue;
-        const throughDirection = edgeDirectionAt(edges[partnerEdges[0]], nodeId);
-        const divergenceDeg = Math.min(...partnerEdges.map((id) => collinearDeviationDeg(baseDirection, edgeDirectionAt(edges[id], nodeId))));
-        const cross = Math.sin(baseDirection - throughDirection);
-        const side = cross >= 0 ? "right" : "left";
-        const typeId = chooseTurnoutType(divergenceDeg);
-
-        const stubId = `track-${state.nextTrackId}`;
-        try {
-          run({ type: "turnout.create", trackId: baseTrackId, position: nodePoint, typeId, side, divergingLengthM: 0 });
-          stats.turnouts += 1;
-        } catch {
-          stats.turnoutFailed += 1;
-          continue;
-        }
-        const stub = state.tracks.find((item) => item.id === stubId)!;
-        const stubEnd = stub.points[stub.points.length - 1];
-        if (createRouteTrack(target, stubId, stubEnd, reversed)) queue.push(targetRouteId);
-        else stats.routeFailed += 1;
-      }
+    // 基準線もここで終わっているなら継目を試す。駄目なら転てつ器の新設。
+    if (isEndpointOf(routes[baseRouteId], nodeId)) {
+      try {
+        run({ type: "track.connect", trackId: baseTrackId, otherTrackId, position });
+        stats.joints += 1;
+        continue;
+      } catch { /* 継目にならなければ転てつ器へ */ }
+    }
+    try {
+      run({ type: "turnout.attach", trackId: baseTrackId, divergingTrackId: otherTrackId, position });
+      stats.turnouts += 1;
+    } catch {
+      if (isEndpointOf(routes[baseRouteId], nodeId)) stats.jointFailed += 1;
+      else stats.turnoutFailed += 1;
     }
   }
 }
+console.log(`Phase 2 転記: 継目=${stats.joints} 転てつ器=${stats.turnouts} 継目失敗=${stats.jointFailed} 転てつ器失敗=${stats.turnoutFailed} 途中どうしで未接続=${stats.passingSkipped}`);
 
 // ---- 結果 ---------------------------------------------------------------
-console.log(`構築: 線路=${stats.tracks} 転てつ器=${stats.turnouts} 転てつ器失敗=${stats.turnoutFailed} 経路失敗=${stats.routeFailed}`);
-console.log(`取り付け: curve退避=${stats.curveFallback} 破綻で撤去=${stats.implausible} 接続断念=${stats.attachGaveUp} 閉路のため未接続=${stats.cycleSkipped}`);
-const topology = inspectTrackRadii(state).topology;
-console.log(`接続成分=${topology.connectedComponents.length} 孤立線路=${topology.isolatedTrackIds.length} 不正接続=${topology.invalidConnections.length}`);
+const inspection = inspectTrackRadii(state);
+const topology = inspection.topology;
+console.log(`接続成分=${topology.connectedComponents.length} 孤立線路=${topology.isolatedTrackIds.length} 未接続端=${topology.unconnectedEndpoints.length} 接続漏れ候補=${topology.nearMisses.length} 不正接続=${topology.invalidConnections.length}`);
 const radii = state.tracks.map((t) => t.engineering.builtMinimumRadiusM).filter((v): v is number => typeof v === "number").sort((a, b) => a - b);
 const percentile = (p: number): number => radii[Math.min(radii.length - 1, Math.floor(radii.length * p))];
-console.log(`曲線半径: 最小=${radii[0]?.toFixed(1)} 5%=${percentile(0.05).toFixed(1)} 25%=${percentile(0.25).toFixed(0)} 中央=${percentile(0.5).toFixed(0)} m / 50 m未満=${radii.filter((v) => v < 50).length}本`);
+console.log(`曲線半径: 最小=${radii[0]?.toFixed(1)} 5%=${percentile(0.05).toFixed(1)} 中央=${percentile(0.5).toFixed(0)} m / 50 m未満=${radii.filter((v) => v < 50).length}本`);
 if (topology.connectedComponents.length > 1) {
   const sizes = topology.connectedComponents.map((c) => c.length).sort((a, b) => b - a);
   console.log(`成分サイズ上位: ${sizes.slice(0, 8).join(", ")}`);
 }
+void polylineLength;
+void trackCatalog;
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
 fs.writeFileSync(outputPath, serializeSaveFile(createSaveFile(saveName, state)), "utf8");

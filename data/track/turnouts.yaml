@@ -6,6 +6,15 @@ items:
   # 半径と制限速度はゲーム上のトレードオフを成立させるための暫定値であり、
   # 正式な工学値ではない。実測・規格資料による裏付けは今後行う。
 
+  - id: turnout-no6
+    name: 6番分岐器
+    status: draft
+    frogNumber: 6
+    divergingRadiusM: 100 # 分岐側の曲線半径。単位はm
+    divergingSpeedKmh: 20 # 分岐側の制限速度。単位はkm/h
+    description: 構内の最も急な分岐。用地が極端に狭い箇所で使う。
+    sources: []
+
   - id: turnout-no8
     name: 8番分岐器
     status: draft

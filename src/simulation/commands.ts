@@ -2,7 +2,7 @@ import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, t
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
 import { formationTemplateCatalog } from "../data/formationTemplateCatalog";
-import { analyzeLine, closestPointOnSegment, createParallelLines, getTrackPortTangent, getTrackTangentAtPosition, isTangentContinuous, polylineOverlapLength, recommendedCantMm, sampleTrack } from "./geometry";
+import { TANGENT_ANGLE_TOLERANCE_RAD, analyzeLine, calculateTangentAngleDifferenceRad, closestPointOnSegment, createParallelLines, getTrackPortTangent, getTrackTangentAtPosition, isTangentContinuous, polylineOverlapLength, recommendedCantMm, sampleTrack } from "./geometry";
 import { advanceOperatingTrains, createOperationRoute } from "./operations";
 import { assertAllAdjacentConnections, assertMechanicalConnection, formationWarnings, getFormationLengthM, type Formation, type Orientation, type Placement, type VehicleUnit } from "./fleet";
 import { assertStationCanBeDeleted, assertTrackCanBeDeletedOrShortened, assertServicePatternCanBeDeleted } from "./guards";
@@ -45,6 +45,8 @@ export type MapCommand =
   | { type: "track.create"; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
   | { type: "track.delete"; trackId: string }
   | { type: "turnout.create"; trackId: string; position: Point; typeId: string; side: TurnoutSide; divergingLengthM?: number }
+  | { type: "track.connect"; trackId: string; otherTrackId: string; position: Point }
+  | { type: "turnout.attach"; trackId: string; divergingTrackId: string; position: Point; typeId?: string }
   | { type: "turnout.delete"; turnoutId: string }
   | { type: "trackGroup.create"; trackIds: string[]; name?: string }
   | { type: "trackGroup.addTrack"; groupId: string; trackId: string }
@@ -125,6 +127,10 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       return createTracks(next, command);
     case "turnout.create":
       return createTurnout(next, command);
+    case "track.connect":
+      return connectTrackEnds(next, command);
+    case "turnout.attach":
+      return attachTurnout(next, command);
     case "turnout.delete":
       return deleteTurnout(next, command);
     case "track.delete": {
@@ -1216,6 +1222,8 @@ function nearestPointOnPath(points: Point[], point: Point): Point {
 // 生成物であるため、接線連続性は定義上かならず満たされる。
 const TURNOUT_ARC_STEPS = 16;
 const TURNOUT_DEFAULT_DIVERGING_LENGTH_M = 120;
+const TURNOUT_ATTACH_MAX_GAP_M = 5;
+const TRACK_CONNECT_MAX_GAP_M = 2;
 
 export function buildDivergingPath(
   origin: Point,
@@ -1303,6 +1311,129 @@ function createTurnout(next: MapState, command: Extract<MapCommand, { type: "tur
   };
   next.turnouts.push(turnout);
   return { state: next, message: `${type.name}を${base.id}へ設置しました（分岐側 ${divergingId}）` };
+}
+
+// 継目: 既存の2線路を端点どうしで接続する。
+// 角度を扱う装置が無いため、接線連続（5度以内）を厳格に要求する。
+// 途中へ入る接続は転てつ器の新設であり turnout.attach を使う。
+function connectTrackEnds(next: MapState, command: Extract<MapCommand, { type: "track.connect" }>): CommandResult {
+  if (command.trackId === command.otherTrackId) throw new Error("同じ線路どうしは接続できません");
+  const first = requireTrack(next, command.trackId);
+  const second = requireTrack(next, command.otherTrackId);
+
+  const endpointOf = (track: Track): { location: "start" | "end"; distanceM: number; gapM: number } => {
+    const path = sampleTrack(track);
+    const startGap = Math.hypot(path[0].x - command.position.x, path[0].y - command.position.y);
+    const endPoint = path[path.length - 1];
+    const endGap = Math.hypot(endPoint.x - command.position.x, endPoint.y - command.position.y);
+    return startGap <= endGap
+      ? { location: "start", distanceM: 0, gapM: startGap }
+      : { location: "end", distanceM: pathLength(path), gapM: endGap };
+  };
+
+  const firstEnd = endpointOf(first);
+  const secondEnd = endpointOf(second);
+  for (const [track, end] of [[first, firstEnd], [second, secondEnd]] as const) {
+    if (end.gapM > TRACK_CONNECT_MAX_GAP_M) {
+      throw new Error(`${track.id}の端が接続位置から${end.gapM.toFixed(1)} m離れています。${TRACK_CONNECT_MAX_GAP_M} m以内で接続してください`);
+    }
+  }
+
+  const firstTangent = getTrackPortTangent(first, firstEnd.location, firstEnd.distanceM);
+  const secondTangent = getTrackPortTangent(second, secondEnd.location, secondEnd.distanceM);
+  if (!isTangentContinuous(firstTangent, secondTangent)) {
+    const deg = (calculateTangentAngleDifferenceRad(firstTangent, secondTangent) * 180) / Math.PI;
+    throw new Error(`接線方向が${deg.toFixed(1)}度ずれています。継目では接続できません。転てつ器の新設を検討してください`);
+  }
+
+  const junctionId = `junction-${next.nextJunctionId++}`;
+  next.junctions.push({
+    id: junctionId,
+    position: { ...command.position },
+    ports: [
+      { trackId: first.id, location: firstEnd.location, distanceM: firstEnd.distanceM },
+      { trackId: second.id, location: secondEnd.location, distanceM: secondEnd.distanceM },
+    ],
+  });
+  if (firstEnd.location === "start") first.startConnection = { trackId: second.id, junctionId };
+  else first.endConnection = { trackId: second.id, junctionId };
+  if (secondEnd.location === "start") second.startConnection = { trackId: first.id, junctionId };
+  else second.endConnection = { trackId: first.id, junctionId };
+
+  return { state: next, message: `${first.id}と${second.id}を継目で接続しました` };
+}
+
+// 既設線へ転てつ器を新設し、既存の線路を分岐側として接続する。
+// 分岐側スタブを生成する turnout.create と対になる操作。
+// 分岐点での角度は転てつ器が受け持つため、番数ぶんの角度変化を許容する。
+function attachTurnout(next: MapState, command: Extract<MapCommand, { type: "turnout.attach" }>): CommandResult {
+  const base = requireTrack(next, command.trackId);
+  const diverging = requireTrack(next, command.divergingTrackId);
+  if (base.id === diverging.id) throw new Error("同じ線路へ転てつ器を接続することはできません");
+
+  const basePath = sampleTrack(base);
+  const divergingPath = sampleTrack(diverging);
+  const located = locateOnPath(basePath, command.position);
+
+  // 分岐側は、分岐点に近い方の端で接続する
+  const startDistance = Math.hypot(divergingPath[0].x - located.point.x, divergingPath[0].y - located.point.y);
+  const endPoint = divergingPath[divergingPath.length - 1];
+  const endDistance = Math.hypot(endPoint.x - located.point.x, endPoint.y - located.point.y);
+  const divergingLocation: "start" | "end" = startDistance <= endDistance ? "start" : "end";
+  const divergingDistanceM = divergingLocation === "start" ? 0 : pathLength(divergingPath);
+  const gapM = Math.min(startDistance, endDistance);
+  if (gapM > TURNOUT_ATTACH_MAX_GAP_M) {
+    throw new Error(`分岐側線路の端が分岐点から${gapM.toFixed(1)} m離れています。${TURNOUT_ATTACH_MAX_GAP_M} m以内で接続してください`);
+  }
+
+  const baseTangent = getTrackPortTangent(base, located.location, located.distanceM);
+  const divergingTangent = getTrackPortTangent(diverging, divergingLocation, divergingDistanceM);
+  const angleRad = calculateTangentAngleDifferenceRad(baseTangent, divergingTangent);
+
+  const type = command.typeId
+    ? trackCatalog.getTurnoutType(command.typeId)
+    : selectTurnoutTypeForAngle(angleRad);
+  const frogAngleRad = Math.atan(1 / type.frogNumber);
+  if (angleRad > frogAngleRad + TANGENT_ANGLE_TOLERANCE_RAD) {
+    throw new Error(`分岐角${((angleRad * 180) / Math.PI).toFixed(1)}度は${type.name}では受けられません。より急な番数を指定してください`);
+  }
+
+  const junctionId = `junction-${next.nextJunctionId++}`;
+  next.junctions.push({
+    id: junctionId,
+    position: { ...located.point },
+    ports: [
+      { trackId: base.id, location: located.location, distanceM: located.distanceM },
+      { trackId: diverging.id, location: divergingLocation, distanceM: divergingDistanceM },
+    ],
+  });
+  if (divergingLocation === "start") diverging.startConnection = { trackId: base.id, junctionId };
+  else diverging.endConnection = { trackId: base.id, junctionId };
+
+  next.turnouts.push({
+    id: `turnout-${next.nextTurnoutId++}`,
+    junctionId,
+    typeId: type.id,
+    throughTrackId: base.id,
+    divergingTrackId: diverging.id,
+    side: Math.sin(Math.atan2(divergingTangent.y, divergingTangent.x) - Math.atan2(baseTangent.y, baseTangent.x)) >= 0 ? "right" : "left",
+  });
+  return { state: next, message: `${type.name}を${base.id}へ新設し${diverging.id}を接続しました` };
+}
+
+// 分岐角を受けられる最も緩い番数を選ぶ。
+// 番数の分岐角そのもので受けられる形式を優先し、どれも届かない場合にのみ
+// 測定誤差ぶんの許容を足して再探索する。許容は測定の緩みであって
+// 転てつ器の能力ではないため、能力として使わない。
+function selectTurnoutTypeForAngle(angleRad: number) {
+  const candidates = [...trackCatalog.turnoutTypes].sort((a, b) => b.frogNumber - a.frogNumber);
+  for (const type of candidates) {
+    if (Math.atan(1 / type.frogNumber) >= angleRad) return type;
+  }
+  for (const type of candidates) {
+    if (Math.atan(1 / type.frogNumber) + TANGENT_ANGLE_TOLERANCE_RAD >= angleRad) return type;
+  }
+  throw new Error(`分岐角${((angleRad * 180) / Math.PI).toFixed(1)}度を受けられる転てつ器がカタログにありません`);
 }
 
 function deleteTurnout(next: MapState, command: Extract<MapCommand, { type: "turnout.delete" }>): CommandResult {

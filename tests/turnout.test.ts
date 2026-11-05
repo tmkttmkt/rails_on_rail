@@ -107,6 +107,89 @@ describe("転てつ器", () => {
     validateMapState(after);
   });
 
+  it("既設線へ転てつ器を新設し、既存の線路を分岐側として接続できる", () => {
+    let state = baseState();
+    // 分岐点(500,0)から約7度で離れていく既存線路
+    const angle = (7 * Math.PI) / 180;
+    state = executeCommand(state, {
+      type: "track.create", geometry: "straight",
+      points: [{ x: 500, y: 0 }, { x: 500 + 300 * Math.cos(angle), y: 300 * Math.sin(angle) }],
+      specification: SPEC, designSpeedKmh: 40,
+    }).state;
+    expect(state.junctions).toHaveLength(0);
+
+    state = executeCommand(state, {
+      type: "turnout.attach", trackId: "track-1", divergingTrackId: "track-2", position: { x: 500, y: 0 },
+    }).state;
+
+    expect(state.turnouts).toHaveLength(1);
+    const turnout = state.turnouts[0];
+    expect(turnout.throughTrackId).toBe("track-1");
+    expect(turnout.divergingTrackId).toBe("track-2");
+    // 7度を受けられる最も緩い番数が選ばれる
+    expect(trackCatalog.getTurnoutType(turnout.typeId).frogNumber).toBeLessThanOrEqual(8);
+
+    const junction = state.junctions.find((item) => item.id === turnout.junctionId)!;
+    expect(junction.ports.map((p) => p.trackId).sort()).toEqual(["track-1", "track-2"]);
+
+    // 転てつ器が受け持つ角度は不正接続としない
+    const topology = inspectTrackRadii(state).topology;
+    expect(topology.invalidConnections).toHaveLength(0);
+    expect(topology.connectedComponents).toHaveLength(1);
+  });
+
+  it("分岐角を受けられない番数を指定すると拒否する", () => {
+    let state = baseState();
+    const angle = (9 * Math.PI) / 180;
+    state = executeCommand(state, {
+      type: "track.create", geometry: "straight",
+      points: [{ x: 500, y: 0 }, { x: 500 + 300 * Math.cos(angle), y: 300 * Math.sin(angle) }],
+      specification: SPEC, designSpeedKmh: 40,
+    }).state;
+    expect(() => executeCommand(state, {
+      type: "turnout.attach", trackId: "track-1", divergingTrackId: "track-2", position: { x: 500, y: 0 }, typeId: "turnout-no18",
+    })).toThrow(/受けられません/);
+  });
+
+  it("分岐点から離れすぎた線路は接続を拒否する", () => {
+    let state = baseState();
+    state = executeCommand(state, {
+      type: "track.create", geometry: "straight",
+      points: [{ x: 600, y: 40 }, { x: 900, y: 70 }],
+      specification: SPEC, designSpeedKmh: 40,
+    }).state;
+    expect(() => executeCommand(state, {
+      type: "turnout.attach", trackId: "track-1", divergingTrackId: "track-2", position: { x: 500, y: 0 },
+    })).toThrow(/離れています/);
+  });
+
+  it("継目として端点どうしを接続でき、角度がずれていれば拒否する", () => {
+    let state = baseState();
+    // 基準線の終点(2000,0)に続く線路
+    state = executeCommand(state, {
+      type: "track.create", geometry: "straight",
+      points: [{ x: 2000, y: 0 }, { x: 2500, y: 0 }],
+      specification: SPEC, designSpeedKmh: 120,
+    }).state;
+    state = executeCommand(state, {
+      type: "track.connect", trackId: "track-1", otherTrackId: "track-2", position: { x: 2000, y: 0 },
+    }).state;
+    expect(state.junctions).toHaveLength(1);
+    expect(state.turnouts).toHaveLength(0);
+    expect(inspectTrackRadii(state).topology.connectedComponents).toHaveLength(1);
+
+    // 角度のついた端点は継目では繋げない
+    let angled = baseState();
+    angled = executeCommand(angled, {
+      type: "track.create", geometry: "straight",
+      points: [{ x: 2000, y: 0 }, { x: 2400, y: 200 }],
+      specification: SPEC, designSpeedKmh: 40,
+    }).state;
+    expect(() => executeCommand(angled, {
+      type: "track.connect", trackId: "track-1", otherTrackId: "track-2", position: { x: 2000, y: 0 },
+    })).toThrow(/継目では接続できません/);
+  });
+
   it("保存して読み込んでも転てつ器が保持される", () => {
     const state = place(baseState());
     const restored = parseSaveFile(serializeSaveFile(createSaveFile("転てつ器", state))).state;
