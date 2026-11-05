@@ -518,6 +518,33 @@ if (stationsPath) {
 // 車両を配置できるのは停車場の停車地点だけなので、これが無いと留置できない。
 const DEPOT_MIN_TOTAL_LENGTH_M = 300;
 const DEPOT_MIN_TRACK_LENGTH_M = 50;
+// 留置する部分は線路が並列している区間である。引上線や本線へ戻る首の部分は
+// 単独で伸びるため、横に仲間がいる区間だけを停車地点にする。
+const DEPOT_PARALLEL_LATERAL_M = 30;  // 仲間とみなす横方向の距離
+const DEPOT_SAMPLE_STEP_M = 10;
+const DEPOT_MIN_SPAN_M = 40;          // これ未満の並列区間は留置に使わない
+
+// 他の線路と並列している最長の連続区間を返す
+function stablingSpan(points: Point[], others: Point[][]): { startM: number; endM: number } | undefined {
+  const total = polylineLength(points);
+  if (total < DEPOT_MIN_SPAN_M) return undefined;
+  const steps = Math.max(2, Math.ceil(total / DEPOT_SAMPLE_STEP_M));
+  let bestStart = 0;
+  let bestEnd = 0;
+  let runStart: number | undefined;
+  for (let index = 0; index <= steps; index += 1) {
+    const alongM = (total * index) / steps;
+    const sample = pointAlong(points, alongM);
+    const parallel = others.some((other) => nearestOnTrack(other, sample).distance <= DEPOT_PARALLEL_LATERAL_M);
+    if (parallel) {
+      if (runStart === undefined) runStart = alongM;
+      if (alongM - runStart > bestEnd - bestStart) { bestStart = runStart; bestEnd = alongM; }
+    } else {
+      runStart = undefined;
+    }
+  }
+  return bestEnd - bestStart >= DEPOT_MIN_SPAN_M ? { startM: bestStart, endM: bestEnd } : undefined;
+}
 
 const covered = new Set(state.stations.flatMap((s) => s.stopPoints.map((sp) => sp.trackId)));
 const candidateTracks = state.tracks.filter((t) =>
@@ -569,7 +596,9 @@ for (const [, trackIds] of clusters) {
 
   const createdIds: string[] = [];
   for (const track of tracks) {
-    const total = polylineLength(track.points);
+    const others = tracks.filter((other) => other.id !== track.id).map((other) => other.points);
+    const span = stablingSpan(track.points, others);
+    if (!span) continue; // 並列区間を持たない線路（引上線・首）は留置に使わない
     const id = `station-${state.nextStationId}`;
     try {
       run({
@@ -577,8 +606,8 @@ for (const [, trackIds] of clusters) {
         kind: "depot",
         name: nearestName,
         trackId: track.id,
-        startPosition: pointAlong(track.points, 0),
-        endPosition: pointAlong(track.points, total),
+        startPosition: pointAlong(track.points, span.startM),
+        endPosition: pointAlong(track.points, span.endM),
         includeTrackGroup: false,
       });
       createdIds.push(id);
