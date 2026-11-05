@@ -15,8 +15,9 @@ const inputPath = process.argv[2];
 const outputPath = path.resolve(process.cwd(), process.argv[3] ?? "saves/osm-import.json");
 const saveName = process.argv[4] ?? "OSM取り込みマップ";
 const stationsPath = process.argv[5];
+const platformsPath = process.argv[6];
 if (!inputPath) {
-  console.error("使い方: vite-node scripts/import-osm-map.ts <overpass.json> [出力先] [セーブ名] [駅のoverpass.json]");
+  console.error("使い方: vite-node scripts/import-osm-map.ts <overpass.json> [出力先] [セーブ名] [駅のoverpass.json] [ホームのoverpass.json]");
   process.exit(1);
 }
 
@@ -42,6 +43,13 @@ const STATION_DUPLICATE_M = 300;     // 同名駅がこの距離内にあれば�
 // 別名の駅がこの距離内にある場合は、線路に近い方だけを残す。
 // 他社の隣接駅（乗換駅）が、地図に無い自社線の代わりに本線へ付くのを防ぐ。
 const STATION_MIN_SEPARATION_M = 250;
+// 駅ノードからこの距離内の線路すべてに停車地点を作り、station.merge で1駅へ統合する。
+// 複線の両方向に停車地点を持たせるために必要。広げすぎると構内の側線まで
+// 停車地点になるため、ホーム周りに収まる範囲に留める。
+const STATION_TRACK_RADIUS_M = 40;
+// ホーム（railway=platform）が与えられた場合は、ホームからこの距離内の線路だけを
+// 停車地点にする。構内の側線や通過線を停車地点にしないための絞り込み。
+const PLATFORM_TRACK_RADIUS_M = 8;
 
 // ---- 入力 ---------------------------------------------------------------
 interface OsmNode { type: "node"; id: number; lat: number; lon: number }
@@ -368,7 +376,46 @@ function pointAlong(points: Point[], alongM: number): Point {
   return points[points.length - 1];
 }
 
-const stationStats = { placed: 0, tooFar: 0, duplicate: 0, crowded: 0, failed: 0 };
+// ---- ホーム（任意） -----------------------------------------------------
+const platformPolylines: Point[][] = [];
+if (platformsPath) {
+  const raw = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), platformsPath), "utf8")) as { elements: any[] };
+  for (const element of raw.elements) {
+    if (!Array.isArray(element?.geometry)) continue;
+    const points = element.geometry
+      .filter((g: any) => typeof g?.lat === "number")
+      .map((g: any) => projectLatLon(g.lat, g.lon));
+    if (points.length >= 2) platformPolylines.push(densify(points, 10));
+  }
+}
+
+// 頂点が疎なホーム線でも距離判定が効くよう、一定間隔へ刻む
+function densify(points: Point[], stepM: number): Point[] {
+  const result: Point[] = [points[0]];
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const a = points[index];
+    const b = points[index + 1];
+    const length = Math.hypot(b.x - a.x, b.y - a.y);
+    const steps = Math.max(1, Math.ceil(length / stepM));
+    for (let k = 1; k <= steps; k += 1) {
+      result.push({ x: a.x + (b.x - a.x) * (k / steps), y: a.y + (b.y - a.y) * (k / steps) });
+    }
+  }
+  return result;
+}
+
+function nearPlatform(points: Point[], target: Point, radiusM: number): boolean {
+  for (const platform of platformPolylines) {
+    // 駅の近傍にあるホームだけを見る
+    if (Math.hypot(platform[0].x - target.x, platform[0].y - target.y) > 400) continue;
+    for (const vertex of platform) {
+      if (nearestOnTrack(points, vertex).distance <= radiusM) return true;
+    }
+  }
+  return false;
+}
+
+const stationStats = { placed: 0, tooFar: 0, duplicate: 0, crowded: 0, failed: 0, stopPoints: 0 };
 const placedStations: { name: string; point: Point }[] = [];
 
 // 線路に近い順に並べ、近い駅から確定させる。
@@ -401,26 +448,48 @@ for (const candidate of candidates) {
     stationStats.crowded += 1;
     continue;
   }
-  const total = candidate.lengthM;
-  const startAlong = Math.max(0, Math.min(total - 2, candidate.alongM - STATION_HALF_LENGTH_M));
-  const endAlong = Math.min(total, Math.max(startAlong + 2, candidate.alongM + STATION_HALF_LENGTH_M));
-  try {
-    run({
-      type: "station.createRange",
-      name: node.name,
-      trackId: candidate.trackId,
-      startPosition: pointAlong(candidate.points, startAlong),
-      endPosition: pointAlong(candidate.points, endAlong),
-      includeTrackGroup: false,
-    });
-    placedStations.push({ name: node.name, point: target });
-    stationStats.placed += 1;
-  } catch {
-    stationStats.failed += 1;
+  // 駅ノードの近くを通る線路すべてへ停車地点を作り、1駅へ統合する
+  const nearby = state.tracks
+    .map((track) => ({ track, hit: nearestOnTrack(track.points, target) }))
+    .filter((entry) => entry.hit.distance <= STATION_TRACK_RADIUS_M || entry.track.id === candidate.trackId);
+  // ホームが与えられていれば、ホームに面した線路だけへ絞る。
+  // 絞った結果が空になる場合（ホーム未整備の駅）は近傍の線路をそのまま使う。
+  const withPlatform = platformPolylines.length > 0
+    ? nearby.filter((entry) => entry.track.id === candidate.trackId || nearPlatform(entry.track.points, target, PLATFORM_TRACK_RADIUS_M))
+    : nearby;
+  const serving = withPlatform.length > 0 ? withPlatform : nearby;
+
+  const createdIds: string[] = [];
+  for (const entry of serving) {
+    const points = entry.track.points;
+    const total = polylineLength(points);
+    const startAlong = Math.max(0, Math.min(total - 2, entry.hit.alongM - STATION_HALF_LENGTH_M));
+    const endAlong = Math.min(total, Math.max(startAlong + 2, entry.hit.alongM + STATION_HALF_LENGTH_M));
+    const id = `station-${state.nextStationId}`;
+    try {
+      run({
+        type: "station.createRange",
+        name: node.name,
+        trackId: entry.track.id,
+        startPosition: pointAlong(points, startAlong),
+        endPosition: pointAlong(points, endAlong),
+        includeTrackGroup: false,
+      });
+      createdIds.push(id);
+    } catch { /* 範囲を取れない線路は飛ばす */ }
   }
+  if (createdIds.length === 0) { stationStats.failed += 1; continue; }
+  if (createdIds.length > 1) {
+    try {
+      run({ type: "station.merge", stationIds: createdIds });
+    } catch { /* 統合できなければ個別のまま残す */ }
+  }
+  placedStations.push({ name: node.name, point: target });
+  stationStats.placed += 1;
+  stationStats.stopPoints += createdIds.length;
 }
 if (stationsPath) {
-  console.log(`Phase 3 駅: 設置=${stationStats.placed} 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
+  console.log(`Phase 3 駅: 設置=${stationStats.placed}（停車地点${stationStats.stopPoints}, ホーム${platformPolylines.length}本） 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
 }
 
 // ---- 結果 ---------------------------------------------------------------
