@@ -74,7 +74,7 @@ interface MapState {
 interface Camera {
   x: number;              // カメラ中心のワールドX
   y: number;              // カメラ中心のワールドY
-  zoom: number;           // 1.0 = 等倍。範囲: 0.2〜4.0
+  zoom: number;           // 1.0 = 1 px/m。範囲: 0.01〜2000
 }
 
 interface Viewport { width: number; height: number }

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { centeredConnectionCandidateIndex, connectionCandidateCount, connectionCandidateIndexFromSelectedTrack, executeCommand, pairByAlignment, pairByCenter } from "../src/simulation/commands";
 import { analyzeLine, analyzeTrackLines, closestPointOnSegment, createParallelLines, findNearestStraightStartPoint, findNearestTrackEndpoint, findNearestTrackPoint, polylineOverlapLength, projectPointToAxis, recommendedCantMm, sampleArcChain, sampleTrack } from "../src/simulation/geometry";
-import { createInitialCamera, createInitialState, distanceToSegment, screenToWorld, worldToScreen, zoomAt } from "../src/simulation/model";
+import { CAMERA_MAX_ZOOM, CAMERA_MIN_ZOOM, createInitialCamera, createInitialState, distanceToSegment, screenToWorld, worldToScreen, zoomAt } from "../src/simulation/model";
 
 describe("free map", () => {
   it("任意の点列から線路を作成・撤去する", () => {
@@ -25,6 +25,21 @@ describe("free map", () => {
     const before = screenToWorld(screen, createInitialCamera(), viewport);
     const camera = zoomAt(createInitialCamera(), screen, 2, viewport);
     expect(screenToWorld(screen, camera, viewport)).toEqual(before);
+  });
+
+  it("拡大率を上下限で丸め、高倍率でも注視点を保つ", () => {
+    const viewport = { width: 800, height: 600 };
+    const screen = { x: 200, y: 150 };
+    expect(zoomAt(createInitialCamera(), screen, 1e9, viewport).zoom).toBe(CAMERA_MAX_ZOOM);
+    expect(zoomAt(createInitialCamera(), screen, 1e-9, viewport).zoom).toBe(CAMERA_MIN_ZOOM);
+    expect(CAMERA_MAX_ZOOM).toBeGreaterThan(4);
+
+    // 高倍率でもスクリーン上の注視点が同じ世界座標を指し続ける
+    const before = screenToWorld(screen, createInitialCamera(), viewport);
+    const deep = zoomAt(createInitialCamera(), screen, 500, viewport);
+    const after = screenToWorld(screen, deep, viewport);
+    expect(after.x).toBeCloseTo(before.x, 6);
+    expect(after.y).toBeCloseTo(before.y, 6);
   });
 
   it("線分からの距離を求める", () => {

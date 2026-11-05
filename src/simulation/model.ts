@@ -331,6 +331,12 @@ export function screenToWorld(point: Point, camera: Camera, viewport: Viewport):
   };
 }
 
+// 拡大率の範囲。1.0 = 1 px/m。
+// 転てつ器や軌道の細部を見るため高倍率側を広く取り、
+// 数十km規模の取り込みマップを俯瞰するため低倍率側も広げている。
+export const CAMERA_MIN_ZOOM = 0.01;
+export const CAMERA_MAX_ZOOM = 2000;
+
 export function zoomAt(
   camera: Camera,
   screenPoint: Point,
@@ -338,7 +344,7 @@ export function zoomAt(
   viewport: Viewport,
 ): Camera {
   const anchor = screenToWorld(screenPoint, camera, viewport);
-  const zoom = Math.min(4, Math.max(0.2, nextZoom));
+  const zoom = Math.min(CAMERA_MAX_ZOOM, Math.max(CAMERA_MIN_ZOOM, nextZoom));
   const cos = Math.cos(camera.rotation);
   const sin = Math.sin(camera.rotation);
   const dx = (screenPoint.x - viewport.width / 2) / zoom;
