@@ -16,6 +16,7 @@ const outputPath = path.resolve(process.cwd(), process.argv[3] ?? "saves/osm-imp
 const saveName = process.argv[4] ?? "OSM取り込みマップ";
 const stationsPath = process.argv[5];
 const platformsPath = process.argv[6];
+const landusePath = process.argv[7];
 if (!inputPath) {
   console.error("使い方: vite-node scripts/import-osm-map.ts <overpass.json> [出力先] [セーブ名] [駅のoverpass.json] [ホームのoverpass.json]");
   process.exit(1);
@@ -513,22 +514,41 @@ if (stationsPath) {
   console.log(`Phase 3 駅: 設置=${stationStats.placed}（停車地点${stationStats.stopPoints}, ホーム${platformPolylines.length}本） 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
 }
 
-// ---- Phase 4: 留置線群から車両基地を作る -------------------------------
-// 停車地点を持たない側線がまとまっている場所を車両基地とする。
-// 車両を配置できるのは停車場の停車地点だけなので、これが無いと留置できない。
+// ---- Phase 4: 鉄道用地から車両基地を作る -------------------------------
+// 留置線のまとまりを幾何から推測すると、数本並んだ連絡線と区別できない。
+// OSMは車両基地の敷地を landuse=railway の多角形として持っているので、
+// 敷地の内側にある側線だけを車両基地の停車地点にする。
+// 連絡線は敷地の外へ出ていくため自然に除かれる。
 const DEPOT_MIN_TOTAL_LENGTH_M = 300;
-const DEPOT_MIN_TRACK_LENGTH_M = 50;
-// 留置する部分は線路が並列している区間である。引上線や本線へ戻る首の部分は
-// 単独で伸びるため、横に仲間がいる区間だけを停車地点にする。
-const DEPOT_PARALLEL_LATERAL_M = 20;  // 仲間とみなす横方向の距離
-// 連絡線や引上線も数本が並んで走るため、隣に1本あるだけでは留置線と区別できない。
-// 留置線群は多数が密に並ぶので、一定本数以上の隣接を求める。
-const DEPOT_MIN_NEIGHBOURS = 3;
 const DEPOT_SAMPLE_STEP_M = 10;
-const DEPOT_MIN_SPAN_M = 40;          // これ未満の並列区間は留置に使わない
+const DEPOT_MIN_SPAN_M = 40;
 
-// 他の線路と並列している最長の連続区間を返す
-function stablingSpan(points: Point[], others: Point[][]): { startM: number; endM: number } | undefined {
+const landusePolygons: Point[][] = [];
+if (landusePath) {
+  const raw = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), landusePath), "utf8")) as { elements: any[] };
+  for (const element of raw.elements) {
+    if (!Array.isArray(element?.geometry)) continue;
+    const ring = element.geometry
+      .filter((g: any) => typeof g?.lat === "number")
+      .map((g: any) => projectLatLon(g.lat, g.lon));
+    if (ring.length >= 4) landusePolygons.push(ring);
+  }
+}
+
+function insidePolygon(point: Point, ring: Point[]): boolean {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
+    const yi = ring[i].y;
+    const yj = ring[j].y;
+    if ((yi > point.y) === (yj > point.y)) continue;
+    const x = ring[i].x + ((point.y - yi) / (yj - yi)) * (ring[j].x - ring[i].x);
+    if (point.x < x) inside = !inside;
+  }
+  return inside;
+}
+
+// 多角形の内側にある最長の連続区間
+function spanInside(points: Point[], ring: Point[]): { startM: number; endM: number } | undefined {
   const total = polylineLength(points);
   if (total < DEPOT_MIN_SPAN_M) return undefined;
   const steps = Math.max(2, Math.ceil(total / DEPOT_SAMPLE_STEP_M));
@@ -537,14 +557,7 @@ function stablingSpan(points: Point[], others: Point[][]): { startM: number; end
   let runStart: number | undefined;
   for (let index = 0; index <= steps; index += 1) {
     const alongM = (total * index) / steps;
-    const sample = pointAlong(points, alongM);
-    let neighbours = 0;
-    for (const other of others) {
-      if (nearestOnTrack(other, sample).distance <= DEPOT_PARALLEL_LATERAL_M) neighbours += 1;
-      if (neighbours >= DEPOT_MIN_NEIGHBOURS) break;
-    }
-    const parallel = neighbours >= DEPOT_MIN_NEIGHBOURS;
-    if (parallel) {
+    if (insidePolygon(pointAlong(points, alongM), ring)) {
       if (runStart === undefined) runStart = alongM;
       if (alongM - runStart > bestEnd - bestStart) { bestStart = runStart; bestEnd = alongM; }
     } else {
@@ -554,81 +567,60 @@ function stablingSpan(points: Point[], others: Point[][]): { startM: number; end
   return bestEnd - bestStart >= DEPOT_MIN_SPAN_M ? { startM: bestStart, endM: bestEnd } : undefined;
 }
 
-const covered = new Set(state.stations.flatMap((s) => s.stopPoints.map((sp) => sp.trackId)));
-const candidateTracks = state.tracks.filter((t) =>
-  t.kind === "side" && !covered.has(t.id) && polylineLength(t.points) >= DEPOT_MIN_TRACK_LENGTH_M);
-
-// 接続点を共有する側線どうしをまとめる
-const parent = new Map<string, string>(candidateTracks.map((t) => [t.id, t.id]));
-const find = (a: string): string => {
-  let root = a;
-  while (parent.get(root) !== root) root = parent.get(root)!;
-  return root;
-};
-const union = (a: string, b: string): void => {
-  const ra = find(a);
-  const rb = find(b);
-  if (ra !== rb) parent.set(ra, rb);
-};
-for (const junction of state.junctions) {
-  const members = junction.ports.map((p) => p.trackId).filter((id) => parent.has(id));
-  for (const other of members.slice(1)) union(members[0], other);
-}
-const clusters = new Map<string, string[]>();
-for (const track of candidateTracks) {
-  const root = find(track.id);
-  if (!clusters.has(root)) clusters.set(root, []);
-  clusters.get(root)!.push(track.id);
-}
-
-const depotStats = { created: 0, stopPoints: 0 };
+const depotStats = { created: 0, stopPoints: 0, skippedSmall: 0 };
 const depotNames = new Set<string>();
-for (const [, trackIds] of clusters) {
-  const tracks = trackIds.map((id) => state.tracks.find((t) => t.id === id)!);
-  const totalLengthM = tracks.reduce((sum, t) => sum + polylineLength(t.points), 0);
-  if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) continue;
-
-  // 最寄りの「駅」の名前を借りる。車両基地を対象に含めると名前が入れ子になる。
-  const center = tracks[0].points[Math.floor(tracks[0].points.length / 2)];
-  let baseName = "車両基地";
-  let nearestDistance = Infinity;
-  for (const station of state.stations) {
-    if (station.kind !== "station") continue;
-    const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
-    if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}車両基地`; }
-  }
-  // 同じ駅の近くに複数のまとまりがある場合は連番で区別する
-  let nearestName = baseName;
-  for (let suffix = 2; depotNames.has(nearestName); suffix += 1) nearestName = `${baseName}${suffix}`;
-  depotNames.add(nearestName);
-
-  const createdIds: string[] = [];
-  for (const track of tracks) {
-    const others = tracks.filter((other) => other.id !== track.id).map((other) => other.points);
-    const span = stablingSpan(track.points, others);
-    if (!span) continue; // 並列区間を持たない線路（引上線・首）は留置に使わない
-    const id = `station-${state.nextStationId}`;
-    try {
-      run({
-        type: "station.createRange",
-        kind: "depot",
-        name: nearestName,
-        trackId: track.id,
-        startPosition: pointAlong(track.points, span.startM),
-        endPosition: pointAlong(track.points, span.endM),
-        includeTrackGroup: false,
+if (landusePolygons.length > 0) {
+  const covered = new Set(state.stations.flatMap((st) => st.stopPoints.map((sp) => sp.trackId)));
+  for (const ring of landusePolygons) {
+    const inside = state.tracks
+      .filter((track) => track.kind === "side" && !covered.has(track.id))
+      .flatMap((track) => {
+        const span = spanInside(track.points, ring);
+        return span ? [{ track, span }] : [];
       });
-      createdIds.push(id);
-    } catch { /* 範囲を取れない線路は飛ばす */ }
+    const totalLengthM = inside.reduce((sum, entry) => sum + (entry.span.endM - entry.span.startM), 0);
+    if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) { if (inside.length > 0) depotStats.skippedSmall += 1; continue; }
+
+    // 敷地に名前が無いため最寄りの駅名を借りる
+    const center = inside[0].track.points[Math.floor(inside[0].track.points.length / 2)];
+    let baseName = "車両基地";
+    let nearestDistance = Infinity;
+    for (const station of state.stations) {
+      if (station.kind !== "station") continue;
+      const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
+      if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}車両基地`; }
+    }
+    let name = baseName;
+    for (let suffix = 2; depotNames.has(name); suffix += 1) name = `${baseName}${suffix}`;
+    depotNames.add(name);
+
+    const createdIds: string[] = [];
+    for (const entry of inside) {
+      const id = `station-${state.nextStationId}`;
+      try {
+        run({
+          type: "station.createRange",
+          kind: "depot",
+          name,
+          trackId: entry.track.id,
+          startPosition: pointAlong(entry.track.points, entry.span.startM),
+          endPosition: pointAlong(entry.track.points, entry.span.endM),
+          includeTrackGroup: false,
+        });
+        createdIds.push(id);
+      } catch { /* 範囲を取れない線路は飛ばす */ }
+    }
+    if (createdIds.length === 0) continue;
+    if (createdIds.length > 1) {
+      try { run({ type: "station.merge", stationIds: createdIds }); } catch { /* 個別のまま */ }
+    }
+    depotStats.created += 1;
+    depotStats.stopPoints += createdIds.length;
   }
-  if (createdIds.length === 0) continue;
-  if (createdIds.length > 1) {
-    try { run({ type: "station.merge", stationIds: createdIds }); } catch { /* 個別のまま */ }
-  }
-  depotStats.created += 1;
-  depotStats.stopPoints += createdIds.length;
+  console.log(`Phase 4 車両基地: ${depotStats.created}箇所（停車地点${depotStats.stopPoints}, 鉄道用地${landusePolygons.length}面, 小規模で除外${depotStats.skippedSmall}）`);
+} else {
+  console.log("Phase 4 車両基地: 鉄道用地が与えられていないため作成しない");
 }
-console.log(`Phase 4 車両基地: ${depotStats.created}箇所（停車地点${depotStats.stopPoints}）`);
 
 // ---- 結果 ---------------------------------------------------------------
 const inspection = inspectTrackRadii(state);
