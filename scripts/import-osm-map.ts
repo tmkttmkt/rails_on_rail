@@ -31,6 +31,10 @@ const THROUGH_PAIR_MAX_DEVIATION_DEG = 40; // これを超える組は直進と�
 // 接線が累積して発振し、曲率が破綻する（実測で最小半径39.7 m -> 7.1 m）。
 // 測位精度より十分小さい許容で簡略化し、ポリラインのまま敷設する。
 const SIMPLIFY_TOLERANCE_M = 2;
+// 円弧当てはめは始端接線と弦の向きが食い違うと巨大な円弧を生成し、
+// 線路が元の範囲から大きく外れる。生成後に妥当性を検査して破棄する。
+const MAX_LENGTH_RATIO = 1.3;        // 生成線形長 / 入力ポリライン長 の上限
+const MIN_PLAUSIBLE_RADIUS_M = 40;   // これ未満の半径は破綻とみなす
 
 // ---- 入力 ---------------------------------------------------------------
 interface OsmNode { type: "node"; id: number; lat: number; lon: number }
@@ -213,7 +217,7 @@ const run = (command: MapCommand): void => { state = executeCommand(state, comma
 
 const trackIdOfRoute = new Map<number, string>();
 const placedRoutes = new Set<number>();
-const stats = { tracks: 0, turnouts: 0, turnoutFailed: 0, routeFailed: 0, cycleSkipped: 0, curveFallback: 0 };
+const stats = { tracks: 0, turnouts: 0, turnoutFailed: 0, routeFailed: 0, cycleSkipped: 0, curveFallback: 0, implausible: 0, attachGaveUp: 0 };
 
 function routePoints(route: Route, dropFrom: Point | undefined, dropRadiusM: number): Point[] {
   const points = route.nodes.map(project);
@@ -223,6 +227,44 @@ function routePoints(route: Route, dropFrom: Point | undefined, dropRadiusM: num
   return points.slice(index);
 }
 
+function polylineLength(points: Point[]): number {
+  let total = 0;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    total += Math.hypot(points[index + 1].x - points[index].x, points[index + 1].y - points[index].y);
+  }
+  return total;
+}
+
+// 生成された線形が入力ポリラインから大きく外れていないか検査する。
+function isPlausible(trackId: string, inputLengthM: number): boolean {
+  const track = state.tracks.find((item) => item.id === trackId);
+  if (!track) return false;
+  if (polylineLength(track.points) > inputLengthM * MAX_LENGTH_RATIO + 1) return false;
+  const radius = track.engineering.builtMinimumRadiusM;
+  return radius === null || radius >= MIN_PLAUSIBLE_RADIUS_M;
+}
+
+function tryCreate(points: Point[], geometry: "straight" | "curve", attachTrackId: string | undefined): string | undefined {
+  const id = `track-${state.nextTrackId}`;
+  try {
+    run({
+      type: "track.create",
+      geometry,
+      points,
+      specification: SPECIFICATION,
+      designSpeedKmh: DEFAULT_SPEED_KMH,
+      ...(attachTrackId ? { startConnectionTrackId: attachTrackId } : {}),
+    });
+  } catch {
+    return undefined;
+  }
+  if (isPlausible(id, polylineLength(points))) return id;
+  // 破綻した線形は残さず撤去する
+  try { run({ type: "track.delete", trackId: id }); } catch { /* 撤去できなければそのまま */ }
+  stats.implausible += 1;
+  return undefined;
+}
+
 function createRouteTrack(route: Route, attachTrackId: string | undefined, startPoint: Point | undefined, reversed: boolean): boolean {
   const ordered = reversed ? { ...route, nodes: [...route.nodes].reverse() } : route;
   const tail = routePoints(ordered, startPoint, 1);
@@ -230,29 +272,24 @@ function createRouteTrack(route: Route, attachTrackId: string | undefined, start
   const points = simplify(raw, SIMPLIFY_TOLERANCE_M);
   if (points.length < 2) return false;
 
-  // ポリラインをそのまま残すため straight を使う。分岐側の取り付けで
-  // 接線が5度の許容に収まらない場合のみ curve へ退避する。
-  for (const geometry of ["straight", "curve"] as const) {
-    const id = `track-${state.nextTrackId}`;
-    try {
-      run({
-        type: "track.create",
-        geometry,
-        points,
-        specification: SPECIFICATION,
-        designSpeedKmh: DEFAULT_SPEED_KMH,
-        ...(attachTrackId ? { startConnectionTrackId: attachTrackId } : {}),
-      });
-      trackIdOfRoute.set(route.id, id);
-      placedRoutes.add(route.id);
-      stats.tracks += 1;
-      if (geometry === "curve") stats.curveFallback += 1;
-      return true;
-    } catch {
-      if (!attachTrackId) return false;
-    }
+  // 1) ポリラインをそのまま残す straight で取り付ける
+  // 2) 駄目なら curve（接線を自動採用）。ただし妥当性検査を通る場合のみ
+  // 3) それも駄目なら接続せずに敷設する。形を壊すより接続を諦める
+  let id = attachTrackId ? tryCreate(points, "straight", attachTrackId) : undefined;
+  if (!id && attachTrackId) {
+    id = tryCreate(points, "curve", attachTrackId);
+    if (id) stats.curveFallback += 1;
   }
-  return false;
+  if (!id) {
+    id = tryCreate(points, "straight", undefined);
+    if (id && attachTrackId) stats.attachGaveUp += 1;
+  }
+  if (!id) return false;
+
+  trackIdOfRoute.set(route.id, id);
+  placedRoutes.add(route.id);
+  stats.tracks += 1;
+  return true;
 }
 
 // 経路の端ノード集合（分岐を探すため）
@@ -319,7 +356,8 @@ for (const seed of seedOrder) {
 }
 
 // ---- 結果 ---------------------------------------------------------------
-console.log(`構築: 線路=${stats.tracks} 転てつ器=${stats.turnouts} 転てつ器失敗=${stats.turnoutFailed} 経路失敗=${stats.routeFailed} 閉路のため未接続=${stats.cycleSkipped} curve退避=${stats.curveFallback}`);
+console.log(`構築: 線路=${stats.tracks} 転てつ器=${stats.turnouts} 転てつ器失敗=${stats.turnoutFailed} 経路失敗=${stats.routeFailed}`);
+console.log(`取り付け: curve退避=${stats.curveFallback} 破綻で撤去=${stats.implausible} 接続断念=${stats.attachGaveUp} 閉路のため未接続=${stats.cycleSkipped}`);
 const topology = inspectTrackRadii(state).topology;
 console.log(`接続成分=${topology.connectedComponents.length} 孤立線路=${topology.isolatedTrackIds.length} 不正接続=${topology.invalidConnections.length}`);
 const radii = state.tracks.map((t) => t.engineering.builtMinimumRadiusM).filter((v): v is number => typeof v === "number").sort((a, b) => a - b);
