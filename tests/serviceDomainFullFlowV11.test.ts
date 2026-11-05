@@ -10,6 +10,7 @@ describe("Service Domain Full Flow (v11 Integration)", () => {
     // 1. Create track and stations
     state.tracks.push({
       id: "track-1",
+      kind: "main",
       geometry: "straight",
       points: [{ x: 0, y: 0 }, { x: 2000, y: 0 }],
       resolvedPath: true,
@@ -20,12 +21,14 @@ describe("Service Domain Full Flow (v11 Integration)", () => {
       {
         id: "st-tokyo",
         name: "東京",
+        kind: "station",
         position: { x: 100, y: 0 },
         stopPoints: [{ id: "sp-tokyo", trackId: "track-1", startDistanceM: 50, endDistanceM: 150, startPosition: { x: 50, y: 0 }, endPosition: { x: 150, y: 0 }, direction: "both" }],
       },
       {
         id: "st-yokohama",
         name: "横浜",
+        kind: "station",
         position: { x: 1800, y: 0 },
         stopPoints: [{ id: "sp-yokohama", trackId: "track-1", startDistanceM: 1750, endDistanceM: 1850, startPosition: { x: 1750, y: 0 }, endPosition: { x: 1850, y: 0 }, direction: "both" }],
       }

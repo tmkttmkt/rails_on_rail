@@ -12,6 +12,8 @@ import {
   type Point,
   type TrackGeometry,
   type Viewport,
+  STATION_KIND_LABELS,
+  TRACK_KIND_LABELS,
 } from "./simulation/model";
 import { drawMap, type PlacementPreviewState } from "./ui/renderer";
 import { createSaveFile, parseMapState, parseSaveFile, serializeSaveFile, validateSaveName, type SaveSlot } from "./simulation/persistence";
@@ -2659,11 +2661,11 @@ function updateUi(): void {
       ].join(" / ")
     : "";
   required("#selection").innerHTML = selectedStation
-    ? `<strong>${escapeHtml(selectedStation.name)}</strong><span>${selectedStation.id.replace("station-", "駅 ")} · 停車地点 ${selectedStation.stopPoints.length}箇所</span><span>${selectedStation.stopPoints.map((stopPoint) => `${stopPoint.trackId} · ${Math.round(stopPoint.endDistanceM - stopPoint.startDistanceM)} m`).join(" / ")}</span>`
+    ? `<strong>${escapeHtml(selectedStation.name)}</strong><span>${STATION_KIND_LABELS[selectedStation.kind]} · ${selectedStation.id.replace("station-", "停車場 ")} · 停車地点 ${selectedStation.stopPoints.length}箇所</span><span>${selectedStation.stopPoints.map((stopPoint) => `${stopPoint.trackId} · ${Math.round(stopPoint.endDistanceM - stopPoint.startDistanceM)} m`).join(" / ")}</span>`
     : selectedStations.length > 1
       ? `<strong>${selectedStations.length}駅を選択</strong><span>${selectedStations.map((station) => escapeHtml(station.name)).join(" / ")}</span><span>「駅を統合」で最初に選択した駅へまとめます</span>`
     : selected
-    ? `<strong>${selected.id.replace("track-", "線路 ")}</strong><span>${selected.geometry === "curve" ? "曲線" : "直線"} · 接続 ${connectionCount}箇所${findTrackGroup(state, selected.id) ? ` · ${findTrackGroup(state, selected.id)!.name}` : " · 単独"}</span><span>${selectedSpecification}</span><span>最小半径 ${formatRadius(selected.engineering.builtMinimumRadiusM)} · 設計 ${selected.engineering.designSpeedKmh} km/h · カント ${selected.engineering.cantProfile[0]?.cantMm ?? 0} mm</span>`
+    ? `<strong>${selected.id.replace("track-", "線路 ")}</strong><span>${TRACK_KIND_LABELS[selected.kind]} · ${selected.geometry === "curve" ? "曲線" : "直線"} · 接続 ${connectionCount}箇所${findTrackGroup(state, selected.id) ? ` · ${findTrackGroup(state, selected.id)!.name}` : " · 単独"}</span><span>${selectedSpecification}</span><span>最小半径 ${formatRadius(selected.engineering.builtMinimumRadiusM)} · 設計 ${selected.engineering.designSpeedKmh} km/h · カント ${selected.engineering.cantProfile[0]?.cantMm ?? 0} mm</span>`
     : selectedTracks.length > 1
       ? `<strong>${selectedTracks.length}本を選択</strong><span>${[...new Set(selectedTracks.map((track) => findTrackGroup(state, track.id)?.name ?? "単独線路"))].join(" / ")}</span><span>Shift＋クリックで選択を追加・解除できます</span>`
       : `<span>線路を選択していません</span>`;

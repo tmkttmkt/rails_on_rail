@@ -28,6 +28,7 @@ const SPECIFICATION = {
   roadbedId: "standard-drained-roadbed",
 };
 const DEFAULT_SPEED_KMH = 80;
+const SIDE_TRACK_SPEED_KMH = 25; // 側線は入換速度。制限速度の導出は別Task
 const THROUGH_PAIR_MAX_DEVIATION_DEG = 40; // これを超える組は直進とみなさない
 // OSMの点列はデジタイズ由来の揺れを含む。円弧チェーンへ当てはめると
 // 接線が累積して発振し、曲率が破綻する（実測で最小半径39.7 m -> 7.1 m）。
@@ -100,6 +101,11 @@ function simplify(points: Point[], toleranceM: number): Point[] {
 // 端点は1、途中ノードは2として数える。2以外をキーノード（分岐・終端）とする。
 const incidence = new Map<number, number>();
 const wayNodes = osmWays.map((way) => way.nodes.filter((id) => osmNodes.has(id)));
+// service タグ（yard / siding / spur）は側線を表す
+const waySideness = osmWays.map((way) => {
+  const service = way.tags?.service;
+  return service === "yard" || service === "siding" || service === "spur";
+});
 for (const nodes of wayNodes) {
   nodes.forEach((id, index) => {
     incidence.set(id, (incidence.get(id) ?? 0) + (index === 0 || index === nodes.length - 1 ? 1 : 2));
@@ -108,18 +114,20 @@ for (const nodes of wayNodes) {
 const isKeyNode = (id: number): boolean => (incidence.get(id) ?? 0) !== 2;
 
 // ---- 辺（キーノード間のポリライン）へ分解 -------------------------------
-interface Edge { id: number; from: number; to: number; nodes: number[] }
+interface Edge { id: number; from: number; to: number; nodes: number[]; side: boolean }
 const edges: Edge[] = [];
-for (const nodes of wayNodes) {
+wayNodes.forEach((nodes, wayIndex) => {
   let start = 0;
   for (let index = 1; index < nodes.length; index += 1) {
     if (isKeyNode(nodes[index]) || index === nodes.length - 1) {
       const slice = nodes.slice(start, index + 1);
-      if (slice.length >= 2) edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice });
+      if (slice.length >= 2) {
+        edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice, side: waySideness[wayIndex] });
+      }
       start = index;
     }
   }
-}
+});
 
 const edgesAtNode = new Map<number, number[]>();
 for (const edge of edges) {
@@ -153,6 +161,9 @@ for (const [nodeId, list] of edgesAtNode) {
   let best: { a: number; b: number; deviation: number } | undefined;
   for (let i = 0; i < unique.length; i += 1) {
     for (let j = i + 1; j < unique.length; j += 1) {
+      // 本線と側線をまたいで直進として連鎖させない。
+      // またぐと側線が本線の経路へ吸収され、区分が失われる。
+      if (edges[unique[i]].side !== edges[unique[j]].side) continue;
       const deviation = collinearDeviationDeg(edgeDirectionAt(edges[unique[i]], nodeId), edgeDirectionAt(edges[unique[j]], nodeId));
       if (!best || deviation < best.deviation) best = { a: unique[i], b: unique[j], deviation };
     }
@@ -168,6 +179,8 @@ for (const [nodeId, list] of edgesAtNode) {
 
 // ---- 辺を直進で連鎖させ「通し経路」にまとめる ---------------------------
 interface Route { id: number; nodes: number[]; edgeIds: number[] }
+const routeIsSide = (route: Route): boolean =>
+  route.edgeIds.filter((id) => edges[id].side).length * 2 > route.edgeIds.length;
 const routeOfEdge = new Map<number, number>();
 const routes: Route[] = [];
 for (const seed of edges) {
@@ -255,8 +268,16 @@ for (const route of routes) {
   const points = routePolyline(route);
   if (points.length < 2) { stats.trackFailed += 1; continue; }
   const id = `track-${state.nextTrackId}`;
+  const side = routeIsSide(route);
   try {
-    run({ type: "track.create", geometry: "straight", points, specification: SPECIFICATION, designSpeedKmh: DEFAULT_SPEED_KMH });
+    run({
+      type: "track.create",
+      kind: side ? "side" : "main",
+      geometry: "straight",
+      points,
+      specification: SPECIFICATION,
+      designSpeedKmh: side ? SIDE_TRACK_SPEED_KMH : DEFAULT_SPEED_KMH,
+    });
   } catch {
     stats.trackFailed += 1;
     continue;
@@ -271,7 +292,7 @@ for (const route of routes) {
   trackIdOfRoute.set(route.id, id);
   stats.tracks += 1;
 }
-console.log(`Phase 1 敷設: 線路=${stats.tracks} 失敗=${stats.trackFailed} 半径不足で撤去=${stats.implausible}`);
+console.log(`Phase 1 敷設: 線路=${stats.tracks}（側線${state.tracks.filter((t) => t.kind === "side").length}） 失敗=${stats.trackFailed} 半径不足で撤去=${stats.implausible}`);
 
 // ---- Phase 2: 共有ノードごとに接続を転記する ---------------------------
 // OSM側は共有ノードで接続を持っているので、復元ではなく転記である。
@@ -491,6 +512,86 @@ for (const candidate of candidates) {
 if (stationsPath) {
   console.log(`Phase 3 駅: 設置=${stationStats.placed}（停車地点${stationStats.stopPoints}, ホーム${platformPolylines.length}本） 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
 }
+
+// ---- Phase 4: 留置線群から車両基地を作る -------------------------------
+// 停車地点を持たない側線がまとまっている場所を車両基地とする。
+// 車両を配置できるのは停車場の停車地点だけなので、これが無いと留置できない。
+const DEPOT_MIN_TOTAL_LENGTH_M = 300;
+const DEPOT_MIN_TRACK_LENGTH_M = 50;
+
+const covered = new Set(state.stations.flatMap((s) => s.stopPoints.map((sp) => sp.trackId)));
+const candidateTracks = state.tracks.filter((t) =>
+  t.kind === "side" && !covered.has(t.id) && polylineLength(t.points) >= DEPOT_MIN_TRACK_LENGTH_M);
+
+// 接続点を共有する側線どうしをまとめる
+const parent = new Map<string, string>(candidateTracks.map((t) => [t.id, t.id]));
+const find = (a: string): string => {
+  let root = a;
+  while (parent.get(root) !== root) root = parent.get(root)!;
+  return root;
+};
+const union = (a: string, b: string): void => {
+  const ra = find(a);
+  const rb = find(b);
+  if (ra !== rb) parent.set(ra, rb);
+};
+for (const junction of state.junctions) {
+  const members = junction.ports.map((p) => p.trackId).filter((id) => parent.has(id));
+  for (const other of members.slice(1)) union(members[0], other);
+}
+const clusters = new Map<string, string[]>();
+for (const track of candidateTracks) {
+  const root = find(track.id);
+  if (!clusters.has(root)) clusters.set(root, []);
+  clusters.get(root)!.push(track.id);
+}
+
+const depotStats = { created: 0, stopPoints: 0 };
+const depotNames = new Set<string>();
+for (const [, trackIds] of clusters) {
+  const tracks = trackIds.map((id) => state.tracks.find((t) => t.id === id)!);
+  const totalLengthM = tracks.reduce((sum, t) => sum + polylineLength(t.points), 0);
+  if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) continue;
+
+  // 最寄りの「駅」の名前を借りる。車両基地を対象に含めると名前が入れ子になる。
+  const center = tracks[0].points[Math.floor(tracks[0].points.length / 2)];
+  let baseName = "車両基地";
+  let nearestDistance = Infinity;
+  for (const station of state.stations) {
+    if (station.kind !== "station") continue;
+    const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
+    if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}車両基地`; }
+  }
+  // 同じ駅の近くに複数のまとまりがある場合は連番で区別する
+  let nearestName = baseName;
+  for (let suffix = 2; depotNames.has(nearestName); suffix += 1) nearestName = `${baseName}${suffix}`;
+  depotNames.add(nearestName);
+
+  const createdIds: string[] = [];
+  for (const track of tracks) {
+    const total = polylineLength(track.points);
+    const id = `station-${state.nextStationId}`;
+    try {
+      run({
+        type: "station.createRange",
+        kind: "depot",
+        name: nearestName,
+        trackId: track.id,
+        startPosition: pointAlong(track.points, 0),
+        endPosition: pointAlong(track.points, total),
+        includeTrackGroup: false,
+      });
+      createdIds.push(id);
+    } catch { /* 範囲を取れない線路は飛ばす */ }
+  }
+  if (createdIds.length === 0) continue;
+  if (createdIds.length > 1) {
+    try { run({ type: "station.merge", stationIds: createdIds }); } catch { /* 個別のまま */ }
+  }
+  depotStats.created += 1;
+  depotStats.stopPoints += createdIds.length;
+}
+console.log(`Phase 4 車両基地: ${depotStats.created}箇所（停車地点${depotStats.stopPoints}）`);
 
 // ---- 結果 ---------------------------------------------------------------
 const inspection = inspectTrackRadii(state);

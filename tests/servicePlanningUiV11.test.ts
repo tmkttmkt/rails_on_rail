@@ -46,6 +46,7 @@ describe("Service Planning UI Panels (v11)", () => {
     // Add track & stations
     state.tracks.push({
       id: "track-1",
+      kind: "main",
       geometry: "straight",
       points: [{ x: 0, y: 0 }, { x: 1000, y: 0 }],
       resolvedPath: true,
@@ -56,12 +57,14 @@ describe("Service Planning UI Panels (v11)", () => {
       {
         id: "st-tokyo",
         name: "東京",
+        kind: "station",
         position: { x: 100, y: 0 },
         stopPoints: [{ id: "sp-tokyo", trackId: "track-1", startDistanceM: 50, endDistanceM: 150, startPosition: { x: 50, y: 0 }, endPosition: { x: 150, y: 0 }, direction: "both" }],
       },
       {
         id: "st-shinagawa",
         name: "品川",
+        kind: "station",
         position: { x: 800, y: 0 },
         stopPoints: [{ id: "sp-shinagawa", trackId: "track-1", startDistanceM: 750, endDistanceM: 850, startPosition: { x: 750, y: 0 }, endPosition: { x: 850, y: 0 }, direction: "both" }],
       }

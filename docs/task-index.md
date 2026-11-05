@@ -1,6 +1,6 @@
 ---
 md_class: status
-updated: 2026-11-05
+updated: 2026-11-06
 ---
 
 # Task一覧
@@ -13,6 +13,7 @@ updated: 2026-11-05
 
 | Status | Task | Epic |
 |---|---|---|
+| `review` | [停車場と線路へ運転上の区分を導入する](tasks/2026-11-06_introduce-operational-classification.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [OSMの鉄道データからマップを生成する](tasks/2026-11-05_import-osm-railway-data.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [転てつ器を一級の実体として導入する](tasks/2026-11-05_introduce-turnout-entity.md) | [Phase -1](epics/phase-minus-one.md) |
 | `review` | [大規模な運行計画レビューマップを用意する](tasks/2026-08-23_create-large-operation-planning-review-map.md) | [Phase -1](epics/phase-minus-one.md) |

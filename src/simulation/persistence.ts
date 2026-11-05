@@ -8,6 +8,8 @@ import {
   type MapState,
   type Point,
   type Track,
+  STATION_KINDS,
+  TRACK_KINDS,
   type VehiclePlacement,
 } from "./model";
 import { formatServiceDateUtc, getAbsoluteTimeSeconds } from "./serviceModel";
@@ -85,13 +87,14 @@ function coerceMapState(value: unknown): MapState {
   if (value.version === 10) return migrateVersion10(value);
   if (value.version === 11) return normalizeVersion11(value);
   if (value.version === 12) return normalizeVersion12(value);
+  if (value.version === 13) return normalizeVersion13(value);
   validateMapState(value);
   return structuredClone(value);
 }
 
 export function validateMapState(value: unknown): asserts value is MapState {
   if (!isRecord(value)) throw new Error("セーブデータの形式が正しくありません");
-  if (value.version !== 12) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
+  if (value.version !== 13) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
   if (!isRecord(value.clock) || !Number.isSafeInteger(value.clock.currentTimeMs) || Math.abs(value.clock.currentTimeMs as number) > 8_640_000_000_000_000 || typeof value.clock.paused !== "boolean" || !(SIMULATION_SPEEDS as readonly unknown[]).includes(value.clock.speedMultiplier)) throw new Error("ゲーム内時計が正しくありません");
   if (!Number.isInteger(value.nextTrackId) || (value.nextTrackId as number) < 1) throw new Error("次の線路IDが正しくありません");
   if (!Number.isInteger(value.nextTrackGroupId) || (value.nextTrackGroupId as number) < 1) throw new Error("次の線路群IDが正しくありません");
@@ -170,6 +173,7 @@ export function validateMapState(value: unknown): asserts value is MapState {
   const allStopPointIds = new Set<string>();
   for (const station of value.stations) {
     if (!isRecord(station) || typeof station.id !== "string" || stationIds.has(station.id) || typeof station.name !== "string" || station.name.trim().length < 1 || station.name.length > 60 || !isPoint(station.position) || !Array.isArray(station.stopPoints) || station.stopPoints.length < 1) throw new Error("駅が正しくありません");
+    if (!STATION_KINDS.includes(station.kind as never)) throw new Error(`${station.id}の停車場種類が正しくありません`);
     stationIds.add(station.id);
     const stopTrackIds = new Set<string>();
     for (const stopPoint of station.stopPoints) {
@@ -419,6 +423,7 @@ function validateTrack(value: unknown, ids: Set<string>): asserts value is Track
   if (!Array.isArray(value.points) || value.points.length < 2 || !value.points.every(isPoint)) throw new Error(`${value.id}の座標が正しくありません`);
   validateSpecification(value.specification, value.id);
   if (!isRecord(value.engineering) || !isFiniteNumber(value.engineering.designSpeedKmh)) throw new Error(`${value.id}の工学状態が正しくありません`);
+  if (!TRACK_KINDS.includes(value.kind as never)) throw new Error(`${value.id}の線路区分が正しくありません`);
   if (value.engineering.builtMinimumRadiusM !== null && !isFiniteNumber(value.engineering.builtMinimumRadiusM)) throw new Error(`${value.id}の最小半径が正しくありません`);
   if (!Array.isArray(value.engineering.cantProfile) || !value.engineering.cantProfile.every((point) => isRecord(point) && isFiniteNumber(point.distanceM) && isFiniteNumber(point.cantMm))) throw new Error(`${value.id}のカントが正しくありません`);
   if (value.startConnection !== undefined) validateConnection(value.startConnection, value.id);
@@ -457,7 +462,7 @@ function migrateVersion1(value: Record<string, any>): MapState {
       const speed = isFiniteNumber(source.engineering?.designSpeedKmh) ? source.engineering.designSpeedKmh : 80;
       const gaugeMm = trackCatalog.getGauge(source.specification.gaugeId).gaugeMm;
       const cantMm = recommendedCantMm(gaugeMm, speed, alignment.minimumRadiusM);
-      state.tracks.push({ id: newIds[index], geometry: source.geometry, points: path, resolvedPath: true, specification: structuredClone(source.specification), engineering: { designSpeedKmh: speed, builtMinimumRadiusM: alignment.minimumRadiusM, cantProfile: [{ distanceM: 0, cantMm }, { distanceM: alignment.lengthM, cantMm }] } });
+      state.tracks.push({ id: newIds[index], kind: "main", geometry: source.geometry, points: path, resolvedPath: true, specification: structuredClone(source.specification), engineering: { designSpeedKmh: speed, builtMinimumRadiusM: alignment.minimumRadiusM, cantProfile: [{ distanceM: 0, cantMm }, { distanceM: alignment.lengthM, cantMm }] } });
     });
     if (newIds.length >= 2) state.trackGroups.push({ id: `track-group-${state.nextTrackGroupId}`, name: `線路群 ${state.nextTrackGroupId++}`, trackIds: newIds });
   }
@@ -1046,6 +1051,23 @@ function normalizeVersion12(raw: Record<string, any>): MapState {
   if (!Number.isInteger(state.nextTurnoutId) || state.nextTurnoutId < 1) {
     state.nextTurnoutId = state.turnouts.length + 1;
   }
+  return migrateVersion12(state);
+}
+
+// version 13 で停車場と線路へ運転上の区分を導入した。
+// 既存データは停車場を駅、線路を本線として扱う。
+function migrateVersion12(value: Record<string, any>): MapState {
+  const state: any = structuredClone(value);
+  state.version = 13;
+  for (const track of state.tracks ?? []) if (!track.kind) track.kind = "main";
+  for (const station of state.stations ?? []) if (!station.kind) station.kind = "station";
+  return normalizeVersion13(state);
+}
+
+function normalizeVersion13(raw: Record<string, any>): MapState {
+  const state = structuredClone(raw);
+  for (const track of state.tracks ?? []) if (!track.kind) track.kind = "main";
+  for (const station of state.stations ?? []) if (!station.kind) station.kind = "station";
   validateMapState(state);
   return state as MapState;
 }

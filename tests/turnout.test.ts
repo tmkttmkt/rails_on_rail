@@ -193,7 +193,7 @@ describe("転てつ器", () => {
   it("保存して読み込んでも転てつ器が保持される", () => {
     const state = place(baseState());
     const restored = parseSaveFile(serializeSaveFile(createSaveFile("転てつ器", state))).state;
-    expect(restored.version).toBe(12);
+    expect(restored.version).toBe(13);
     expect(restored.turnouts).toEqual(state.turnouts);
   });
 
@@ -205,7 +205,7 @@ describe("転てつ器", () => {
     delete raw.nextTurnoutId;
 
     const migrated = parseMapState(JSON.stringify(raw));
-    expect(migrated.version).toBe(12);
+    expect(migrated.version).toBe(13);
     expect(migrated.turnouts).toEqual([]);
     expect(migrated.nextTurnoutId).toBe(1);
     expect(migrated.tracks).toHaveLength(1);

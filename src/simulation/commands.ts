@@ -1,4 +1,4 @@
-import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation, type Turnout, type TurnoutSide } from "./model";
+import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation, type Turnout, type TurnoutSide, type StationKind, type TrackKind, STATION_KINDS, TRACK_KINDS } from "./model";
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
 import { formationTemplateCatalog } from "../data/formationTemplateCatalog";
@@ -42,8 +42,9 @@ import {
 import type { ServiceDomainCommand } from "./serviceCommands";
 
 export type MapCommand =
-  | { type: "track.create"; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
+  | { type: "track.create"; kind?: TrackKind; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
   | { type: "track.delete"; trackId: string }
+  | { type: "track.setKind"; trackId: string; kind: TrackKind }
   | { type: "turnout.create"; trackId: string; position: Point; typeId: string; side: TurnoutSide; divergingLengthM?: number }
   | { type: "track.connect"; trackId: string; otherTrackId: string; position: Point }
   | { type: "turnout.attach"; trackId: string; divergingTrackId: string; position: Point; typeId?: string }
@@ -52,7 +53,8 @@ export type MapCommand =
   | { type: "trackGroup.addTrack"; groupId: string; trackId: string }
   | { type: "trackGroup.removeTrack"; groupId: string; trackId: string }
   | { type: "trackGroup.dissolve"; groupId: string }
-  | { type: "station.createRange"; name: string; trackId: string; startPosition: Point; endPosition: Point; includeTrackGroup?: boolean }
+  | { type: "station.createRange"; name: string; trackId: string; startPosition: Point; endPosition: Point; includeTrackGroup?: boolean; kind?: StationKind }
+  | { type: "station.setKind"; stationId: string; kind: StationKind }
   | { type: "station.rename"; stationId: string; name: string }
   | { type: "station.extend"; stationId: string; trackId: string; position: Point }
   | { type: "station.merge"; stationIds: string[] }
@@ -125,6 +127,19 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
   switch (command.type) {
     case "track.create":
       return createTracks(next, command);
+    case "track.setKind": {
+      const track = requireTrack(next, command.trackId);
+      if (!TRACK_KINDS.includes(command.kind)) throw new Error("線路の区分が正しくありません");
+      track.kind = command.kind;
+      return { state: next, message: `${track.id}を${command.kind === "main" ? "本線" : "側線"}にしました` };
+    }
+    case "station.setKind": {
+      const station = next.stations.find((item) => item.id === command.stationId);
+      if (!station) throw new Error("停車場が存在しません");
+      if (!STATION_KINDS.includes(command.kind)) throw new Error("停車場の種類が正しくありません");
+      station.kind = command.kind;
+      return { state: next, message: `停車場「${station.name}」の種類を変更しました` };
+    }
     case "turnout.create":
       return createTurnout(next, command);
     case "track.connect":
@@ -207,6 +222,8 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       const group = command.includeTrackGroup ? groupTrackIds(next, track.id) : [track.id];
       const number = next.nextStationId++;
       const stationId = `station-${number}`;
+      const stationKind: StationKind = command.kind ?? "station";
+      if (!STATION_KINDS.includes(stationKind)) throw new Error("停車場の種類が正しくありません");
       const stopPoints = group.map((trackId, idx) => {
         const targetPath = sampleTrack(requireTrack(next, trackId));
         const targetStart = locateOnPath(targetPath, first.point);
@@ -224,7 +241,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
           direction: "both" as const,
         };
       });
-      next.stations.push({ id: stationId, name, position: midpoint, stopPoints });
+      next.stations.push({ id: stationId, name, kind: stationKind, position: midpoint, stopPoints });
       return { state: next, message: `駅「${name}」を${stopPoints.length}本の線路へ設置しました` };
     }
     case "station.rename": {
@@ -1053,6 +1070,7 @@ function createTracks(next: MapState, command: Extract<MapCommand, { type: "trac
     const endConnection = endPairs.find((pair) => pair.ownId === newIds[index]);
     next.tracks.push({
       id: newIds[index],
+      kind: command.kind ?? "main",
       geometry: command.geometry,
       points: path.map((point) => ({ ...point })),
       resolvedPath: true,
@@ -1286,6 +1304,7 @@ function createTurnout(next: MapState, command: Extract<MapCommand, { type: "tur
   const cantMm = recommendedCantMm(gaugeMm, type.divergingSpeedKmh, alignment.minimumRadiusM);
   next.tracks.push({
     id: divergingId,
+    kind: base.kind,
     geometry: "curve",
     points: path.map((point) => ({ ...point })),
     resolvedPath: true,

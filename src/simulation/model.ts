@@ -52,8 +52,14 @@ export interface Point {
   y: number;
 }
 
+// 線路の運転上の区分。設備規格とは別で、規格の上に乗る運用の制約である。
+export type TrackKind = "main" | "side";
+export const TRACK_KINDS: readonly TrackKind[] = ["main", "side"];
+export const TRACK_KIND_LABELS: Record<TrackKind, string> = { main: "本線", side: "側線" };
+
 export interface Track {
   id: string;
+  kind: TrackKind;
   geometry: TrackGeometry;
   points: Point[];
   resolvedPath: boolean;
@@ -116,9 +122,21 @@ export interface StationStopPoint {
   direction: "both";
 }
 
+// 停車場の種類。日本の鉄道では停車場が上位区分であり、
+// 駅・信号場・操車場はその種類である。
+export type StationKind = "station" | "signal-box" | "yard" | "depot";
+export const STATION_KINDS: readonly StationKind[] = ["station", "signal-box", "yard", "depot"];
+export const STATION_KIND_LABELS: Record<StationKind, string> = {
+  "station": "駅",
+  "signal-box": "信号場",
+  "yard": "操車場",
+  "depot": "車両基地",
+};
+
 export interface Station {
   id: string;
   name: string;
+  kind: StationKind;
   position: Point;
   stopPoints: StationStopPoint[];
 }
@@ -172,7 +190,7 @@ export interface SimulationClock {
 }
 
 export interface MapState {
-  version: 12;
+  version: 13;
   clock: SimulationClock;
   tracks: Track[];
   trackGroups: TrackGroup[];
@@ -230,7 +248,7 @@ export interface Viewport {
 
 export function createInitialState(): MapState {
   const state: MapState = {
-    version: 12,
+    version: 13,
     clock: createInitialClock(),
     tracks: [],
     trackGroups: [],
