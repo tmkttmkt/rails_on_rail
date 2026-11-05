@@ -198,7 +198,7 @@ describe("Canonical Runtime Model and Migration Invariants", () => {
     };
 
     const v11State = parseMapState(JSON.stringify(v9State));
-    expect(v11State.version).toBe(11);
+    expect(v11State.version).toBe(12);
     expect(v11State.routes).toBeDefined();
     expect((v11State as any).dispatchReservations).toBeUndefined();
     expect(v11State.routes["route-1"]).toBeDefined();

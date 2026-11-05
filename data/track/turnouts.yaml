@@ -1,0 +1,52 @@
+formatVersion: 1
+catalog: turnouts # 転てつ器カタログ
+items:
+  # 番数Nは分岐角θをtan θ = 1/Nで定める。
+  # 番数が大きいほど分岐側を高速で通過できるが、全長・用地・価格が増える。
+  # 半径と制限速度はゲーム上のトレードオフを成立させるための暫定値であり、
+  # 正式な工学値ではない。実測・規格資料による裏付けは今後行う。
+
+  - id: turnout-no8
+    name: 8番分岐器
+    status: draft
+    frogNumber: 8
+    divergingRadiusM: 145 # 分岐側の曲線半径。単位はm
+    divergingSpeedKmh: 25 # 分岐側の制限速度。単位はkm/h
+    description: 構内・側線向けの急分岐。用地が狭くても設置できる。
+    sources: []
+
+  - id: turnout-no10
+    name: 10番分岐器
+    status: draft
+    frogNumber: 10
+    divergingRadiusM: 245
+    divergingSpeedKmh: 35
+    description: 構内および副本線で広く使う標準的な分岐器。
+    sources: []
+
+  - id: turnout-no12
+    name: 12番分岐器
+    status: draft
+    frogNumber: 12
+    divergingRadiusM: 350
+    divergingSpeedKmh: 45
+    description: 本線の待避・渡り線に用いる分岐器。
+    sources: []
+
+  - id: turnout-no16
+    name: 16番分岐器
+    status: draft
+    frogNumber: 16
+    divergingRadiusM: 660
+    divergingSpeedKmh: 60
+    description: 幹線の分岐・渡り線に用いる緩い分岐器。
+    sources: []
+
+  - id: turnout-no18
+    name: 18番分岐器
+    status: draft
+    frogNumber: 18
+    divergingRadiusM: 800
+    divergingSpeedKmh: 70
+    description: 高速通過を要する幹線分岐。全長と価格が大きい。
+    sources: []

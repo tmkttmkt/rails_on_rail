@@ -1,4 +1,4 @@
-import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation } from "./model";
+import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation, type Turnout, type TurnoutSide } from "./model";
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
 import { formationTemplateCatalog } from "../data/formationTemplateCatalog";
@@ -44,6 +44,8 @@ import type { ServiceDomainCommand } from "./serviceCommands";
 export type MapCommand =
   | { type: "track.create"; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
   | { type: "track.delete"; trackId: string }
+  | { type: "turnout.create"; trackId: string; position: Point; typeId: string; side: TurnoutSide; divergingLengthM?: number }
+  | { type: "turnout.delete"; turnoutId: string }
   | { type: "trackGroup.create"; trackIds: string[]; name?: string }
   | { type: "trackGroup.addTrack"; groupId: string; trackId: string }
   | { type: "trackGroup.removeTrack"; groupId: string; trackId: string }
@@ -121,6 +123,10 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
   switch (command.type) {
     case "track.create":
       return createTracks(next, command);
+    case "turnout.create":
+      return createTurnout(next, command);
+    case "turnout.delete":
+      return deleteTurnout(next, command);
     case "track.delete": {
       const track = next.tracks.find((t) => t.id === command.trackId);
       if (!track) throw new Error("線路が存在しません");
@@ -1203,6 +1209,125 @@ function nearestPointOnPath(points: Point[], point: Point): Point {
     if (candidate.distance < distance) { nearest = candidate.point; distance = candidate.distance; }
   }
   return nearest;
+}
+
+// 転てつ器の分岐側線形を生成する。
+// 分岐点では基準線の接線から始め、カタログの半径で番数ぶんだけ曲げる。
+// 生成物であるため、接線連続性は定義上かならず満たされる。
+const TURNOUT_ARC_STEPS = 16;
+const TURNOUT_DEFAULT_DIVERGING_LENGTH_M = 120;
+
+export function buildDivergingPath(
+  origin: Point,
+  tangent: Point,
+  radiusM: number,
+  frogNumber: number,
+  side: TurnoutSide,
+  divergingLengthM: number
+): Point[] {
+  const length = Math.hypot(tangent.x, tangent.y);
+  if (length <= 0) throw new Error("基準線の接線が取得できません");
+  const t = { x: tangent.x / length, y: tangent.y / length };
+  const sign = side === "right" ? 1 : -1;
+  // 進行方向に対する右手法線（画面座標はyが下向き）
+  const normal = { x: -t.y * sign, y: t.x * sign };
+  const center = { x: origin.x + normal.x * radiusM, y: origin.y + normal.y * radiusM };
+  const theta = Math.atan(1 / frogNumber);
+
+  const points: Point[] = [];
+  const rx = origin.x - center.x;
+  const ry = origin.y - center.y;
+  for (let step = 0; step <= TURNOUT_ARC_STEPS; step += 1) {
+    const phi = sign * theta * (step / TURNOUT_ARC_STEPS);
+    const cos = Math.cos(phi);
+    const sin = Math.sin(phi);
+    points.push({ x: center.x + rx * cos - ry * sin, y: center.y + rx * sin + ry * cos });
+  }
+  if (divergingLengthM > 0) {
+    const endAngle = sign * theta;
+    const endTangent = {
+      x: t.x * Math.cos(endAngle) - t.y * Math.sin(endAngle),
+      y: t.x * Math.sin(endAngle) + t.y * Math.cos(endAngle),
+    };
+    const last = points[points.length - 1];
+    points.push({ x: last.x + endTangent.x * divergingLengthM, y: last.y + endTangent.y * divergingLengthM });
+  }
+  return points;
+}
+
+function createTurnout(next: MapState, command: Extract<MapCommand, { type: "turnout.create" }>): CommandResult {
+  const base = requireTrack(next, command.trackId);
+  const type = trackCatalog.getTurnoutType(command.typeId);
+  const divergingLengthM = command.divergingLengthM ?? TURNOUT_DEFAULT_DIVERGING_LENGTH_M;
+  if (!Number.isFinite(divergingLengthM) || divergingLengthM < 0) throw new Error("分岐側の延長は0以上で指定してください");
+
+  const basePath = sampleTrack(base);
+  const located = locateOnPath(basePath, command.position);
+  const tangent = getTrackTangentAtPosition(base, located.point);
+  const path = buildDivergingPath(located.point, tangent, type.divergingRadiusM, type.frogNumber, command.side, divergingLengthM);
+
+  for (const existing of next.tracks) {
+    if (polylineOverlapLength(path, sampleTrack(existing)) > 0.0001) {
+      throw new Error(`既設線路${existing.id}と同じ区間へ分岐側線路を重ねることはできません`);
+    }
+  }
+
+  const divergingId = `track-${next.nextTrackId++}`;
+  const alignment = analyzeLine(path);
+  const gaugeMm = trackCatalog.getGauge(base.specification.gaugeId).gaugeMm;
+  const cantMm = recommendedCantMm(gaugeMm, type.divergingSpeedKmh, alignment.minimumRadiusM);
+  next.tracks.push({
+    id: divergingId,
+    geometry: "curve",
+    points: path.map((point) => ({ ...point })),
+    resolvedPath: true,
+    specification: structuredClone(base.specification),
+    engineering: {
+      designSpeedKmh: type.divergingSpeedKmh,
+      builtMinimumRadiusM: alignment.minimumRadiusM,
+      cantProfile: [{ distanceM: 0, cantMm }, { distanceM: alignment.lengthM, cantMm }],
+    },
+  });
+
+  const junctionId = createConnectionJunction(next, divergingId, path, "start", base.id, path[0], "curve");
+  const diverging = next.tracks.find((item) => item.id === divergingId)!;
+  diverging.startConnection = { trackId: base.id, junctionId };
+
+  const turnout: Turnout = {
+    id: `turnout-${next.nextTurnoutId++}`,
+    junctionId,
+    typeId: type.id,
+    throughTrackId: base.id,
+    divergingTrackId: divergingId,
+    side: command.side,
+  };
+  next.turnouts.push(turnout);
+  return { state: next, message: `${type.name}を${base.id}へ設置しました（分岐側 ${divergingId}）` };
+}
+
+function deleteTurnout(next: MapState, command: Extract<MapCommand, { type: "turnout.delete" }>): CommandResult {
+  const index = next.turnouts.findIndex((item) => item.id === command.turnoutId);
+  if (index < 0) throw new Error("転てつ器が存在しません");
+  const turnout = next.turnouts[index];
+  const placed = next.vehiclePlacements.find((p) => p.trackId === turnout.divergingTrackId);
+  if (placed) throw new Error(`配置されている編成があるため転てつ器${turnout.id}を撤去できません`);
+  assertTrackCanBeDeletedOrShortened(next, turnout.divergingTrackId);
+
+  next.turnouts.splice(index, 1);
+  next.tracks = next.tracks.filter((item) => item.id !== turnout.divergingTrackId);
+  next.junctions = next.junctions.flatMap((junction) => {
+    const ports = junction.ports.filter((port) => port.trackId !== turnout.divergingTrackId);
+    return ports.length >= 2 ? [{ ...junction, ports }] : [];
+  });
+  next.trackGroups = next.trackGroups.flatMap((group) => {
+    const trackIds = group.trackIds.filter((id) => id !== turnout.divergingTrackId);
+    return trackIds.length > 0 ? [{ ...group, trackIds }] : [];
+  });
+  for (const item of next.tracks) {
+    if (item.startConnection?.trackId === turnout.divergingTrackId) delete item.startConnection;
+    if (item.endConnection?.trackId === turnout.divergingTrackId) delete item.endConnection;
+  }
+  return { state: next, message: `転てつ器${turnout.id}を撤去しました` };
 }
 
 function createGroup(state: MapState, trackIds: string[], name?: string): TrackGroup {

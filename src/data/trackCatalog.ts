@@ -4,6 +4,7 @@ import roadbedsYaml from "../../data/track/roadbeds.yaml?raw";
 import standardsYaml from "../../data/track/standards.yaml?raw";
 import supportSystemsYaml from "../../data/track/support-systems.yaml?raw";
 import gaugesYaml from "../../data/track/gauges.yaml?raw";
+import turnoutsYaml from "../../data/track/turnouts.yaml?raw";
 
 export interface TrackGauge {
   id: string;
@@ -26,6 +27,14 @@ export interface TrackSupportSystem {
 export interface Roadbed {
   id: string;
   name: string;
+}
+
+export interface TurnoutType {
+  id: string;
+  name: string;
+  frogNumber: number;
+  divergingRadiusM: number;
+  divergingSpeedKmh: number;
 }
 
 export interface TrackStandard {
@@ -76,6 +85,8 @@ export class TrackCatalog {
   readonly supportSystems: TrackSupportSystem[];
   readonly roadbeds: Roadbed[];
   readonly standards: TrackStandard[];
+  readonly turnoutTypes: TurnoutType[];
+  private readonly turnoutTypesById: Map<string, TurnoutType>;
   private readonly railProfilesById: Map<string, RailProfile>;
   private readonly gaugesById: Map<string, TrackGauge>;
   private readonly supportSystemsById: Map<string, TrackSupportSystem>;
@@ -87,12 +98,15 @@ export class TrackCatalog {
     supportSystems: TrackSupportSystem[],
     roadbeds: Roadbed[],
     standards: TrackStandard[],
+    turnoutTypes: TurnoutType[],
   ) {
     this.gauges = gauges;
     this.railProfiles = railProfiles;
     this.supportSystems = supportSystems;
     this.roadbeds = roadbeds;
     this.standards = standards;
+    this.turnoutTypes = turnoutTypes;
+    this.turnoutTypesById = indexById(turnoutTypes, "転てつ器カタログ");
     this.gaugesById = indexById(gauges, "軌間カタログ");
     this.railProfilesById = indexById(railProfiles, "レールカタログ");
     this.supportSystemsById = indexById(supportSystems, "軌道支持方式カタログ");
@@ -116,6 +130,12 @@ export class TrackCatalog {
   getSupportSystem(id: string): TrackSupportSystem {
     const item = this.supportSystemsById.get(id);
     if (!item) throw new Error(`軌道支持方式が存在しません: ${id}`);
+    return item;
+  }
+
+  getTurnoutType(id: string): TurnoutType {
+    const item = this.turnoutTypesById.get(id);
+    if (!item) throw new Error(`転てつ器形式が存在しません: ${id}`);
     return item;
   }
 
@@ -152,10 +172,11 @@ export class TrackCatalog {
   }
 }
 
+const turnoutTypes = readCatalog<TurnoutType>(turnoutsYaml, "turnouts").items;
 const gauges = readCatalog<TrackGauge>(gaugesYaml, "track-gauges").items;
 const railProfiles = readCatalog<RailProfile>(railProfilesYaml, "rail-profiles").items;
 const supportSystems = readCatalog<TrackSupportSystem>(supportSystemsYaml, "track-support-systems").items;
 const roadbeds = readCatalog<Roadbed>(roadbedsYaml, "track-roadbeds").items;
 const standards = readCatalog<TrackStandard>(standardsYaml, "track-standards").items;
 
-export const trackCatalog = new TrackCatalog(gauges, railProfiles, supportSystems, roadbeds, standards);
+export const trackCatalog = new TrackCatalog(gauges, railProfiles, supportSystems, roadbeds, standards, turnoutTypes);

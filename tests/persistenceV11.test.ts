@@ -22,7 +22,7 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
 
     const json = serializeMapState(state);
     const restored = parseMapState(json);
-    expect(restored.version).toBe(11);
+    expect(restored.version).toBe(12);
     expect(restored).toEqual(state);
   });
 
@@ -251,7 +251,7 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
     };
 
     const migrated = parseMapState(JSON.stringify(v10Data));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.lines["line-1"]).toBeDefined();
     expect(migrated.lines["line-1"].name).toBe("東海道線");
 
@@ -354,13 +354,16 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
 
     // Simulate legacy v11 raw JSON with route.lineSections
     const rawState = JSON.parse(JSON.stringify(state));
+    rawState.version = 11;
+    delete rawState.turnouts;
+    delete rawState.nextTurnoutId;
     rawState.routes[routeId].lineSections = [
       { fromStopSequence: 1, toStopSequence: 2, lineId, serviceSystemId: sysId },
     ];
     delete rawState.operations[opId].lineAssignments;
 
     const normalized = parseMapState(JSON.stringify(rawState));
-    expect(normalized.version).toBe(11);
+    expect(normalized.version).toBe(12);
     expect((normalized.routes[routeId] as unknown as Record<string, unknown>).lineSections).toBeUndefined();
     expect(normalized.operations[opId].lineAssignments).toEqual([
       { lineId, serviceSystemId: sysId },

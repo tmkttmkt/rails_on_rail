@@ -95,6 +95,17 @@ export interface TrackJunction {
   ports: TrackJunctionPort[];
 }
 
+export type TurnoutSide = "left" | "right";
+
+export interface Turnout {
+  id: string;
+  junctionId: string;
+  typeId: string;
+  throughTrackId: string;
+  divergingTrackId: string;
+  side: TurnoutSide;
+}
+
 export interface StationStopPoint {
   id: string;
   trackId: string;
@@ -161,11 +172,12 @@ export interface SimulationClock {
 }
 
 export interface MapState {
-  version: 11;
+  version: 12;
   clock: SimulationClock;
   tracks: Track[];
   trackGroups: TrackGroup[];
   junctions: TrackJunction[];
+  turnouts: Turnout[];
   stations: Station[];
   lines: Record<string, Line>;
   serviceSystems: Record<string, ServiceSystem>;
@@ -189,6 +201,7 @@ export interface MapState {
   nextTrackId: number;
   nextTrackGroupId: number;
   nextJunctionId: number;
+  nextTurnoutId: number;
   nextStationId: number;
   nextLineId: number;
   nextServiceSystemId: number;
@@ -217,11 +230,12 @@ export interface Viewport {
 
 export function createInitialState(): MapState {
   const state: MapState = {
-    version: 11,
+    version: 12,
     clock: createInitialClock(),
     tracks: [],
     trackGroups: [],
     junctions: [],
+    turnouts: [],
     stations: [],
     lines: {},
     serviceSystems: {},
@@ -244,6 +258,7 @@ export function createInitialState(): MapState {
     nextTrackId: 1,
     nextTrackGroupId: 1,
     nextJunctionId: 1,
+    nextTurnoutId: 1,
     nextStationId: 1,
     nextLineId: 1,
     nextServiceSystemId: 1,

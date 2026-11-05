@@ -1,0 +1,1564 @@
+{
+  "formatVersion": 1,
+  "metadata": {
+    "name": "転てつ器見本",
+    "createdAt": "2026-11-05T08:25:26.626Z",
+    "updatedAt": "2026-11-05T08:25:26.626Z"
+  },
+  "state": {
+    "version": 12,
+    "clock": {
+      "currentTimeMs": -2208967200000,
+      "paused": true,
+      "speedMultiplier": 1
+    },
+    "tracks": [
+      {
+        "id": "track-1",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 1400,
+            "y": 0
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1400,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-2",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 0
+          },
+          {
+            "x": 301.12695579201704,
+            "y": 0.004379477713740698
+          },
+          {
+            "x": 302.25384350847855,
+            "y": 0.017517646305662993
+          },
+          {
+            "x": 303.3805950779412,
+            "y": 0.03941371214381206
+          },
+          {
+            "x": 304.5071424371859,
+            "y": 0.07006635256152549
+          },
+          {
+            "x": 305.6334175353291,
+            "y": 0.10947371593735511
+          },
+          {
+            "x": 306.75935233793376,
+            "y": 0.15763342180690643
+          },
+          {
+            "x": 307.8848788311188,
+            "y": 0.21454256100659563
+          },
+          {
+            "x": 309.0099290256677,
+            "y": 0.28019769584940946
+          },
+          {
+            "x": 310.13443496113564,
+            "y": 0.354594860332611
+          },
+          {
+            "x": 311.2583287099545,
+            "y": 0.43772956037727795
+          },
+          {
+            "x": 312.3815423815365,
+            "y": 0.5295967740997298
+          },
+          {
+            "x": 313.50400812637474,
+            "y": 0.6301909521149014
+          },
+          {
+            "x": 314.6256581401421,
+            "y": 0.7395060178716335
+          },
+          {
+            "x": 315.7464246677871,
+            "y": 0.8575353680196542
+          },
+          {
+            "x": 316.8662400076265,
+            "y": 0.9842718728084776
+          },
+          {
+            "x": 317.98503651543524,
+            "y": 1.1197078765181914
+          },
+          {
+            "x": 714.8961872009023,
+            "y": 50.733601712201576
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": 144.99999999941747,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 36
+            },
+            {
+              "distanceM": 418.0314288249256,
+              "cantMm": 36
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-1",
+          "junctionId": "junction-1"
+        }
+      },
+      {
+        "id": "track-3",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 0
+          },
+          {
+            "x": 301.12695579201704,
+            "y": -0.004379477713740698
+          },
+          {
+            "x": 302.25384350847855,
+            "y": -0.017517646305662993
+          },
+          {
+            "x": 303.3805950779412,
+            "y": -0.03941371214381206
+          },
+          {
+            "x": 304.5071424371859,
+            "y": -0.07006635256152549
+          },
+          {
+            "x": 305.6334175353291,
+            "y": -0.10947371593735511
+          },
+          {
+            "x": 306.75935233793376,
+            "y": -0.15763342180690643
+          },
+          {
+            "x": 307.8848788311188,
+            "y": -0.21454256100659563
+          },
+          {
+            "x": 309.0099290256677,
+            "y": -0.28019769584940946
+          },
+          {
+            "x": 310.13443496113564,
+            "y": -0.354594860332611
+          },
+          {
+            "x": 311.2583287099545,
+            "y": -0.43772956037727795
+          },
+          {
+            "x": 312.3815423815365,
+            "y": -0.5295967740997298
+          },
+          {
+            "x": 313.50400812637474,
+            "y": -0.6301909521149014
+          },
+          {
+            "x": 314.6256581401421,
+            "y": -0.7395060178716335
+          },
+          {
+            "x": 315.7464246677871,
+            "y": -0.8575353680196542
+          },
+          {
+            "x": 316.8662400076265,
+            "y": -0.9842718728084776
+          },
+          {
+            "x": 317.98503651543524,
+            "y": -1.1197078765181914
+          },
+          {
+            "x": 714.8961872009023,
+            "y": -50.733601712201576
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 25,
+          "builtMinimumRadiusM": 144.99999999941747,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 36
+            },
+            {
+              "distanceM": 418.0314288249256,
+              "cantMm": 36
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-1",
+          "junctionId": "junction-2"
+        }
+      },
+      {
+        "id": "track-4",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 260
+          },
+          {
+            "x": 1400,
+            "y": 260
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1400,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-5",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 260
+          },
+          {
+            "x": 301.5261663709834,
+            "y": 260.00475348242355
+          },
+          {
+            "x": 303.05227352070136,
+            "y": 260.01901374524016
+          },
+          {
+            "x": 304.57826223018634,
+            "y": 260.0427802350956
+          },
+          {
+            "x": 306.104073285067,
+            "y": 260.0760520297565
+          },
+          {
+            "x": 307.6296474778653,
+            "y": 260.11882783814616
+          },
+          {
+            "x": 309.15492561029487,
+            "y": 260.17110600039473
+          },
+          {
+            "x": 310.6798484955573,
+            "y": 260.23288448790356
+          },
+          {
+            "x": 312.20435696063913,
+            "y": 260.3041609034242
+          },
+          {
+            "x": 313.72839184860834,
+            "y": 260.38493248115094
+          },
+          {
+            "x": 315.2518940209094,
+            "y": 260.47519608682853
+          },
+          {
+            "x": 316.7748043596581,
+            "y": 260.57494821787355
+          },
+          {
+            "x": 318.29706376993596,
+            "y": 260.6841850035105
+          },
+          {
+            "x": 319.81861318208297,
+            "y": 260.80290220492185
+          },
+          {
+            "x": 321.3393935539898,
+            "y": 260.9310952154127
+          },
+          {
+            "x": 322.859345873389,
+            "y": 261.0687590605894
+          },
+          {
+            "x": 324.37841116014476,
+            "y": 261.2158883985527
+          },
+          {
+            "x": 722.3932872441404,
+            "y": 301.01737600695225
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 35,
+          "builtMinimumRadiusM": 244.99999999794588,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 42
+            },
+            {
+              "distanceM": 424.4187803791272,
+              "cantMm": 42
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-4",
+          "junctionId": "junction-3"
+        }
+      },
+      {
+        "id": "track-6",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 260
+          },
+          {
+            "x": 301.5261663709834,
+            "y": 259.99524651757645
+          },
+          {
+            "x": 303.05227352070136,
+            "y": 259.98098625475984
+          },
+          {
+            "x": 304.57826223018634,
+            "y": 259.9572197649044
+          },
+          {
+            "x": 306.104073285067,
+            "y": 259.9239479702435
+          },
+          {
+            "x": 307.6296474778653,
+            "y": 259.88117216185384
+          },
+          {
+            "x": 309.15492561029487,
+            "y": 259.82889399960527
+          },
+          {
+            "x": 310.6798484955573,
+            "y": 259.76711551209644
+          },
+          {
+            "x": 312.20435696063913,
+            "y": 259.6958390965758
+          },
+          {
+            "x": 313.72839184860834,
+            "y": 259.61506751884906
+          },
+          {
+            "x": 315.2518940209094,
+            "y": 259.52480391317147
+          },
+          {
+            "x": 316.7748043596581,
+            "y": 259.42505178212645
+          },
+          {
+            "x": 318.29706376993596,
+            "y": 259.3158149964895
+          },
+          {
+            "x": 319.81861318208297,
+            "y": 259.19709779507815
+          },
+          {
+            "x": 321.3393935539898,
+            "y": 259.0689047845873
+          },
+          {
+            "x": 322.859345873389,
+            "y": 258.9312409394106
+          },
+          {
+            "x": 324.37841116014476,
+            "y": 258.7841116014473
+          },
+          {
+            "x": 722.3932872441404,
+            "y": 218.98262399304775
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 35,
+          "builtMinimumRadiusM": 244.99999999794588,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 42
+            },
+            {
+              "distanceM": 424.4187803791272,
+              "cantMm": 42
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-4",
+          "junctionId": "junction-4"
+        }
+      },
+      {
+        "id": "track-7",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 520
+          },
+          {
+            "x": 1400,
+            "y": 520
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1400,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-8",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 520
+          },
+          {
+            "x": 301.8187062628058,
+            "y": 520.0047253068556
+          },
+          {
+            "x": 303.6373634173534,
+            "y": 520.0189010998306
+          },
+          {
+            "x": 305.4559223567108,
+            "y": 520.042526996154
+          },
+          {
+            "x": 307.2743339765978,
+            "y": 520.0756023578851
+          },
+          {
+            "x": 309.0925491767122,
+            "y": 520.118126291931
+          },
+          {
+            "x": 310.9105188620554,
+            "y": 520.1700976500712
+          },
+          {
+            "x": 312.7281939442582,
+            "y": 520.2315150289876
+          },
+          {
+            "x": 314.5455253429061,
+            "y": 520.3023767703033
+          },
+          {
+            "x": 316.3624639868647,
+            "y": 520.3826809606273
+          },
+          {
+            "x": 318.17896081560474,
+            "y": 520.4724254316054
+          },
+          {
+            "x": 319.9949667805267,
+            "y": 520.5716077599795
+          },
+          {
+            "x": 321.81043284628515,
+            "y": 520.680225267653
+          },
+          {
+            "x": 323.6253099921131,
+            "y": 520.7982750217626
+          },
+          {
+            "x": 325.43954921314514,
+            "y": 520.925753834758
+          },
+          {
+            "x": 327.2531015217412,
+            "y": 521.0626582644877
+          },
+          {
+            "x": 329.065917948809,
+            "y": 521.2089846142921
+          },
+          {
+            "x": 727.6842212467609,
+            "y": 554.4271765557882
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 45,
+          "builtMinimumRadiusM": 349.99999999527483,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 49
+            },
+            {
+              "distanceM": 429.09939842190573,
+              "cantMm": 49
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-7",
+          "junctionId": "junction-5"
+        }
+      },
+      {
+        "id": "track-9",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 520
+          },
+          {
+            "x": 301.8187062628058,
+            "y": 519.9952746931444
+          },
+          {
+            "x": 303.6373634173534,
+            "y": 519.9810989001694
+          },
+          {
+            "x": 305.4559223567108,
+            "y": 519.957473003846
+          },
+          {
+            "x": 307.2743339765978,
+            "y": 519.9243976421149
+          },
+          {
+            "x": 309.0925491767122,
+            "y": 519.881873708069
+          },
+          {
+            "x": 310.9105188620554,
+            "y": 519.8299023499288
+          },
+          {
+            "x": 312.7281939442582,
+            "y": 519.7684849710124
+          },
+          {
+            "x": 314.5455253429061,
+            "y": 519.6976232296967
+          },
+          {
+            "x": 316.3624639868647,
+            "y": 519.6173190393727
+          },
+          {
+            "x": 318.17896081560474,
+            "y": 519.5275745683946
+          },
+          {
+            "x": 319.9949667805267,
+            "y": 519.4283922400205
+          },
+          {
+            "x": 321.81043284628515,
+            "y": 519.319774732347
+          },
+          {
+            "x": 323.6253099921131,
+            "y": 519.2017249782374
+          },
+          {
+            "x": 325.43954921314514,
+            "y": 519.074246165242
+          },
+          {
+            "x": 327.2531015217412,
+            "y": 518.9373417355123
+          },
+          {
+            "x": 329.065917948809,
+            "y": 518.7910153857079
+          },
+          {
+            "x": 727.6842212467609,
+            "y": 485.57282344421185
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 45,
+          "builtMinimumRadiusM": 349.99999999527483,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 49
+            },
+            {
+              "distanceM": 429.09939842190573,
+              "cantMm": 49
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-7",
+          "junctionId": "junction-6"
+        }
+      },
+      {
+        "id": "track-10",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 780
+          },
+          {
+            "x": 1400,
+            "y": 780
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1400,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-11",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 780
+          },
+          {
+            "x": 302.5747693813456,
+            "y": 780.0050223201446
+          },
+          {
+            "x": 305.14949957688475,
+            "y": 780.0200892041428
+          },
+          {
+            "x": 307.72415140140737,
+            "y": 780.0452004226895
+          },
+          {
+            "x": 310.29868567089613,
+            "y": 780.0803555936131
+          },
+          {
+            "x": 312.8730632031227,
+            "y": 780.125554181882
+          },
+          {
+            "x": 315.4472448182443,
+            "y": 780.1807954996117
+          },
+          {
+            "x": 318.02119133939976,
+            "y": 780.2460787060764
+          },
+          {
+            "x": 320.59486359330583,
+            "y": 780.321402807721
+          },
+          {
+            "x": 323.1682224108534,
+            "y": 780.4067666581765
+          },
+          {
+            "x": 325.74122862770366,
+            "y": 780.5021689582776
+          },
+          {
+            "x": 328.31384308488396,
+            "y": 780.607608256082
+          },
+          {
+            "x": 330.88602662938393,
+            "y": 780.7230829468932
+          },
+          {
+            "x": 333.45774011475146,
+            "y": 780.8485912732843
+          },
+          {
+            "x": 336.02894440168814,
+            "y": 780.9841313251251
+          },
+          {
+            "x": 338.5996003586452,
+            "y": 781.1297010396106
+          },
+          {
+            "x": 341.16966886241914,
+            "y": 781.2852982012936
+          },
+          {
+            "x": 740.3907002555745,
+            "y": 806.2366126633658
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 60,
+          "builtMinimumRadiusM": 659.9999999916304,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 46
+            },
+            {
+              "distanceM": 441.1963884733664,
+              "cantMm": 46
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-10",
+          "junctionId": "junction-7"
+        }
+      },
+      {
+        "id": "track-12",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 780
+          },
+          {
+            "x": 302.5747693813456,
+            "y": 779.9949776798554
+          },
+          {
+            "x": 305.14949957688475,
+            "y": 779.9799107958572
+          },
+          {
+            "x": 307.72415140140737,
+            "y": 779.9547995773105
+          },
+          {
+            "x": 310.29868567089613,
+            "y": 779.9196444063869
+          },
+          {
+            "x": 312.8730632031227,
+            "y": 779.874445818118
+          },
+          {
+            "x": 315.4472448182443,
+            "y": 779.8192045003883
+          },
+          {
+            "x": 318.02119133939976,
+            "y": 779.7539212939236
+          },
+          {
+            "x": 320.59486359330583,
+            "y": 779.678597192279
+          },
+          {
+            "x": 323.1682224108534,
+            "y": 779.5932333418235
+          },
+          {
+            "x": 325.74122862770366,
+            "y": 779.4978310417224
+          },
+          {
+            "x": 328.31384308488396,
+            "y": 779.392391743918
+          },
+          {
+            "x": 330.88602662938393,
+            "y": 779.2769170531068
+          },
+          {
+            "x": 333.45774011475146,
+            "y": 779.1514087267157
+          },
+          {
+            "x": 336.02894440168814,
+            "y": 779.0158686748749
+          },
+          {
+            "x": 338.5996003586452,
+            "y": 778.8702989603894
+          },
+          {
+            "x": 341.16966886241914,
+            "y": 778.7147017987064
+          },
+          {
+            "x": 740.3907002555745,
+            "y": 753.7633873366342
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 60,
+          "builtMinimumRadiusM": 659.9999999916304,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 46
+            },
+            {
+              "distanceM": 441.1963884733664,
+              "cantMm": 46
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-10",
+          "junctionId": "junction-8"
+        }
+      },
+      {
+        "id": "track-13",
+        "geometry": "straight",
+        "points": [
+          {
+            "x": 0,
+            "y": 1040
+          },
+          {
+            "x": 1400,
+            "y": 1040
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 120,
+          "builtMinimumRadiusM": null,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 0
+            },
+            {
+              "distanceM": 1400,
+              "cantMm": 0
+            }
+          ]
+        }
+      },
+      {
+        "id": "track-14",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 1040
+          },
+          {
+            "x": 302.77491969783404,
+            "y": 1040.0048126265567
+          },
+          {
+            "x": 305.54980600903747,
+            "y": 1040.0192504483234
+          },
+          {
+            "x": 308.32462554738146,
+            "y": 1040.043313291591
+          },
+          {
+            "x": 311.0993449274405,
+            "y": 1040.0770008668449
+          },
+          {
+            "x": 313.8739307649941,
+            "y": 1040.1203127687713
+          },
+          {
+            "x": 316.6483496774286,
+            "y": 1040.1732484762601
+          },
+          {
+            "x": 319.42256828413866,
+            "y": 1040.2358073524122
+          },
+          {
+            "x": 322.1965532069289,
+            "y": 1040.3079886445457
+          },
+          {
+            "x": 324.97027107041555,
+            "y": 1040.3897914842069
+          },
+          {
+            "x": 327.74368850242803,
+            "y": 1040.4812148871797
+          },
+          {
+            "x": 330.5167721344103,
+            "y": 1040.5822577534968
+          },
+          {
+            "x": 333.28948860182254,
+            "y": 1040.6929188674549
+          },
+          {
+            "x": 336.0618045445426,
+            "y": 1040.813196897627
+          },
+          {
+            "x": 338.833686607267,
+            "y": 1040.94309039688
+          },
+          {
+            "x": 341.6051014399128,
+            "y": 1041.082597802392
+          },
+          {
+            "x": 344.3760156980183,
+            "y": 1041.2317174356701
+          },
+          {
+            "x": 743.7601569801832,
+            "y": 1063.4197252846793
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 70,
+          "builtMinimumRadiusM": 799.9999999693367,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 51
+            },
+            {
+              "distanceM": 444.39878193875603,
+              "cantMm": 51
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-13",
+          "junctionId": "junction-9"
+        }
+      },
+      {
+        "id": "track-15",
+        "geometry": "curve",
+        "points": [
+          {
+            "x": 300,
+            "y": 1040
+          },
+          {
+            "x": 302.77491969783404,
+            "y": 1039.9951873734433
+          },
+          {
+            "x": 305.54980600903747,
+            "y": 1039.9807495516766
+          },
+          {
+            "x": 308.32462554738146,
+            "y": 1039.956686708409
+          },
+          {
+            "x": 311.0993449274405,
+            "y": 1039.9229991331551
+          },
+          {
+            "x": 313.8739307649941,
+            "y": 1039.8796872312287
+          },
+          {
+            "x": 316.6483496774286,
+            "y": 1039.8267515237399
+          },
+          {
+            "x": 319.42256828413866,
+            "y": 1039.7641926475878
+          },
+          {
+            "x": 322.1965532069289,
+            "y": 1039.6920113554543
+          },
+          {
+            "x": 324.97027107041555,
+            "y": 1039.6102085157931
+          },
+          {
+            "x": 327.74368850242803,
+            "y": 1039.5187851128203
+          },
+          {
+            "x": 330.5167721344103,
+            "y": 1039.4177422465032
+          },
+          {
+            "x": 333.28948860182254,
+            "y": 1039.3070811325451
+          },
+          {
+            "x": 336.0618045445426,
+            "y": 1039.186803102373
+          },
+          {
+            "x": 338.833686607267,
+            "y": 1039.05690960312
+          },
+          {
+            "x": 341.6051014399128,
+            "y": 1038.917402197608
+          },
+          {
+            "x": 344.3760156980183,
+            "y": 1038.7682825643299
+          },
+          {
+            "x": 743.7601569801832,
+            "y": 1016.5802747153207
+          }
+        ],
+        "resolvedPath": true,
+        "specification": {
+          "gaugeId": "gauge-1067mm",
+          "railProfileId": "jis-50n",
+          "supportSystemId": "pc-sleeper-ballast",
+          "roadbedId": "reinforced-roadbed"
+        },
+        "engineering": {
+          "designSpeedKmh": 70,
+          "builtMinimumRadiusM": 799.9999999693367,
+          "cantProfile": [
+            {
+              "distanceM": 0,
+              "cantMm": 51
+            },
+            {
+              "distanceM": 444.39878193875603,
+              "cantMm": 51
+            }
+          ]
+        },
+        "startConnection": {
+          "trackId": "track-13",
+          "junctionId": "junction-10"
+        }
+      }
+    ],
+    "trackGroups": [],
+    "junctions": [
+      {
+        "id": "junction-1",
+        "position": {
+          "x": 300,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-2",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-1",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-2",
+        "position": {
+          "x": 300,
+          "y": 0
+        },
+        "ports": [
+          {
+            "trackId": "track-3",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-1",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-3",
+        "position": {
+          "x": 300,
+          "y": 260
+        },
+        "ports": [
+          {
+            "trackId": "track-5",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-4",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-4",
+        "position": {
+          "x": 300,
+          "y": 260
+        },
+        "ports": [
+          {
+            "trackId": "track-6",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-4",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-5",
+        "position": {
+          "x": 300,
+          "y": 520
+        },
+        "ports": [
+          {
+            "trackId": "track-8",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-7",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-6",
+        "position": {
+          "x": 300,
+          "y": 520
+        },
+        "ports": [
+          {
+            "trackId": "track-9",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-7",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-7",
+        "position": {
+          "x": 300,
+          "y": 780
+        },
+        "ports": [
+          {
+            "trackId": "track-11",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-10",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-8",
+        "position": {
+          "x": 300,
+          "y": 780
+        },
+        "ports": [
+          {
+            "trackId": "track-12",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-10",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-9",
+        "position": {
+          "x": 300,
+          "y": 1040
+        },
+        "ports": [
+          {
+            "trackId": "track-14",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-13",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      },
+      {
+        "id": "junction-10",
+        "position": {
+          "x": 300,
+          "y": 1040
+        },
+        "ports": [
+          {
+            "trackId": "track-15",
+            "location": "start",
+            "distanceM": 0
+          },
+          {
+            "trackId": "track-13",
+            "location": "interior",
+            "distanceM": 300
+          }
+        ]
+      }
+    ],
+    "turnouts": [
+      {
+        "id": "turnout-1",
+        "junctionId": "junction-1",
+        "typeId": "turnout-no8",
+        "throughTrackId": "track-1",
+        "divergingTrackId": "track-2",
+        "side": "right"
+      },
+      {
+        "id": "turnout-2",
+        "junctionId": "junction-2",
+        "typeId": "turnout-no8",
+        "throughTrackId": "track-1",
+        "divergingTrackId": "track-3",
+        "side": "left"
+      },
+      {
+        "id": "turnout-3",
+        "junctionId": "junction-3",
+        "typeId": "turnout-no10",
+        "throughTrackId": "track-4",
+        "divergingTrackId": "track-5",
+        "side": "right"
+      },
+      {
+        "id": "turnout-4",
+        "junctionId": "junction-4",
+        "typeId": "turnout-no10",
+        "throughTrackId": "track-4",
+        "divergingTrackId": "track-6",
+        "side": "left"
+      },
+      {
+        "id": "turnout-5",
+        "junctionId": "junction-5",
+        "typeId": "turnout-no12",
+        "throughTrackId": "track-7",
+        "divergingTrackId": "track-8",
+        "side": "right"
+      },
+      {
+        "id": "turnout-6",
+        "junctionId": "junction-6",
+        "typeId": "turnout-no12",
+        "throughTrackId": "track-7",
+        "divergingTrackId": "track-9",
+        "side": "left"
+      },
+      {
+        "id": "turnout-7",
+        "junctionId": "junction-7",
+        "typeId": "turnout-no16",
+        "throughTrackId": "track-10",
+        "divergingTrackId": "track-11",
+        "side": "right"
+      },
+      {
+        "id": "turnout-8",
+        "junctionId": "junction-8",
+        "typeId": "turnout-no16",
+        "throughTrackId": "track-10",
+        "divergingTrackId": "track-12",
+        "side": "left"
+      },
+      {
+        "id": "turnout-9",
+        "junctionId": "junction-9",
+        "typeId": "turnout-no18",
+        "throughTrackId": "track-13",
+        "divergingTrackId": "track-14",
+        "side": "right"
+      },
+      {
+        "id": "turnout-10",
+        "junctionId": "junction-10",
+        "typeId": "turnout-no18",
+        "throughTrackId": "track-13",
+        "divergingTrackId": "track-15",
+        "side": "left"
+      }
+    ],
+    "stations": [
+      {
+        "id": "station-1",
+        "name": "転てつ器見本",
+        "position": {
+          "x": 1100,
+          "y": 0
+        },
+        "stopPoints": [
+          {
+            "id": "station-1-sp-1",
+            "trackId": "track-1",
+            "startDistanceM": 900.0000000000002,
+            "endDistanceM": 1300,
+            "startPosition": {
+              "x": 900.0000000000002,
+              "y": 0
+            },
+            "endPosition": {
+              "x": 1300,
+              "y": 0
+            },
+            "direction": "both"
+          }
+        ]
+      }
+    ],
+    "lines": {},
+    "serviceSystems": {},
+    "routes": {},
+    "operations": {},
+    "vehicleDuties": {},
+    "vehicleDutyExecutions": {},
+    "operationExecutions": {},
+    "operatingTrains": [],
+    "fleet": {
+      "operatorClasses": [],
+      "vehicleUnits": [],
+      "formations": [],
+      "trains": []
+    },
+    "vehiclePlacements": [],
+    "operationRoutes": {},
+    "servicePatterns": {},
+    "stopPatterns": {},
+    "trainRuns": {},
+    "nextOperationRouteId": 1,
+    "nextServicePatternId": 1,
+    "nextStopPatternId": 1,
+    "nextTrainRunId": 1,
+    "nextTrackId": 16,
+    "nextTrackGroupId": 1,
+    "nextJunctionId": 11,
+    "nextTurnoutId": 11,
+    "nextStationId": 2,
+    "nextLineId": 1,
+    "nextServiceSystemId": 1,
+    "nextRouteId": 1,
+    "nextOperationId": 1,
+    "nextVehicleDutyId": 1,
+    "nextVehicleDutyExecutionId": 1,
+    "nextOperationExecutionId": 1,
+    "nextOperatingTrainId": 1,
+    "nextOperatorClassId": 1,
+    "nextVehicleUnitId": 1,
+    "nextFormationId": 1
+  }
+}

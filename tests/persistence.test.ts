@@ -78,7 +78,7 @@ describe("マップの保存と読込", () => {
       }],
     };
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.tracks).toHaveLength(2);
     expect(migrated.trackGroups[0].trackIds).toEqual(["track-1", "track-2"]);
   });
@@ -92,7 +92,7 @@ describe("マップの保存と読込", () => {
     delete legacy.nextJunctionId;
     delete legacy.tracks[1].startConnection.junctionId;
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.junctions[0].ports.map((port) => port.location)).toEqual(["start", "interior"]);
   });
 
@@ -102,7 +102,7 @@ describe("マップの保存と読込", () => {
     delete legacy.stations;
     delete legacy.nextStationId;
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.stations).toEqual([]);
     expect(migrated.nextStationId).toBe(1);
   });
@@ -114,7 +114,7 @@ describe("マップの保存と読込", () => {
     legacy.version = 4;
     legacy.stations[0].stopPoints[0] = { trackId: "track-1", distanceM: 50, position: { x: 50, y: 0 }, direction: "both" };
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.stations[0].stopPoints[0]).toMatchObject({ startDistanceM: 0, endDistanceM: 110 });
   });
 
@@ -125,7 +125,7 @@ describe("マップの保存と読込", () => {
     legacy.version = 5;
     legacy.stations[0].stopPoints[0] = { trackId: "track-1", distanceM: 100, lengthM: 80, position: { x: 100, y: 0 }, direction: "both" };
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.stations[0].stopPoints[0]).toMatchObject({ startDistanceM: 60, endDistanceM: 140 });
   });
 
@@ -137,7 +137,7 @@ describe("マップの保存と読込", () => {
     delete legacy.nextRouteId;
     delete legacy.nextOperatingTrainId;
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.routes).toEqual({});
     expect(migrated.operatingTrains).toEqual([]);
   });
@@ -147,7 +147,7 @@ describe("マップの保存と読込", () => {
     legacy.version = 7;
     delete legacy.clock;
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.clock).toEqual({ currentTimeMs: Date.UTC(1900, 0, 1, 6), paused: true, speedMultiplier: 1 });
   });
 
@@ -165,7 +165,7 @@ describe("マップの保存と読込", () => {
     expect(legacy.operatingTrains).toHaveLength(1);
 
     const migrated = parseMapState(JSON.stringify(legacy));
-    expect(migrated.version).toBe(11);
+    expect(migrated.version).toBe(12);
     expect(migrated.operatingTrains).toEqual([]);
     expect(migrated.fleet).toEqual({ operatorClasses: [], vehicleUnits: [], formations: [], trains: [] });
     expect(migrated.vehiclePlacements).toEqual([]);

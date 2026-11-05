@@ -84,17 +84,19 @@ function coerceMapState(value: unknown): MapState {
   if (value.version === 9) return migrateVersion9(value);
   if (value.version === 10) return migrateVersion10(value);
   if (value.version === 11) return normalizeVersion11(value);
+  if (value.version === 12) return normalizeVersion12(value);
   validateMapState(value);
   return structuredClone(value);
 }
 
 export function validateMapState(value: unknown): asserts value is MapState {
   if (!isRecord(value)) throw new Error("セーブデータの形式が正しくありません");
-  if (value.version !== 11) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
+  if (value.version !== 12) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
   if (!isRecord(value.clock) || !Number.isSafeInteger(value.clock.currentTimeMs) || Math.abs(value.clock.currentTimeMs as number) > 8_640_000_000_000_000 || typeof value.clock.paused !== "boolean" || !(SIMULATION_SPEEDS as readonly unknown[]).includes(value.clock.speedMultiplier)) throw new Error("ゲーム内時計が正しくありません");
   if (!Number.isInteger(value.nextTrackId) || (value.nextTrackId as number) < 1) throw new Error("次の線路IDが正しくありません");
   if (!Number.isInteger(value.nextTrackGroupId) || (value.nextTrackGroupId as number) < 1) throw new Error("次の線路群IDが正しくありません");
   if (!Number.isInteger(value.nextJunctionId) || (value.nextJunctionId as number) < 1) throw new Error("次の接続点IDが正しくありません");
+  if (!Number.isInteger(value.nextTurnoutId) || (value.nextTurnoutId as number) < 1) throw new Error("次の転てつ器IDが正しくありません");
   if (!Number.isInteger(value.nextStationId) || (value.nextStationId as number) < 1) throw new Error("次の駅IDが正しくありません");
   if (!Number.isInteger(value.nextLineId) || (value.nextLineId as number) < 1) throw new Error("次の路線IDが正しくありません");
   if (!Number.isInteger(value.nextServiceSystemId) || (value.nextServiceSystemId as number) < 1) throw new Error("次の系統IDが正しくありません");
@@ -108,7 +110,7 @@ export function validateMapState(value: unknown): asserts value is MapState {
   if (!Number.isInteger(value.nextVehicleUnitId) || (value.nextVehicleUnitId as number) < 1) throw new Error("次の車両個体IDが正しくありません");
   if (!Number.isInteger(value.nextFormationId) || (value.nextFormationId as number) < 1) throw new Error("次の編成IDが正しくありません");
 
-  if (!Array.isArray(value.tracks) || !Array.isArray(value.trackGroups) || !Array.isArray(value.junctions) || !Array.isArray(value.stations) || !Array.isArray(value.operatingTrains)) throw new Error("地図または運行の一覧がありません");
+  if (!Array.isArray(value.tracks) || !Array.isArray(value.trackGroups) || !Array.isArray(value.junctions) || !Array.isArray(value.turnouts) || !Array.isArray(value.stations) || !Array.isArray(value.operatingTrains)) throw new Error("地図または運行の一覧がありません");
   if (!isRecord(value.fleet) || !Array.isArray(value.fleet.operatorClasses) || !Array.isArray(value.fleet.vehicleUnits) || !Array.isArray(value.fleet.formations) || !Array.isArray(value.fleet.trains)) throw new Error("車両状態が正しくありません");
   if (!Array.isArray(value.vehiclePlacements)) throw new Error("車両配置の一覧がありません");
   if (!isRecord(value.lines) || !isRecord(value.serviceSystems) || !isRecord(value.routes) || !isRecord(value.operations) || !isRecord(value.vehicleDuties) || !isRecord(value.vehicleDutyExecutions) || !isRecord(value.operationExecutions)) throw new Error("路線・系統・運行モデルの構造が正しくありません");
@@ -124,6 +126,23 @@ export function validateMapState(value: unknown): asserts value is MapState {
       if (!isRecord(port) || typeof port.trackId !== "string" || !ids.has(port.trackId) || !["start", "end", "interior"].includes(port.location) || !isFiniteNumber(port.distanceM) || port.distanceM < 0) throw new Error(`${junction.id}の接続口が正しくありません`);
       if (portTrackIds.has(port.trackId)) throw new Error(`${junction.id}に同じ線路が重複しています`);
       portTrackIds.add(port.trackId);
+    }
+  }
+  const turnoutIds = new Set<string>();
+  for (const turnout of value.turnouts) {
+    if (!isRecord(turnout) || typeof turnout.id !== "string" || turnout.id.length === 0) throw new Error("転てつ器IDが正しくありません");
+    if (turnoutIds.has(turnout.id)) throw new Error(`転てつ器IDが重複しています: ${turnout.id}`);
+    turnoutIds.add(turnout.id);
+    if (typeof turnout.junctionId !== "string" || !junctionIds.has(turnout.junctionId)) throw new Error(`${turnout.id}の接続点が存在しません`);
+    if (typeof turnout.throughTrackId !== "string" || !ids.has(turnout.throughTrackId)) throw new Error(`${turnout.id}の直進側線路が存在しません`);
+    if (typeof turnout.divergingTrackId !== "string" || !ids.has(turnout.divergingTrackId)) throw new Error(`${turnout.id}の分岐側線路が存在しません`);
+    if (turnout.throughTrackId === turnout.divergingTrackId) throw new Error(`${turnout.id}の直進側と分岐側が同じ線路です`);
+    if (turnout.side !== "left" && turnout.side !== "right") throw new Error(`${turnout.id}の分岐方向が正しくありません`);
+    if (typeof turnout.typeId !== "string") throw new Error(`${turnout.id}の転てつ器形式が正しくありません`);
+    trackCatalog.getTurnoutType(turnout.typeId);
+    const junction = value.junctions.find((candidate: any) => candidate.id === turnout.junctionId);
+    for (const trackId of [turnout.throughTrackId, turnout.divergingTrackId]) {
+      if (!junction.ports.some((port: any) => port.trackId === trackId)) throw new Error(`${turnout.id}の接続点に${trackId}が参加していません`);
     }
   }
   for (const item of value.tracks as Track[]) for (const connection of [item.startConnection, item.endConnection]) {
@@ -975,8 +994,7 @@ function migrateVersion10(value: Record<string, any>): MapState {
   state.nextVehicleDutyExecutionId = 1;
   state.nextOperationExecutionId = Math.max(Object.keys(state.operationExecutions).length + 1, 1);
 
-  validateMapState(state);
-  return state as MapState;
+  return migrateVersion11(state);
 }
 
 function normalizeVersion11(raw: Record<string, any>): MapState {
@@ -1008,6 +1026,25 @@ function normalizeVersion11(raw: Record<string, any>): MapState {
     for (const route of Object.values(state.routes) as any[]) {
       delete route.lineSections;
     }
+  }
+  return migrateVersion11(state);
+}
+
+// version 12 で転てつ器を導入した。既存の接続点はそのまま残り、
+// 転てつ器としては記録されない。暗黙の分岐はそのままの扱いとする。
+function migrateVersion11(value: Record<string, any>): MapState {
+  const state: any = structuredClone(value);
+  state.version = 12;
+  state.turnouts = [];
+  state.nextTurnoutId = 1;
+  return normalizeVersion12(state);
+}
+
+function normalizeVersion12(raw: Record<string, any>): MapState {
+  const state = structuredClone(raw);
+  if (!Array.isArray(state.turnouts)) state.turnouts = [];
+  if (!Number.isInteger(state.nextTurnoutId) || state.nextTurnoutId < 1) {
+    state.nextTurnoutId = state.turnouts.length + 1;
   }
   validateMapState(state);
   return state as MapState;
