@@ -6,6 +6,11 @@ export const TANGENT_ANGLE_TOLERANCE_RAD = (5 * Math.PI) / 180; // 5 degrees tol
 // 転てつ器が受け持つ接続点の許容角。カタログで最も急な6番（約9.5度）に
 // 上記の許容を足した値。診断用の上限であり、番数ごとの判定はコマンド層で行う。
 export const TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD = Math.atan(1 / 6) + TANGENT_ANGLE_TOLERANCE_RAD;
+// 転てつ器の分岐角を測るときの基線長。取り込んだ点列では、分岐点のすぐ隣の
+// ノードが近いと位置の揺れがそのまま角度誤差になる。一定距離だけ先を見て
+// 向きを取ることで揺れを均す。長くしすぎると分岐直後の曲線を拾って
+// 過大評価するため、分岐器の長さ程度に留める。
+export const TURNOUT_TANGENT_BASELINE_M = 40;
 
 export function calculateTangentAngleDifferenceRad(tangent1: Point, tangent2: Point): number {
   const u1 = normalize(tangent1);
@@ -42,15 +47,19 @@ export function getTrackTangentAtPosition(
 export function getTrackPortTangent(
   track: Pick<Track, "geometry" | "points" | "startTangent" | "endTangent"> & Partial<Pick<Track, "resolvedPath">>,
   location: TrackJunctionPortLocation,
-  distanceM?: number
+  distanceM?: number,
+  minimumBaselineM = 0
 ): Point {
   const sampled = sampleTrack(track);
   if (sampled.length < 2) return { x: 1, y: 0 };
   if (location === "start" || (distanceM !== undefined && distanceM <= 0.001)) {
-    return normalize({ x: sampled[1].x - sampled[0].x, y: sampled[1].y - sampled[0].y });
+    const far = pointAfterBaseline(sampled, 0, 1, minimumBaselineM);
+    return normalize({ x: far.x - sampled[0].x, y: far.y - sampled[0].y });
   }
   if (location === "end") {
-    return normalize({ x: sampled.at(-1)!.x - sampled.at(-2)!.x, y: sampled.at(-1)!.y - sampled.at(-2)!.y });
+    const last = sampled.length - 1;
+    const far = pointAfterBaseline(sampled, last, -1, minimumBaselineM);
+    return normalize({ x: sampled[last].x - far.x, y: sampled[last].y - far.y });
   }
   if (distanceM !== undefined) {
     let traversed = 0;
@@ -63,6 +72,19 @@ export function getTrackPortTangent(
     }
   }
   return normalize({ x: sampled.at(-1)!.x - sampled.at(-2)!.x, y: sampled.at(-1)!.y - sampled.at(-2)!.y });
+}
+
+// 端点から基線長ぶん進んだ点を返す。基線長0なら隣の点をそのまま返す。
+function pointAfterBaseline(points: Point[], fromIndex: number, step: 1 | -1, baselineM: number): Point {
+  let traversed = 0;
+  let index = fromIndex;
+  while (index + step >= 0 && index + step < points.length) {
+    const next = index + step;
+    traversed += Math.hypot(points[next].x - points[index].x, points[next].y - points[index].y);
+    index = next;
+    if (traversed >= baselineM) break;
+  }
+  return points[index];
 }
 
 export function sampleTrack(track: Pick<Track, "geometry" | "points" | "startTangent" | "endTangent"> & Partial<Pick<Track, "resolvedPath">>): Point[] {

@@ -2,7 +2,7 @@ import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, t
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
 import { formationTemplateCatalog } from "../data/formationTemplateCatalog";
-import { TANGENT_ANGLE_TOLERANCE_RAD, analyzeLine, calculateTangentAngleDifferenceRad, closestPointOnSegment, createParallelLines, getTrackPortTangent, getTrackTangentAtPosition, isTangentContinuous, polylineOverlapLength, recommendedCantMm, sampleTrack } from "./geometry";
+import { TANGENT_ANGLE_TOLERANCE_RAD, TURNOUT_TANGENT_BASELINE_M, analyzeLine, calculateTangentAngleDifferenceRad, closestPointOnSegment, createParallelLines, getTrackPortTangent, getTrackTangentAtPosition, isTangentContinuous, polylineOverlapLength, recommendedCantMm, sampleTrack } from "./geometry";
 import { advanceOperatingTrains, createOperationRoute } from "./operations";
 import { assertAllAdjacentConnections, assertMechanicalConnection, formationWarnings, getFormationLengthM, type Formation, type Orientation, type Placement, type VehicleUnit } from "./fleet";
 import { assertStationCanBeDeleted, assertTrackCanBeDeletedOrShortened, assertServicePatternCanBeDeleted } from "./guards";
@@ -1386,8 +1386,10 @@ function attachTurnout(next: MapState, command: Extract<MapCommand, { type: "tur
     throw new Error(`分岐側線路の端が分岐点から${gapM.toFixed(1)} m離れています。${TURNOUT_ATTACH_MAX_GAP_M} m以内で接続してください`);
   }
 
-  const baseTangent = getTrackPortTangent(base, located.location, located.distanceM);
-  const divergingTangent = getTrackPortTangent(diverging, divergingLocation, divergingDistanceM);
+  // 取り込んだ点列では隣接ノードが近いと揺れが角度に化けるため、
+  // 一定の基線長ぶん先を見て向きを取る。
+  const baseTangent = getTrackPortTangent(base, located.location, located.distanceM, TURNOUT_TANGENT_BASELINE_M);
+  const divergingTangent = getTrackPortTangent(diverging, divergingLocation, divergingDistanceM, TURNOUT_TANGENT_BASELINE_M);
   const angleRad = calculateTangentAngleDifferenceRad(baseTangent, divergingTangent);
 
   const type = command.typeId

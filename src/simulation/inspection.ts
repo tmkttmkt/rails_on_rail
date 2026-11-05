@@ -1,4 +1,4 @@
-import { analyzeLine, TANGENT_ANGLE_TOLERANCE_RAD, TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD, calculateTangentAngleDifferenceRad, closestPointOnSegment, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
+import { analyzeLine, TANGENT_ANGLE_TOLERANCE_RAD, TURNOUT_JUNCTION_ANGLE_TOLERANCE_RAD, TURNOUT_TANGENT_BASELINE_M, calculateTangentAngleDifferenceRad, closestPointOnSegment, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
 import type { MapState, Point, TrackJunctionPortLocation } from "./model";
 import { buildOperationRoute } from "./pathfinding";
 
@@ -75,6 +75,7 @@ function inspectTopology(state: Pick<MapState, "tracks" | "junctions" | "turnout
   const recordedInvalidPairs = new Set<string>();
 
   for (const junction of state.junctions ?? []) {
+    const governedByTurnout = (state.turnouts ?? []).some((item) => item.junctionId === junction.id);
     for (let i = 0; i < junction.ports.length; i += 1) {
       const port = junction.ports[i];
       const track1 = state.tracks.find((t) => t.id === port.trackId);
@@ -87,8 +88,10 @@ function inspectTopology(state: Pick<MapState, "tracks" | "junctions" | "turnout
         let angleDiffDeg = 0;
 
         if (track1 && track2) {
-          const tangent1 = getTrackPortTangent(track1, port.location, port.distanceM);
-          const tangent2 = getTrackPortTangent(track2, other.location, other.distanceM);
+          // 転てつ器が受け持つ接続点では、コマンド層と同じ基線長で向きを測る
+          const baseline = governedByTurnout ? TURNOUT_TANGENT_BASELINE_M : 0;
+          const tangent1 = getTrackPortTangent(track1, port.location, port.distanceM, baseline);
+          const tangent2 = getTrackPortTangent(track2, other.location, other.distanceM, baseline);
           const angleDiffRad = calculateTangentAngleDifferenceRad(tangent1, tangent2);
           angleDiffDeg = angleDiffRad * (180 / Math.PI);
           isContinuous = isTangentContinuous(tangent1, tangent2, junctionToleranceRad(state, junction.id));
