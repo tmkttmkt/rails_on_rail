@@ -14,8 +14,9 @@ import { trackCatalog } from "../src/data/trackCatalog";
 const inputPath = process.argv[2];
 const outputPath = path.resolve(process.cwd(), process.argv[3] ?? "saves/osm-import.json");
 const saveName = process.argv[4] ?? "OSM取り込みマップ";
+const stationsPath = process.argv[5];
 if (!inputPath) {
-  console.error("使い方: vite-node scripts/import-osm-map.ts <overpass.json> [出力先] [セーブ名]");
+  console.error("使い方: vite-node scripts/import-osm-map.ts <overpass.json> [出力先] [セーブ名] [駅のoverpass.json]");
   process.exit(1);
 }
 
@@ -35,6 +36,12 @@ const SIMPLIFY_TOLERANCE_M = 2;
 // 線路が元の範囲から大きく外れる。生成後に妥当性を検査して破棄する。
 const MAX_LENGTH_RATIO = 1.3;        // 生成線形長 / 入力ポリライン長 の上限
 const MIN_PLAUSIBLE_RADIUS_M = 40;   // これ未満の半径は破綻とみなす
+const STATION_MAX_DISTANCE_M = 150;  // 駅ノードからこの距離内の線路へ設置する
+const STATION_HALF_LENGTH_M = 90;    // 駅範囲の片側長
+const STATION_DUPLICATE_M = 300;     // 同名駅がこの距離内にあれば同一とみなす
+// 別名の駅がこの距離内にある場合は、線路に近い方だけを残す。
+// 他社の隣接駅（乗換駅）が、地図に無い自社線の代わりに本線へ付くのを防ぐ。
+const STATION_MIN_SEPARATION_M = 250;
 
 // ---- 入力 ---------------------------------------------------------------
 interface OsmNode { type: "node"; id: number; lat: number; lon: number }
@@ -307,6 +314,115 @@ for (const [nodeId, routeIds] of routesAtNode) {
 }
 console.log(`Phase 2 転記: 継目=${stats.joints} 転てつ器=${stats.turnouts} 継目失敗=${stats.jointFailed} 転てつ器失敗=${stats.turnoutFailed} 途中どうしで未接続=${stats.passingSkipped}`);
 
+// ---- Phase 3: 駅を設置する ---------------------------------------------
+// OSMの駅ノードを、最寄りの線路へ範囲付きで設置する。
+// 線路は1つの線路群にしか属せないため多番線へはまたげない。
+// 本線へ付けるよう、距離内で最も長い線路を選ぶ。
+interface StationNode { lat: number; lon: number; name: string; operator: string }
+const stationNodes: StationNode[] = [];
+if (stationsPath) {
+  const raw = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), stationsPath), "utf8")) as { elements: any[] };
+  for (const element of raw.elements) {
+    const name = element?.tags?.name;
+    if (element.type !== "node" || typeof name !== "string" || typeof element.lat !== "number") continue;
+    stationNodes.push({ lat: element.lat, lon: element.lon, name, operator: element.tags.operator ?? "" });
+  }
+}
+
+function projectLatLon(lat: number, lon: number): Point {
+  return { x: (lon - lon0) * M_PER_DEG_LON, y: -(lat - lat0) * M_PER_DEG_LAT };
+}
+
+function nearestOnTrack(points: Point[], target: Point): { distance: number; alongM: number } {
+  let best = { distance: Infinity, alongM: 0 };
+  let traversed = 0;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const a = points[index];
+    const b = points[index + 1];
+    const dx = b.x - a.x;
+    const dy = b.y - a.y;
+    const segment = Math.hypot(dx, dy);
+    const t = segment <= 0 ? 0 : Math.max(0, Math.min(1, ((target.x - a.x) * dx + (target.y - a.y) * dy) / (segment * segment)));
+    const px = a.x + dx * t;
+    const py = a.y + dy * t;
+    const distance = Math.hypot(target.x - px, target.y - py);
+    if (distance < best.distance) best = { distance, alongM: traversed + segment * t };
+    traversed += segment;
+  }
+  return best;
+}
+
+function pointAlong(points: Point[], alongM: number): Point {
+  let traversed = 0;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const segment = Math.hypot(points[index + 1].x - points[index].x, points[index + 1].y - points[index].y);
+    if (traversed + segment >= alongM) {
+      const t = segment <= 0 ? 0 : (alongM - traversed) / segment;
+      return {
+        x: points[index].x + (points[index + 1].x - points[index].x) * t,
+        y: points[index].y + (points[index + 1].y - points[index].y) * t,
+      };
+    }
+    traversed += segment;
+  }
+  return points[points.length - 1];
+}
+
+const stationStats = { placed: 0, tooFar: 0, duplicate: 0, crowded: 0, failed: 0 };
+const placedStations: { name: string; point: Point }[] = [];
+
+// 線路に近い順に並べ、近い駅から確定させる。
+// 乗換駅では自社線に乗っている方が近くなるため、正しい側が残る。
+interface StationCandidate { node: StationNode; target: Point; distance: number; trackId: string; points: Point[]; alongM: number; lengthM: number }
+const candidates: StationCandidate[] = [];
+for (const node of stationNodes) {
+  const target = projectLatLon(node.lat, node.lon);
+  let chosen: StationCandidate | undefined;
+  for (const track of state.tracks) {
+    const hit = nearestOnTrack(track.points, target);
+    if (hit.distance > STATION_MAX_DISTANCE_M) continue;
+    const lengthM = polylineLength(track.points);
+    // 同程度の近さなら長い線路（本線）を優先する
+    if (!chosen || hit.distance < chosen.distance - 5 || (Math.abs(hit.distance - chosen.distance) <= 5 && lengthM > chosen.lengthM)) {
+      chosen = { node, target, distance: hit.distance, trackId: track.id, points: track.points, alongM: hit.alongM, lengthM };
+    }
+  }
+  if (chosen) candidates.push(chosen); else stationStats.tooFar += 1;
+}
+candidates.sort((a, b) => a.distance - b.distance);
+
+for (const candidate of candidates) {
+  const { node, target } = candidate;
+  if (placedStations.some((s) => s.name === node.name && Math.hypot(s.point.x - target.x, s.point.y - target.y) < STATION_DUPLICATE_M)) {
+    stationStats.duplicate += 1;
+    continue;
+  }
+  if (placedStations.some((s) => Math.hypot(s.point.x - target.x, s.point.y - target.y) < STATION_MIN_SEPARATION_M)) {
+    stationStats.crowded += 1;
+    continue;
+  }
+  const total = candidate.lengthM;
+  const startAlong = Math.max(0, Math.min(total - 2, candidate.alongM - STATION_HALF_LENGTH_M));
+  const endAlong = Math.min(total, Math.max(startAlong + 2, candidate.alongM + STATION_HALF_LENGTH_M));
+  try {
+    run({
+      type: "station.createRange",
+      name: node.name,
+      trackId: candidate.trackId,
+      startPosition: pointAlong(candidate.points, startAlong),
+      endPosition: pointAlong(candidate.points, endAlong),
+      includeTrackGroup: false,
+    });
+    placedStations.push({ name: node.name, point: target });
+    stationStats.placed += 1;
+  } catch {
+    stationStats.failed += 1;
+  }
+}
+if (stationsPath) {
+  console.log(`Phase 3 駅: 設置=${stationStats.placed} 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
+}
+
 // ---- 結果 ---------------------------------------------------------------
 const inspection = inspectTrackRadii(state);
 const topology = inspection.topology;
@@ -318,7 +434,6 @@ if (topology.connectedComponents.length > 1) {
   const sizes = topology.connectedComponents.map((c) => c.length).sort((a, b) => b - a);
   console.log(`成分サイズ上位: ${sizes.slice(0, 8).join(", ")}`);
 }
-void polylineLength;
 void trackCatalog;
 
 fs.mkdirSync(path.dirname(outputPath), { recursive: true });
