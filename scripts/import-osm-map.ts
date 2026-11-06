@@ -3,6 +3,7 @@ import path from "node:path";
 import { executeCommand, type MapCommand } from "../src/simulation/commands";
 import { createInitialState, type MapState, type Point } from "../src/simulation/model";
 import { inspectTrackRadii } from "../src/simulation/inspection";
+import { analyzeLine } from "../src/simulation/geometry";
 import { createSaveFile, parseSaveFile, serializeSaveFile } from "../src/simulation/persistence";
 import { trackCatalog } from "../src/data/trackCatalog";
 
@@ -39,6 +40,13 @@ const SIMPLIFY_TOLERANCE_M = 2;
 // 線路が元の範囲から大きく外れる。生成後に妥当性を検査して破棄する。
 const MAX_LENGTH_RATIO = 1.3;        // 生成線形長 / 入力ポリライン長 の上限
 const MIN_PLAUSIBLE_RADIUS_M = 40;   // これ未満の半径は破綻とみなす
+// 有効長: 分岐器の上や車両接触限界の外側には車両を止められない。
+// 線路上の分岐点で区切り、その内側を停車に使える区間とする。
+const FOULING_CLEARANCE_M = 25;
+// 急曲線には車両を留置しない。咽喉部の曲線を停車地点から外す。
+const STABLING_MIN_RADIUS_M = 250;
+// 留置には編成が収まる有効長が要る。咽喉部の短い渡り線などは停車地点にしない。
+const STABLING_MIN_USABLE_M = 150;
 const STATION_MAX_DISTANCE_M = 150;  // 駅ノードからこの距離内の線路へ設置する
 const STATION_HALF_LENGTH_M = 90;    // 駅範囲の片側長
 const STATION_DUPLICATE_M = 300;     // 同名駅がこの距離内にあれば同一とみなす
@@ -365,6 +373,53 @@ if (stationsPath) {
   }
 }
 
+// 線路上で停車に使える最長の区間を返す。分岐点から FOULING_CLEARANCE_M だけ退く。
+function usableSpan(trackId: string, points: Point[]): { startM: number; endM: number } | undefined {
+  const total = polylineLength(points);
+  const cuts = [0];
+  for (const junction of state.junctions) {
+    for (const port of junction.ports) {
+      if (port.trackId !== trackId) continue;
+      const distance = Math.max(0, Math.min(total, port.distanceM));
+      if (!cuts.includes(distance)) cuts.push(distance);
+    }
+  }
+  if (!cuts.includes(total)) cuts.push(total);
+  cuts.sort((a, b) => a - b);
+
+  // 急曲線の区間は留置に使えないので、その範囲を除外する
+  const sharp: { from: number; to: number }[] = [];
+  for (const sample of analyzeLine(points).samples) {
+    if (sample.radiusM !== null && sample.radiusM < STABLING_MIN_RADIUS_M) {
+      const from = sample.distanceM;
+      const previous = sharp[sharp.length - 1];
+      if (previous && from - previous.to <= 30) previous.to = from;
+      else sharp.push({ from, to: from });
+    }
+  }
+  const blocked = (from: number, to: number): boolean =>
+    sharp.some((range) => from < range.to && range.from < to);
+
+  let best: { startM: number; endM: number } | undefined;
+  for (let index = 0; index < cuts.length - 1; index += 1) {
+    // 分岐点が乗っている端だけ退く。線路の端（他と繋がっていない）は退かない。
+    const lowerIsJunction = cuts[index] > 0.001;
+    const upperIsJunction = cuts[index + 1] < total - 0.001;
+    let startM = cuts[index] + (lowerIsJunction ? FOULING_CLEARANCE_M : 0);
+    let endM = cuts[index + 1] - (upperIsJunction ? FOULING_CLEARANCE_M : 0);
+    // 急曲線が区間へ掛かる場合は、曲線を避けた側だけを使う
+    for (const range of sharp) {
+      if (range.to <= startM || range.from >= endM) continue;
+      const before = range.from - startM;
+      const after = endM - range.to;
+      if (before >= after) endM = range.from; else startM = range.to;
+    }
+    if (endM - startM < 2 || blocked(startM, endM)) continue;
+    if (!best || endM - startM > best.endM - best.startM) best = { startM, endM };
+  }
+  return best;
+}
+
 function projectLatLon(lat: number, lon: number): Point {
   return { x: (lon - lon0) * M_PER_DEG_LON, y: -(lat - lat0) * M_PER_DEG_LAT };
 }
@@ -490,9 +545,10 @@ for (const candidate of candidates) {
   const createdIds: string[] = [];
   for (const entry of serving) {
     const points = entry.track.points;
-    const total = polylineLength(points);
-    const startAlong = Math.max(0, Math.min(total - 2, entry.hit.alongM - STATION_HALF_LENGTH_M));
-    const endAlong = Math.min(total, Math.max(startAlong + 2, entry.hit.alongM + STATION_HALF_LENGTH_M));
+    const usable = usableSpan(entry.track.id, points);
+    if (!usable) continue; // 分岐器に挟まれて停車できる区間が無い
+    const startAlong = Math.max(usable.startM, Math.min(usable.endM - 2, entry.hit.alongM - STATION_HALF_LENGTH_M));
+    const endAlong = Math.min(usable.endM, Math.max(startAlong + 2, entry.hit.alongM + STATION_HALF_LENGTH_M));
     const id = `station-${state.nextStationId}`;
     try {
       run({
@@ -632,7 +688,12 @@ for (const ring of landusePolygons) {
     .filter((track) => track.kind === "side" && !covered.has(track.id))
     .flatMap((track) => {
       const span = spanInside(track.points, ring);
-      return span ? [{ trackId: track.id, points: track.points, startM: span.startM, endM: span.endM }] : [];
+      if (!span) return [];
+      const usable = usableSpan(track.id, track.points);
+      if (!usable) return [];
+      const startM = Math.max(span.startM, usable.startM);
+      const endM = Math.min(span.endM, usable.endM);
+      return endM - startM >= STABLING_MIN_USABLE_M ? [{ trackId: track.id, points: track.points, startM, endM }] : [];
     });
   const totalLengthM = parts.reduce((sum, part) => sum + (part.endM - part.startM), 0);
   if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) continue;
@@ -666,7 +727,12 @@ for (const ring of landusePolygons) {
   for (const [, tracks] of clusters) {
     const totalLengthM = tracks.reduce((sum, t) => sum + polylineLength(t.points), 0);
     if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) { depotStats.skippedSmall += 1; continue; }
-    const parts = tracks.map((track) => ({ trackId: track.id, points: track.points, startM: 0, endM: polylineLength(track.points) }));
+    const parts = tracks.flatMap((track) => {
+      const usable = usableSpan(track.id, track.points);
+      if (!usable || usable.endM - usable.startM < STABLING_MIN_USABLE_M) return [];
+      return [{ trackId: track.id, points: track.points, startM: usable.startM, endM: usable.endM }];
+    });
+    if (parts.length === 0) continue;
     if (createFacility(parts)) depotStats.byCluster += 1;
   }
 }

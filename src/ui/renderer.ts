@@ -98,8 +98,14 @@ export function drawMap(
       if (!track) continue;
       const stationRange = slicePathByDistance(sampleTrack(track), stopPoint.startDistanceM, stopPoint.endDistanceM);
       if (stationRange.length >= 2) {
-        strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#d5a642", 7);
-        strokePolyline(context, stationRange, camera, viewport, "#f4f0df", 3);
+        // 旅客の乗降がある駅は強調し、構内の停車場（車両基地・操車場・信号場）は
+        // 控えめに描く。構内は停車地点が多く、同じ強調では地図が読めなくなる。
+        if (station.kind === "station") {
+          strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#d5a642", 7);
+          strokePolyline(context, stationRange, camera, viewport, "#f4f0df", 3);
+        } else {
+          strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#9aa7b4", 3);
+        }
       }
     }
     drawStation(context, station.position, station.name, camera, viewport, selected);
