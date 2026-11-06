@@ -520,11 +520,18 @@ if (stationsPath) {
   console.log(`Phase 3 駅: 設置=${stationStats.placed}（停車地点${stationStats.stopPoints}, ホーム${platformPolylines.length}本） 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
 }
 
-// ---- Phase 4: 鉄道用地から車両基地を作る -------------------------------
-// 留置線のまとまりを幾何から推測すると、数本並んだ連絡線と区別できない。
-// OSMは車両基地の敷地を landuse=railway の多角形として持っているので、
-// 敷地の内側にある側線だけを車両基地の停車地点にする。
-// 連絡線は敷地の外へ出ていくため自然に除かれる。
+// ---- Phase 4: 構内に停車場を作る ---------------------------------------
+// 車両を置けるのは停車場の停車地点だけなので、構内線に停車場が無いと留置できない。
+//
+// 二段構えにする。
+//   1. OSMに鉄道用地（landuse=railway）があれば、その内側だけを使う。
+//      連絡線は敷地の外へ出るため自然に除かれ、範囲が正確になる。
+//   2. 敷地が無い地域では、service=yard の線路だけをまとめる。
+//      当初は側線すべてをまとめて連絡線まで車庫に含めてしまったが、OSMは
+//      構内線を yard、車庫へ至る連絡線を siding と区別していた（森林公園では
+//      yard 76本がすべて敷地内、敷地外へ出るのは siding 2本のみ）。
+//
+// ベカソヴォのように敷地が描かれていない地域は2だけで拾う。
 const DEPOT_MIN_TOTAL_LENGTH_M = 300;
 const DEPOT_SAMPLE_STEP_M = 10;
 const DEPOT_MIN_SPAN_M = 40;
@@ -553,7 +560,6 @@ function insidePolygon(point: Point, ring: Point[]): boolean {
   return inside;
 }
 
-// 多角形の内側にある最長の連続区間
 function spanInside(points: Point[], ring: Point[]): { startM: number; endM: number } | undefined {
   const total = polylineLength(points);
   if (total < DEPOT_MIN_SPAN_M) return undefined;
@@ -573,65 +579,98 @@ function spanInside(points: Point[], ring: Point[]): { startM: number; endM: num
   return bestEnd - bestStart >= DEPOT_MIN_SPAN_M ? { startM: bestStart, endM: bestEnd } : undefined;
 }
 
-const depotStats = { created: 0, stopPoints: 0, skippedSmall: 0 };
+const depotStats = { byLanduse: 0, byCluster: 0, stopPoints: 0, skippedSmall: 0 };
 const depotNames = new Set<string>();
-if (landusePolygons.length > 0) {
-  const covered = new Set(state.stations.flatMap((st) => st.stopPoints.map((sp) => sp.trackId)));
-  for (const ring of landusePolygons) {
-    const inside = state.tracks
-      .filter((track) => track.kind === "side" && !covered.has(track.id))
-      .flatMap((track) => {
-        const span = spanInside(track.points, ring);
-        return span ? [{ track, span }] : [];
-      });
-    const totalLengthM = inside.reduce((sum, entry) => sum + (entry.span.endM - entry.span.startM), 0);
-    if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) { if (inside.length > 0) depotStats.skippedSmall += 1; continue; }
 
-    // 仕分線が主体なら操車場、そうでなければ車両基地
-    const yardCount = inside.filter((entry) => yardTrackIds.has(entry.track.id)).length;
-    const facilityKind = yardCount * 2 > inside.length ? "yard" : "depot";
-    const suffixWord = facilityKind === "yard" ? "操車場" : "車両基地";
-
-    // 敷地に名前が無いため最寄りの駅名を借りる
-    const center = inside[0].track.points[Math.floor(inside[0].track.points.length / 2)];
-    let baseName = suffixWord;
-    let nearestDistance = Infinity;
-    for (const station of state.stations) {
-      if (station.kind !== "station") continue;
-      const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
-      if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}${suffixWord}`; }
-    }
-    let name = baseName;
-    for (let suffix = 2; depotNames.has(name); suffix += 1) name = `${baseName}${suffix}`;
-    depotNames.add(name);
-
-    const createdIds: string[] = [];
-    for (const entry of inside) {
-      const id = `station-${state.nextStationId}`;
-      try {
-        run({
-          type: "station.createRange",
-          kind: facilityKind,
-          name,
-          trackId: entry.track.id,
-          startPosition: pointAlong(entry.track.points, entry.span.startM),
-          endPosition: pointAlong(entry.track.points, entry.span.endM),
-          includeTrackGroup: false,
-        });
-        createdIds.push(id);
-      } catch { /* 範囲を取れない線路は飛ばす */ }
-    }
-    if (createdIds.length === 0) continue;
-    if (createdIds.length > 1) {
-      try { run({ type: "station.merge", stationIds: createdIds }); } catch { /* 個別のまま */ }
-    }
-    depotStats.created += 1;
-    depotStats.stopPoints += createdIds.length;
+function facilityName(center: Point): string {
+  let baseName = "車両基地";
+  let nearestDistance = Infinity;
+  for (const station of state.stations) {
+    if (station.kind !== "station") continue;
+    const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
+    if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}車両基地`; }
   }
-  console.log(`Phase 4 車両基地: ${depotStats.created}箇所（停車地点${depotStats.stopPoints}, 鉄道用地${landusePolygons.length}面, 小規模で除外${depotStats.skippedSmall}）`);
-} else {
-  console.log("Phase 4 車両基地: 鉄道用地が与えられていないため作成しない");
+  let name = baseName;
+  for (let suffix = 2; depotNames.has(name); suffix += 1) name = `${baseName}${suffix}`;
+  depotNames.add(name);
+  return name;
 }
+
+function createFacility(parts: { trackId: string; points: Point[]; startM: number; endM: number }[]): boolean {
+  const name = facilityName(parts[0].points[Math.floor(parts[0].points.length / 2)]);
+  const createdIds: string[] = [];
+  for (const part of parts) {
+    const id = `station-${state.nextStationId}`;
+    try {
+      run({
+        type: "station.createRange",
+        kind: "depot",
+        name,
+        trackId: part.trackId,
+        startPosition: pointAlong(part.points, part.startM),
+        endPosition: pointAlong(part.points, part.endM),
+        includeTrackGroup: false,
+      });
+      createdIds.push(id);
+    } catch { /* 範囲を取れない線路は飛ばす */ }
+  }
+  if (createdIds.length === 0) return false;
+  if (createdIds.length > 1) {
+    try { run({ type: "station.merge", stationIds: createdIds }); } catch { /* 個別のまま */ }
+  }
+  depotStats.stopPoints += createdIds.length;
+  return true;
+}
+
+const coveredTrackIds = (): Set<string> =>
+  new Set(state.stations.flatMap((st) => st.stopPoints.map((sp) => sp.trackId)));
+
+// 1. 鉄道用地の内側
+for (const ring of landusePolygons) {
+  const covered = coveredTrackIds();
+  const parts = state.tracks
+    .filter((track) => track.kind === "side" && !covered.has(track.id))
+    .flatMap((track) => {
+      const span = spanInside(track.points, ring);
+      return span ? [{ trackId: track.id, points: track.points, startM: span.startM, endM: span.endM }] : [];
+    });
+  const totalLengthM = parts.reduce((sum, part) => sum + (part.endM - part.startM), 0);
+  if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) continue;
+  if (createFacility(parts)) depotStats.byLanduse += 1;
+}
+
+// 2. 敷地に入らなかった構内線（service=yard）をまとめる
+{
+  const covered = coveredTrackIds();
+  const members = state.tracks.filter((track) => yardTrackIds.has(track.id) && !covered.has(track.id));
+  const parent = new Map<string, string>(members.map((t) => [t.id, t.id]));
+  const find = (a: string): string => {
+    let root = a;
+    while (parent.get(root) !== root) root = parent.get(root)!;
+    return root;
+  };
+  for (const junction of state.junctions) {
+    const present = junction.ports.map((port) => port.trackId).filter((id) => parent.has(id));
+    for (const other of present.slice(1)) {
+      const ra = find(present[0]);
+      const rb = find(other);
+      if (ra !== rb) parent.set(ra, rb);
+    }
+  }
+  const clusters = new Map<string, typeof members>();
+  for (const track of members) {
+    const root = find(track.id);
+    if (!clusters.has(root)) clusters.set(root, []);
+    clusters.get(root)!.push(track);
+  }
+  for (const [, tracks] of clusters) {
+    const totalLengthM = tracks.reduce((sum, t) => sum + polylineLength(t.points), 0);
+    if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) { depotStats.skippedSmall += 1; continue; }
+    const parts = tracks.map((track) => ({ trackId: track.id, points: track.points, startM: 0, endM: polylineLength(track.points) }));
+    if (createFacility(parts)) depotStats.byCluster += 1;
+  }
+}
+console.log(`Phase 4 構内の停車場: 鉄道用地から${depotStats.byLanduse}箇所 / 構内線から${depotStats.byCluster}箇所（停車地点${depotStats.stopPoints}, 小規模で除外${depotStats.skippedSmall}）`);
 
 // ---- 結果 ---------------------------------------------------------------
 const inspection = inspectTrackRadii(state);
