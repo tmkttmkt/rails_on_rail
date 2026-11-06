@@ -107,6 +107,8 @@ const waySideness = osmWays.map((way) => {
   const service = way.tags?.service;
   return service === "yard" || service === "siding" || service === "spur";
 });
+// service=yard は仕分け・組成を行う操車場、siding / spur は留置・側線である。
+const wayIsYard = osmWays.map((way) => way.tags?.service === "yard");
 for (const nodes of wayNodes) {
   nodes.forEach((id, index) => {
     incidence.set(id, (incidence.get(id) ?? 0) + (index === 0 || index === nodes.length - 1 ? 1 : 2));
@@ -115,7 +117,7 @@ for (const nodes of wayNodes) {
 const isKeyNode = (id: number): boolean => (incidence.get(id) ?? 0) !== 2;
 
 // ---- 辺（キーノード間のポリライン）へ分解 -------------------------------
-interface Edge { id: number; from: number; to: number; nodes: number[]; side: boolean }
+interface Edge { id: number; from: number; to: number; nodes: number[]; side: boolean; yard: boolean }
 const edges: Edge[] = [];
 wayNodes.forEach((nodes, wayIndex) => {
   let start = 0;
@@ -123,7 +125,7 @@ wayNodes.forEach((nodes, wayIndex) => {
     if (isKeyNode(nodes[index]) || index === nodes.length - 1) {
       const slice = nodes.slice(start, index + 1);
       if (slice.length >= 2) {
-        edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice, side: waySideness[wayIndex] });
+        edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice, side: waySideness[wayIndex], yard: wayIsYard[wayIndex] });
       }
       start = index;
     }
@@ -182,6 +184,8 @@ for (const [nodeId, list] of edgesAtNode) {
 interface Route { id: number; nodes: number[]; edgeIds: number[] }
 const routeIsSide = (route: Route): boolean =>
   route.edgeIds.filter((id) => edges[id].side).length * 2 > route.edgeIds.length;
+const routeIsYard = (route: Route): boolean =>
+  route.edgeIds.filter((id) => edges[id].yard).length * 2 > route.edgeIds.length;
 const routeOfEdge = new Map<number, number>();
 const routes: Route[] = [];
 for (const seed of edges) {
@@ -265,6 +269,7 @@ const stats = {
 
 // ---- Phase 1: 幾何だけを全線敷設する（接続は付けない） -----------------
 const trackIdOfRoute = new Map<number, string>();
+const yardTrackIds = new Set<string>();
 for (const route of routes) {
   const points = routePolyline(route);
   if (points.length < 2) { stats.trackFailed += 1; continue; }
@@ -291,6 +296,7 @@ for (const route of routes) {
     continue;
   }
   trackIdOfRoute.set(route.id, id);
+  if (routeIsYard(route)) yardTrackIds.add(id);
   stats.tracks += 1;
 }
 console.log(`Phase 1 敷設: 線路=${stats.tracks}（側線${state.tracks.filter((t) => t.kind === "side").length}） 失敗=${stats.trackFailed} 半径不足で撤去=${stats.implausible}`);
@@ -581,14 +587,19 @@ if (landusePolygons.length > 0) {
     const totalLengthM = inside.reduce((sum, entry) => sum + (entry.span.endM - entry.span.startM), 0);
     if (totalLengthM < DEPOT_MIN_TOTAL_LENGTH_M) { if (inside.length > 0) depotStats.skippedSmall += 1; continue; }
 
+    // 仕分線が主体なら操車場、そうでなければ車両基地
+    const yardCount = inside.filter((entry) => yardTrackIds.has(entry.track.id)).length;
+    const facilityKind = yardCount * 2 > inside.length ? "yard" : "depot";
+    const suffixWord = facilityKind === "yard" ? "操車場" : "車両基地";
+
     // 敷地に名前が無いため最寄りの駅名を借りる
     const center = inside[0].track.points[Math.floor(inside[0].track.points.length / 2)];
-    let baseName = "車両基地";
+    let baseName = suffixWord;
     let nearestDistance = Infinity;
     for (const station of state.stations) {
       if (station.kind !== "station") continue;
       const distance = Math.hypot(station.position.x - center.x, station.position.y - center.y);
-      if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}車両基地`; }
+      if (distance < nearestDistance) { nearestDistance = distance; baseName = `${station.name}${suffixWord}`; }
     }
     let name = baseName;
     for (let suffix = 2; depotNames.has(name); suffix += 1) name = `${baseName}${suffix}`;
@@ -600,7 +611,7 @@ if (landusePolygons.length > 0) {
       try {
         run({
           type: "station.createRange",
-          kind: "depot",
+          kind: facilityKind,
           name,
           trackId: entry.track.id,
           startPosition: pointAlong(entry.track.points, entry.span.startM),
