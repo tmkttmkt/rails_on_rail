@@ -204,3 +204,5 @@ simulation/ 内のモジュールは `src/ui/` を import しない。
 ## yard.ts / yardScenario.ts
 
 入換の任意状態、線路距離と向きを持つ経路探索、複数線路上の占有、連結・解結、実配線上の試験計画を扱う。詳細は[ベカソヴォの入換試験](../features/yard-operations.md)を参照する。
+
+操車の車両正本はfleetと共通。[yardFleet.ts](../../src/simulation/yardFleet.ts)で車長・動力と個体所属を参照する。本体と試作の範囲は[現行仕様](../features/yard-operations.md#本体と試作の境界)を参照。

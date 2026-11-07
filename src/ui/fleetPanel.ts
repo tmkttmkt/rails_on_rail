@@ -5,6 +5,11 @@ import { getFormationOperationalStatus, type MapState } from "../simulation/mode
 import { getEligibleRoutesForPlacement, getIneligibleRouteReasons } from "../simulation/selectors";
 import { formatGameTime, getStatusBadgeClass, getStatusLabel, type FleetUiState } from "./fleetView";
 
+function formationStatusLabel(state: MapState, id: string, status: Parameters<typeof getStatusLabel>[0]): string {
+  const cut = state.yard?.cuts.find((c) => c.id === id);
+  return cut ? cut.move ? "入換中" : "構内留置" : getStatusLabel(status);
+}
+
 export function renderFleetLeftPanel(state: MapState, uiState: FleetUiState): string {
   const { leftSubTab, acquireCategory, formationFilter, selectedFormationId } = uiState;
 
@@ -44,7 +49,7 @@ export function renderFleetLeftPanel(state: MapState, uiState: FleetUiState): st
             <li class="fleet-item ${isSelected ? "selected" : ""}" data-formation-id="${f.id}">
               <div class="fleet-item-header">
                 <strong>${f.name}</strong>
-                <span class="badge ${getStatusBadgeClass(status)}">${getStatusLabel(status)}</span>
+                <span class="badge ${getStatusBadgeClass(status)}">${formationStatusLabel(state, f.id, status)}</span>
               </div>
               <div class="fleet-item-sub">
                 <span>${f.vehicles.length}両</span>
@@ -165,13 +170,17 @@ export function renderFleetRightPanel(state: MapState, uiState: FleetUiState): s
 
   // Placed info / Reservation info / Train info
   const placement = state.vehiclePlacements.find((p) => p.formationId === formation.id);
+  const yardCut = state.yard?.cuts.find((c) => c.id === formation.id);
   const station = placement ? state.stations.find((s) => s.id === placement.stationId) : null;
   const reservation = Object.values(state.trainRuns || {}).find((r) => r.formationId === formation.id && r.status === "reserved");
   const reservationRoute = reservation ? state.operationRoutes[reservation.routeId] : null;
   const operatingTrain = state.operatingTrains.find((t) => t.formationId === formation.id && t.state !== "completed");
 
   let statusDetailHtml = "";
-  if (status === "placed" && station && placement) {
+  if (yardCut) {
+    const head = yardCut.spans.at(-1)!;
+    statusDetailHtml = `<div class="status-box">操車場上の同じ車両個体 · ${head.trackId} / ${head.toM.toFixed(1)} m<br>${yardCut.move ? "入換中" : "停止中"}。連結・解結は「操車」画面で操作する。</div>`;
+  } else if (status === "placed" && station && placement) {
     statusDetailHtml = `<div class="status-box">配置位置: <strong>${station.name}</strong> (線路 ${placement.trackId})</div>`;
   } else if (status === "reserved" && reservation) {
     statusDetailHtml = `
@@ -192,6 +201,7 @@ export function renderFleetRightPanel(state: MapState, uiState: FleetUiState): s
     const cls = unit ? state.fleet.operatorClasses.find((c) => c.id === unit.operatorClassId) : null;
     const design = cls ? vehicleCatalog.getVehicleDesign(cls.baseVehicleDesignId) : null;
     const dirArrow = v.orientation === "forward" ? "→" : "←";
+    const cargoLabel = unit?.cargoDestination?.replace(/[&<>"']/g, "") ?? "";
 
     return `
       <div class="vehicle-card">
@@ -199,7 +209,7 @@ export function renderFleetRightPanel(state: MapState, uiState: FleetUiState): s
           <span class="vehicle-num">#${idx + 1}</span>
           <div class="vehicle-info">
             <strong>${unit?.operatorNumber ?? v.vehicleId}</strong>
-            <small>${design?.name ?? "未知の設計"} (${dirArrow})</small>
+            <small>${design?.name ?? "未知の設計"} (${dirArrow})${cargoLabel ? ` · 行先 ${cargoLabel}` : ""}</small>
           </div>
         </div>
         ${isEditable ? `
@@ -256,7 +266,9 @@ export function renderFleetRightPanel(state: MapState, uiState: FleetUiState): s
 
   // Action buttons & Dispatch controls
   let actionSectionHtml = "";
-  if (status === "unplaced" || status === "awaiting-placement") {
+  if (yardCut) {
+    actionSectionHtml = `<div class="status-box">操車画面の編成と連動している。線路上で解結・連結するとこの所属一覧も更新される。</div>`;
+  } else if (status === "unplaced" || status === "awaiting-placement") {
     actionSectionHtml = `
       <div class="divider"></div>
       <button id="fleet-place-btn" class="primary full mb-2" ${formation.vehicles.length === 0 ? "disabled" : ""}>駅へ配置 (地図上で指示)</button>
@@ -327,7 +339,7 @@ export function renderFleetRightPanel(state: MapState, uiState: FleetUiState): s
         <strong id="formation-name-display">${formation.name}</strong>
         <button id="fleet-rename-formation-btn" class="ghost small">改名</button>
       </div>
-      <span class="badge ${getStatusBadgeClass(status)}">${getStatusLabel(status)}</span>
+      <span class="badge ${getStatusBadgeClass(status)}">${formationStatusLabel(state, formation.id, status)}</span>
     </div>
     <div class="formation-meta">
       <span>構成: ${formation.vehicles.length}両</span>

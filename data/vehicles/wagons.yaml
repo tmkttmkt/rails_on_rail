@@ -40,3 +40,25 @@ items:
         throughBrakeSystemIds: []
     hasHandBrake: true
     sources: []
+
+  - id: prototype-yard-wagon-1520
+    name: 仮想1520 mm貨車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: YARD-PROTOTYPE-W
+    dimensions:
+      lengthOverCouplersM: 12
+      maximumWidthM: 3
+    runningGear:
+      gaugeMm: 1520
+    capabilities:
+      selfPropelled: false
+      canHaulOtherVehicles: false
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    sources: []

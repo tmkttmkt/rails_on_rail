@@ -127,7 +127,8 @@ function makeDefaultStopTimes(route: any) {
 export function executeCommand(state: MapState, command: MapCommand): CommandResult {
   const next = structuredClone(state);
   if (command.type.startsWith("yard.")) return { state: next, message: executeYardCommand(next, command as YardCommand) };
-  if (state.yard?.cuts.length && /^(fleet\.|train\.|track\.|turnout\.|vehicleDutyExecution\.|operationExecution\.|execution\.|trainRun\.)/.test(command.type)) throw new Error("操車車両がある間は線路編集・既存fleet運転を行えない。元セーブまたは別セーブを使用する");
+  if (state.yard?.cuts.length && /^(train\.|track\.|turnout\.|vehicleDutyExecution\.|operationExecution\.|execution\.|trainRun\.|fleet\.dispatch\.)/.test(command.type)) throw new Error("操車中の線路編集・本線との同時運転は未対応");
+  if (command.type.startsWith("fleet.") && "formationId" in command && typeof command.formationId === "string" && state.yard?.cuts.some((c) => c.id === command.formationId) && command.type !== "fleet.formation.rename") throw new Error("線路上の編成は操車画面から連結・解結する");
 
   switch (command.type) {
     case "track.create":
@@ -259,11 +260,19 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       const station = next.stations.find((item) => item.id === command.stationId);
       if (!station) throw new Error("駅が存在しません");
       const stopPoint = station.stopPoints.find((item) => item.trackId === command.trackId);
-      if (!stopPoint) throw new Error("選択した駅はこの線路に停車地点を持ちません");
+      if (!stopPoint) throw new Error(station.stopPoints.some((sp) => sp.trackId === command.trackId) ? "配置位置が駅の停車範囲外です" : "選択した駅はこの線路に停車地点を持ちません");
       const groupIds = new Set(groupTrackIds(next, command.trackId));
-      for (const target of station.stopPoints.filter((item) => groupIds.has(item.trackId))) {
+      for (const trackId of groupIds) {
+        const candidates = station.stopPoints.filter((item) => item.trackId === trackId);
+        if (!candidates.length) continue;
+        const distance = locateOnPath(sampleTrack(requireTrack(next, trackId)), command.position).distanceM;
+        const gap = (p: typeof candidates[number]) => Math.max(p.startDistanceM - distance, distance - p.endDistanceM, 0);
+        const target = candidates.reduce((a, b) => gap(a) <= gap(b) ? a : b);
         const path = sampleTrack(requireTrack(next, target.trackId));
         const located = locateOnPath(path, command.position);
+        const lower = Math.min(target.startDistanceM, located.distanceM), upper = Math.max(target.endDistanceM, located.distanceM);
+        if (candidates.some((p) => p !== target && Math.min(upper, p.endDistanceM) > Math.max(lower, p.startDistanceM))) throw new Error("別の停車可能区間をまたいで延長できません");
+        if (station.kind !== "station") assertStablingClearOfJunctions(next, requireTrack(next, trackId), lower, upper);
         target.startDistanceM = Math.min(target.startDistanceM, located.distanceM);
         target.endDistanceM = Math.max(target.endDistanceM, located.distanceM);
         target.startPosition = pointAtPathDistance(path, target.startDistanceM);
@@ -284,7 +293,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       const target = stations[0];
       for (const source of stations.slice(1)) {
         for (const incoming of source.stopPoints) {
-          const existing = target.stopPoints.find((item) => item.trackId === incoming.trackId);
+          const existing = target.stopPoints.find((item) => item.trackId === incoming.trackId && item.startDistanceM <= incoming.endDistanceM && incoming.startDistanceM <= item.endDistanceM);
           if (!existing) {
             target.stopPoints.push(structuredClone(incoming));
             continue;
@@ -292,6 +301,20 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
           const path = sampleTrack(requireTrack(next, existing.trackId));
           existing.startDistanceM = Math.min(existing.startDistanceM, incoming.startDistanceM);
           existing.endDistanceM = Math.max(existing.endDistanceM, incoming.endDistanceM);
+          existing.startPosition = pointAtPathDistance(path, existing.startDistanceM);
+          existing.endPosition = pointAtPathDistance(path, existing.endDistanceM);
+          // 追加範囲が複数区間を橋渡しした場合も、重なった区間だけ統合する。
+          let joined = true;
+          while (joined) {
+            joined = false;
+            for (const candidate of [...target.stopPoints]) {
+              if (candidate === existing || candidate.trackId !== existing.trackId || candidate.startDistanceM > existing.endDistanceM || candidate.endDistanceM < existing.startDistanceM) continue;
+              existing.startDistanceM = Math.min(existing.startDistanceM, candidate.startDistanceM);
+              existing.endDistanceM = Math.max(existing.endDistanceM, candidate.endDistanceM);
+              target.stopPoints = target.stopPoints.filter((p) => p !== candidate);
+              joined = true;
+            }
+          }
           existing.startPosition = pointAtPathDistance(path, existing.startDistanceM);
           existing.endPosition = pointAtPathDistance(path, existing.endDistanceM);
         }
@@ -879,8 +902,8 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       if (!station) throw new Error("駅が存在しません");
       const track = next.tracks.find((item) => item.id === command.trackId);
       if (!track) throw new Error("線路が存在しません");
-      const stopPoint = station.stopPoints.find((sp) => sp.trackId === command.trackId);
-      if (!stopPoint) throw new Error("選択した駅はこの線路に停車地点を持ちません");
+      const stopPoint = station.stopPoints.find((sp) => sp.trackId === command.trackId && command.distanceM >= sp.startDistanceM - 0.001 && command.distanceM <= sp.endDistanceM + 0.001);
+      if (!stopPoint) throw new Error(station.stopPoints.some((sp) => sp.trackId === command.trackId) ? "配置位置が駅の停車範囲外です" : "選択した駅はこの線路に停車地点を持ちません");
       if (command.distanceM < stopPoint.startDistanceM - 0.001 || command.distanceM > stopPoint.endDistanceM + 0.001) {
         throw new Error("配置位置が駅の停車範囲外です");
       }

@@ -20,6 +20,7 @@ export interface VehicleUnit {
   operatorClassId: string;
   operatorNumber: string;
   manufacturerSerialNumber?: string;
+  cargoDestination?: string;
 }
 
 export interface FormationVehicle {

@@ -296,6 +296,8 @@ export function createInitialState(): MapState {
 }
 
 export function getFormationOperationalStatus(state: MapState, formationId: string): FormationOperationalStatus {
+  const yardCut = state.yard?.cuts.find((c) => c.id === formationId);
+  if (yardCut) return yardCut.move ? "operating" : "placed";
   if (
     state.operatingTrains.some((train) => train.formationId === formationId && train.state !== "completed") ||
     Object.values(state.operationExecutions || {}).some(

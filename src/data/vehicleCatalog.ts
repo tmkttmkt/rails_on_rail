@@ -42,6 +42,7 @@ export interface VehicleDesign {
     maximumWidthM?: number;
     maximumHeightM?: number;
   };
+  capabilities?: { selfPropelled: boolean; canHaulOtherVehicles?: boolean };
 }
 
 interface CatalogFile<T> {

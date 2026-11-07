@@ -88,3 +88,25 @@ items:
         throughBrakeSystemIds: [vacuum-automatic]
     hasHandBrake: true
     sources: []
+
+  - id: prototype-yard-locomotive-1520
+    name: 仮想1520 mm入換機関車
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: YARD-PROTOTYPE-L
+    dimensions:
+      lengthOverCouplersM: 16
+      maximumWidthM: 3
+    runningGear:
+      gaugeMm: 1520
+    capabilities:
+      selfPropelled: true
+      canHaulOtherVehicles: true
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    sources: []

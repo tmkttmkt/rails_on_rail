@@ -177,12 +177,13 @@ export function validateMapState(value: unknown): asserts value is MapState {
     if (!isRecord(station) || typeof station.id !== "string" || stationIds.has(station.id) || typeof station.name !== "string" || station.name.trim().length < 1 || station.name.length > 60 || !isPoint(station.position) || !Array.isArray(station.stopPoints) || station.stopPoints.length < 1) throw new Error("駅が正しくありません");
     if (!STATION_KINDS.includes(station.kind as never)) throw new Error(`${station.id}の停車場種類が正しくありません`);
     stationIds.add(station.id);
-    const stopTrackIds = new Set<string>();
+    const trackRanges = new Map<string, { start: number; end: number }[]>();
     for (const stopPoint of station.stopPoints) {
       if (!isRecord(stopPoint) || typeof stopPoint.id !== "string" || typeof stopPoint.trackId !== "string" || !ids.has(stopPoint.trackId) || !isFiniteNumber(stopPoint.startDistanceM) || stopPoint.startDistanceM < 0 || !isFiniteNumber(stopPoint.endDistanceM) || stopPoint.endDistanceM <= stopPoint.startDistanceM || !isPoint(stopPoint.startPosition) || !isPoint(stopPoint.endPosition) || stopPoint.direction !== "both") throw new Error(`${station.id}の停車地点が正しくありません`);
-      if (stopTrackIds.has(stopPoint.trackId)) throw new Error(`${station.id}に同じ線路の停車地点が重複しています`);
+      const ranges = trackRanges.get(stopPoint.trackId) ?? [];
+      if (ranges.some((r) => Math.min(r.end, stopPoint.endDistanceM as number) > Math.max(r.start, stopPoint.startDistanceM as number) + 0.001)) throw new Error(`${station.id}に同じ線路の停車範囲が重複しています`);
       if (allStopPointIds.has(stopPoint.id)) throw new Error(`停車地点IDが重複しています: ${stopPoint.id}`);
-      stopTrackIds.add(stopPoint.trackId);
+      ranges.push({ start: stopPoint.startDistanceM, end: stopPoint.endDistanceM }); trackRanges.set(stopPoint.trackId, ranges);
       allStopPointIds.add(stopPoint.id);
       const track = (value.tracks as Track[]).find((item) => item.id === stopPoint.trackId)!;
       if (stopPoint.endDistanceM > analyzeLine(sampleTrack(track)).lengthM + 0.001) throw new Error(`${station.id}の停車地点距離が線路長を超えています`);
@@ -212,6 +213,7 @@ export function validateMapState(value: unknown): asserts value is MapState {
   const vehicleUnitIds = new Set<string>();
   for (const unit of value.fleet.vehicleUnits) {
     if (!isRecord(unit) || typeof unit.id !== "string" || typeof unit.operatorClassId !== "string" || typeof unit.operatorNumber !== "string") throw new Error("車両個体が正しくありません");
+    if (unit.cargoDestination !== undefined && typeof unit.cargoDestination !== "string") throw new Error("貨車の行先が不正です");
     if (vehicleUnitIds.has(unit.id)) throw new Error(`車両個体IDが重複しています: ${unit.id}`);
     if (!operatorClassIds.has(unit.operatorClassId)) throw new Error(`車両個体の運行会社形式が存在しません: ${unit.operatorClassId}`);
     const opClass = value.fleet.operatorClasses.find((c: any) => c.id === unit.operatorClassId);
@@ -370,7 +372,7 @@ export function validateMapState(value: unknown): asserts value is MapState {
     if (!stationIds.has(placement.stationId)) throw new Error(`配置先の駅が存在しません: ${placement.stationId}`);
     if (!ids.has(placement.trackId)) throw new Error(`配置先の線路が存在しません: ${placement.trackId}`);
     const station = (value.stations as any[]).find((s) => s.id === placement.stationId)!;
-    const stopPoint = station.stopPoints.find((sp: any) => sp.trackId === placement.trackId);
+    const stopPoint = station.stopPoints.find((sp: any) => sp.trackId === placement.trackId && placement.centerDistanceM >= sp.startDistanceM - 0.001 && placement.centerDistanceM <= sp.endDistanceM + 0.001);
     if (!stopPoint) throw new Error(`配置先の駅に指定線路の停車地点がありません: ${placement.stationId}`);
     if (placement.centerDistanceM < stopPoint.startDistanceM - 0.001 || placement.centerDistanceM > stopPoint.endDistanceM + 0.001) {
       throw new Error(`配置位置が駅の停車範囲外です: ${placement.stationId}`);

@@ -1,3 +1,4 @@
+import { yardFormation, yardVehicle, yardVehicleIds } from "../simulation/yardFleet";
 import { getFormationOperationalStatus, worldToScreen, type Camera, type MapState, type Point, type Viewport } from "../simulation/model";
 import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLines } from "../simulation/geometry";
 import type { TrackGeometry } from "../simulation/model";
@@ -125,8 +126,8 @@ export function drawMap(
         strokePolyline(context, slicePathByDistance(sampleTrack(track), Math.min(s.fromM, s.toM), Math.max(s.fromM, s.toM)), camera, viewport, "#8b3fb2", 3, [4, 4]);
       }
       let offset = 0;
-      for (const id of cut.vehicleIds) {
-        const vehicle = state.yard.vehicles.find((v) => v.id === id)!;
+      for (const id of yardVehicleIds(state, cut)) {
+        const vehicle = yardVehicle(state, id);
         let cursor = 0;
         for (const s of cut.spans) {
           const length = spanLength(s), from = Math.max(offset, cursor), to = Math.min(offset + vehicle.lengthM, cursor + length);
@@ -142,7 +143,7 @@ export function drawMap(
         offset += vehicle.lengthM;
       }
       const head = cut.spans.at(-1)!;
-      drawPlacedFormation(context, yardPoint(state, head.trackId, head.toM), cut.name, cut.move ? "operating" : "placed", camera, viewport);
+      drawPlacedFormation(context, yardPoint(state, head.trackId, head.toM), yardFormation(state, cut).name, cut.move ? "operating" : "placed", camera, viewport);
     }
   }
   for (const placement of state.vehiclePlacements) {

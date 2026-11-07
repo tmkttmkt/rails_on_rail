@@ -3,8 +3,6 @@ formatVersion: 1
 defaultSpeedKph: 10
 maximumSpeedKph: 25
 junctionClearanceM: 12
-wagonLengthM: 12
-locomotiveLengthM: 16
 wagonsPerDestination: 3
 leadClearanceM: 37
 branchClearanceM: 42

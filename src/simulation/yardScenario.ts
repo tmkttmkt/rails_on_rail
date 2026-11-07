@@ -1,3 +1,5 @@
+import { vehicleCatalog } from "../data/vehicleCatalog";
+import { createYardFormation } from "./yardFleet";
 import type { MapState } from "./model";
 import { yardConfig as config } from "../data/yardConfig";
 import { executeYardCommand, findYardPath, trackLength, yardPoint, type YardAction } from "./yard";
@@ -7,8 +9,8 @@ export function prepareYardScenario(original: MapState): MapState {
   if (original.yard?.cuts.length) throw new Error("操車車両は既に配置済み。試験開始前のセーブを読み込む");
   if (original.vehiclePlacements.length || original.operatingTrains.some((t) => t.state !== "completed")) throw new Error("既存の配置・運転があるマップには試験車両を追加しない");
   const groups = new Map<string, { baseM: number; trackId: string; junctionM: number; direction: 1 | -1; leadDir: 1 | -1 }[]>();
-  const groupLength = config.wagonLengthM * config.wagonsPerDestination;
-  const totalLength = groupLength * 2 + config.locomotiveLengthM;
+  const groupLength = vehicleCatalog.getVehicleDesign("prototype-yard-wagon-1520").dimensions!.lengthOverCouplersM! * config.wagonsPerDestination;
+  const totalLength = groupLength * 2 + vehicleCatalog.getVehicleDesign("prototype-yard-locomotive-1520").dimensions!.lengthOverCouplersM!;
   const branchHead = totalLength + config.branchClearanceM;
   for (const turnout of original.turnouts) {
     const j = original.junctions.find((j) => j.id === turnout.junctionId)!;
@@ -41,8 +43,8 @@ export function prepareYardScenario(original: MapState): MapState {
         findYardPath(original, { trackId: a.trackId, distanceM: aM - a.direction * groupLength, direction: -a.direction }, { trackId: baseId, distanceM: leadM });
         findYardPath(original, { trackId: baseId, distanceM: leadM, direction: -leadDir }, { trackId: b.trackId, distanceM: bM });
         const state = structuredClone(original);
-        const vehicles = [...Array.from({ length: config.wagonsPerDestination * 2 }, (_, n) => ({ id: `yard-wagon-${n + 1}`, name: `試験貨車${n + 1}`, lengthM: config.wagonLengthM, powered: false, destination: n < config.wagonsPerDestination ? "A方面" : "B方面" })), { id: "yard-locomotive", name: "試験入換機", lengthM: config.locomotiveLengthM, powered: true, destination: "" }];
-        executeYardCommand(state, { type: "yard.deploy", cutId: "arrival", name: "到着編成", vehicles, trackId: baseId, headM: leadM, direction: leadDir });
+        createYardFormation(state, "arrival", "到着編成", [...Array.from({ length: config.wagonsPerDestination * 2 }, (_, n) => ({ id: `yard-wagon-${n + 1}`, name: `試験貨車${n + 1}`, designId: "prototype-yard-wagon-1520", destination: n < config.wagonsPerDestination ? "A方面" : "B方面" })), { id: "yard-locomotive", name: "試験入換機", designId: "prototype-yard-locomotive-1520" }]);
+        executeYardCommand(state, { type: "yard.place", cutId: "arrival", trackId: baseId, headM: leadM, direction: leadDir });
         const move = (cutId: string, trackId: string, distanceM: number): Extract<YardAction, { type: "yard.move" }> => ({ type: "yard.move", cutId, trackId, distanceM, speedKph: config.defaultSpeedKph });
         state.yard!.roles = [{ name: "到着・引上げ（試験指定）", trackId: baseId, distanceM: leadM }, { name: "A方面 仕分・出発（試験指定）", trackId: a.trackId, distanceM: aM }, { name: "B方面 仕分・出発（試験指定）", trackId: b.trackId, distanceM: bM }];
         state.yard!.plan = [
@@ -57,6 +59,7 @@ export function prepareYardScenario(original: MapState): MapState {
           { type: "yard.couple", cutId: "locomotive", otherCutId: "engine-B" },
           { type: "yard.reverse", cutId: "locomotive" }, move("locomotive", baseId, leadM),
         ];
+        state.yard!.planLabels = state.yard!.plan.map((action) => action.type);
         state.clock.paused = true; state.clock.speedMultiplier = 1;
         return state;
       } catch (error) { failures.push((error as Error).message); }

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { executeCommand, type MapCommand } from "../src/simulation/commands";
 import { createInitialState, type MapState } from "../src/simulation/model";
+import { parseMapState, serializeMapState } from "../src/simulation/persistence";
 import { getUsableStablingSpans } from "../src/simulation/stabling";
 
 function setup(turnout = false, side: "left" | "right" = "right"): MapState {
@@ -80,4 +81,27 @@ describe("留置配置の安全範囲", () => {
     ] });
     expect(place(state, 24).state.vehiclePlacements).toHaveLength(1);
   });
+  it("同一線路の離れた留置区間を保存し、後方の区間へ配置できる", () => {
+    const state = setup();
+    const station = state.stations[0], first = station.stopPoints[0];
+    first.endDistanceM = 200; first.endPosition = { x: 200, y: 0 };
+    station.stopPoints.push({ ...first, id: "second-range", startDistanceM: 600, endDistanceM: 980, startPosition: { x: 600, y: 0 }, endPosition: { x: 980, y: 0 } });
+    const restored = parseMapState(serializeMapState(state));
+    expect(place(restored, 800).state.vehiclePlacements).toHaveLength(1);
+    expect(() => place(restored, 400)).toThrow(/停車範囲外/);
+    station.stopPoints[1].startDistanceM = 100;
+    expect(() => parseMapState(serializeMapState(state))).toThrow(/重複/);
+  });
+
+  it("施設を統合しても離れた区間の間を留置範囲にしない", () => {
+    const state = setup(), first = state.stations[0].stopPoints[0];
+    first.endDistanceM = 200; first.endPosition = { x: 200, y: 0 };
+    state.stations.push({ ...structuredClone(state.stations[0]), id: "station-2", stopPoints: [{ ...first, id: "second-range", startDistanceM: 600, endDistanceM: 980, startPosition: { x: 600, y: 0 }, endPosition: { x: 980, y: 0 } }] });
+    state.nextStationId = 3;
+    const merged = executeCommand(state, { type: "station.merge", stationIds: state.stations.map((s) => s.id) }).state;
+    expect(merged.stations[0].stopPoints).toHaveLength(2);
+    expect(() => place(merged, 400)).toThrow(/停車範囲外/);
+    expect(parseMapState(serializeMapState(merged)).stations[0].stopPoints).toHaveLength(2);
+  });
+
 });

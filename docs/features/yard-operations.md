@@ -11,19 +11,19 @@ npm run generate:bekasovo-operation
 npm run dev
 ```
 
-既定の入力は `saves/osm-bekasovo-split.json`、出力は `saves/osm-bekasovo-operation.json`。入力は変更しない。OSM由来のローカルセーブはGit管理対象外である。分割版がない場合は、引数で元のベカソヴォOSMセーブを渡す。
+既定の入力は `saves/osm-bekasovo-split.json`、出力は `saves/osm-bekasovo-core.json`。入力は変更しない。OSM由来のローカルセーブはGit管理対象外である。分割版がない場合は、引数で元のベカソヴォOSMセーブを渡す。
 
 ```sh
-npm run generate:bekasovo-operation -- saves/osm-bekasovo.json saves/osm-bekasovo-operation.json
+npm run generate:bekasovo-operation -- saves/osm-bekasovo.json saves/osm-bekasovo-core.json
 ```
 
-1. セーブ管理で「ベカソヴォ (OSM・入換試験)」を読込む。
+1. セーブ管理で「ベカソヴォ (本体・二方面入換確認)」を読込む。
 2. 上部の「操車」を開き「選択車両を地図中央へ」を押す。
-3. 時間速度を60×または300×にして「仕分・出発計画を実行」を押す。1×ではゲーム内約34分かかる。
+3. 時間速度を60×または300×にして「仕分・出発計画を実行」を押す。
 4. A方面3両を仕分線に残し、B方面3両を再連結した機関車が共通線へ引き出すと完了になる。
 5. やり直すときは初期試験セーブを再読込む。途中保存は新規保存を使う。
 
-画面の役割名は試験上の指定であり、実ベカソヴォの設備用途の断定ではない。車両は試験貨車6両と試験入換機1両。車長・速度・分岐保護距離は [試験設定](../../data/yard/prototype.yaml) に置く。
+画面の役割名は試験上の指定であり、実ベカソヴォの設備用途の断定ではない。車両は試験貨車6両と試験入換機1両。車長・動力・連結器は車両カタログから読み、速度・分岐保護距離は [試験設定](../../data/yard/prototype.yaml) に置く。
 
 ## 手動操作
 
@@ -33,13 +33,21 @@ npm run generate:bekasovo-operation -- saves/osm-bekasovo.json saves/osm-bekasov
 
 ## 状態と安全上の境界
 
-- `MapState.yard` はversion 13への加算的な任意項目。旧セーブに必須項目を追加しない。
-- UIとAIは `yard.deploy/move/reverse/split/couple/cancel/automatic` を `executeCommand` で利用する。時間は既存の `simulation.tick` に従う。
+- `MapState.yard` は任意項目。yard内部形式は2で、旧独立yard形式のセーブは再生成を要求する。
+- UIとAIは `yard.place/move/reverse/split/couple/cancel/automatic` を `executeCommand` で利用する。時間は既存の `simulation.tick` に従う。
 - 個体ID・長さ・動力・行先、車両順と複数線路上の占有、残移動経路、自動計画の進捗を保存する。
 - 経路全体と他列の占有・先行予約が競合すれば待機する。分岐近傍も保守的に排他する。全経路を先に確保するため、部分的に前進できる場合も出発待ちになる。
 - 自動計画は命令列であり、一般的な作業最適化ではない。今回の初期貨車順は方面ごとのまとまりを持つ。
-- 車両はyard領域の試験個体で、既存fleetと相互転属できない。両者の同時配置・走行、および操車中の線路編集は拒否する。
+- 車両個体・編成所属は既存fleetが正本である。yardは編成IDと占有・経路を保持し、連結・解結・反転でfleetを更新する。同じ編成は車両管理でも見える。駅配置・本線との同時運転、操車中の線路編集は拒否する。
 - 重力ハンプ、信号連動、牽引力・制動距離、接続関係のない線路との車体干渉、継続的な貨物需要は未実装。分岐近傍の距離は実物の車両接触限界の保証ではない。
 
 根拠: [入換処理](../../src/simulation/yard.ts)、[試験計画](../../src/simulation/yardScenario.ts)、[テスト](../../tests/yard.test.ts)。
 関連: [Epic](../epics/yard-operations.md)、[Task](../tasks/2026-11-07_operate-bekasovo-yard.md)、[設計](../designs/bekasovo-yard-operations.md)。
+
+## 本体と試作の境界
+
+mainはfleet共通化、停車範囲の配置・統合、接続判定の整合を採用する。既存の二方面・固定15工程の入換試験を維持する。
+
+混載順からの自動手順生成、中央4方面・2到着・8出発、仮想勾配ハンプ、簡易信号連動、26施設の自動整形と専用観察UIは `prototype/bekasovo-yard` ブランチに保存する。正式ゲーム仕様として採用していない。試作ブランチの操車セーブには本体にない命令を含むため、mainでは読込互換を保証しない。
+
+[分離Task](../tasks/2026-11-08_split-yard-prototype.md)。次の本体機能は小さい問題から個別に定義する。

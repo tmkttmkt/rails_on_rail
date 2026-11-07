@@ -1,23 +1,24 @@
-import { analyzeLine, sampleTrack } from "./geometry";
+import { analyzeLine, sampleTrack, getTrackPortTangent, TURNOUT_TANGENT_BASELINE_M } from "./geometry";
 import type { MapState, Point } from "./model";
 import { yardConfig } from "../data/yardConfig";
+import { yardFormation, yardVehicle, yardVehicleIds } from "./yardFleet";
+import { assertMechanicalConnection, formationWarnings, getFormationLengthM, type Formation } from "./fleet";
 
-export interface YardVehicle { id: string; name: string; lengthM: number; powered: boolean; destination: string }
 export interface YardSpan { trackId: string; fromM: number; toM: number }
-export interface YardCut { id: string; name: string; vehicleIds: string[]; spans: YardSpan[]; move?: { spans: YardSpan[]; speedKph: number; couplingTarget?: string }; waiting?: string }
+export interface YardCut { id: string; spans: YardSpan[]; move?: { spans: YardSpan[]; speedKph: number; couplingTarget?: string }; waiting?: string }
 export type YardAction =
   | { type: "yard.move"; cutId: string; trackId: string; distanceM: number; speedKph?: number; couplingTarget?: string }
   | { type: "yard.reverse"; cutId: string }
   | { type: "yard.split"; cutId: string; rearCount: number; newCutId: string }
   | { type: "yard.couple"; cutId: string; otherCutId: string };
-export interface YardState { vehicles: YardVehicle[]; cuts: YardCut[]; plan: YardAction[]; planIndex: number; automatic: boolean; error?: string; roles: { name: string; trackId: string; distanceM: number }[] }
+export interface YardState { formatVersion: 2; cuts: YardCut[]; plan: YardAction[]; planLabels: string[]; planIndex: number; automatic: boolean; error?: string; roles: { name: string; trackId: string; distanceM: number }[] }
 export type YardCommand = YardAction
-  | { type: "yard.deploy"; cutId: string; name: string; vehicles: YardVehicle[]; trackId: string; headM: number; direction: 1 | -1 }
+  | { type: "yard.place"; cutId: string; trackId: string; headM: number; direction: 1 | -1 }
   | { type: "yard.automatic"; running: boolean }
   | { type: "yard.cancel"; cutId: string };
 const EPS = 0.01;
 export const spanLength = (s: YardSpan): number => Math.abs(s.toM - s.fromM);
-export const cutLength = (yard: YardState, cut: YardCut): number => cut.vehicleIds.reduce((n, id) => n + yard.vehicles.find((v) => v.id === id)!.lengthM, 0);
+export const cutLength = (state: MapState, cut: YardCut): number => getFormationLengthM(state.fleet, yardFormation(state, cut)).lengthM;
 export const trackLength = (state: MapState, id: string): number => {
   const track = state.tracks.find((t) => t.id === id);
   if (!track) throw new Error(`線路がない: ${id}`);
@@ -35,11 +36,11 @@ export function yardPoint(state: MapState, trackId: string, distanceM: number): 
   }
   return points.at(-1)!;
 }
-function tangent(state: MapState, id: string, m: number, dir: number): Point {
+function tangent(state: MapState, id: string, m: number, dir: number, turnout = false): Point {
   const length = trackLength(state, id);
-  const a = yardPoint(state, id, Math.max(0, m - 1)), b = yardPoint(state, id, Math.min(length, m + 1));
-  const norm = Math.hypot(b.x - a.x, b.y - a.y) || 1;
-  return { x: (b.x - a.x) / norm * dir, y: (b.y - a.y) / norm * dir };
+  const track = state.tracks.find((t) => t.id === id)!;
+  const tangent = getTrackPortTangent(track, m <= EPS ? "start" : m >= length - EPS ? "end" : "interior", m, turnout ? TURNOUT_TANGENT_BASELINE_M : 0);
+  return { x: tangent.x * dir, y: tangent.y * dir };
 }
 
 /** 探索の向きを状態に含め、暗黙の折返しや分岐の鋭角な渡りを防ぐ。 */
@@ -77,7 +78,7 @@ export function findYardPath(state: MapState, start: { trackId: string; distance
         for (const dir of [1, -1]) {
           const nextList = cuts.get(port.trackId)!;
           if (nextList[nextList.indexOf(port.distanceM) + dir] === undefined) continue;
-          const a = tangent(state, node.trackId, node.m, node.dir), b = tangent(state, port.trackId, port.distanceM, dir);
+          const a = tangent(state, node.trackId, node.m, node.dir, !!turnout), b = tangent(state, port.trackId, port.distanceM, dir, !!turnout);
           if (a.x * b.x + a.y * b.y >= threshold) offer({ trackId: port.trackId, m: port.distanceM, dir }, 0.001);
         }
       }
@@ -119,11 +120,11 @@ function conflict(state: MapState, cut: YardCut, path: YardSpan[], snapshot = st
     // 予約競合は配列順の優先権で解決する。後からの要求で先行要求も待つ相互待ちを避ける。
     const priority = snapshot.findIndex((c) => c.id === other.id) < snapshot.findIndex((c) => c.id === cut.id);
     const reserved = [...other.spans, ...(priority ? other.move?.spans ?? [] : [])];
-    if (path.some((a) => reserved.some((b) => overlaps(a, b)))) return `${other.name}の占有・予約待ち`;
+    if (path.some((a) => reserved.some((b) => overlaps(a, b)))) return `${yardFormation(state, other).name}の占有・予約待ち`;
     // 異なる線路でも、同じ分岐の近傍を同時に使用させない。
     for (const j of state.junctions) {
       const near = (spans: YardSpan[]) => j.ports.some((p) => spans.some((s) => s.trackId === p.trackId && Math.min(s.fromM, s.toM) < p.distanceM + yardConfig.junctionClearanceM && Math.max(s.fromM, s.toM) > p.distanceM - yardConfig.junctionClearanceM));
-      if (near(path) && near(reserved)) return `${j.id}: ${other.name}の分岐使用待ち`;
+      if (near(path) && near(reserved)) return `${j.id}: ${yardFormation(state, other).name}の分岐使用待ち`;
     }
   }
   return undefined;
@@ -132,44 +133,60 @@ function getCut(state: MapState, id: string): YardCut { const cut = state.yard?.
 function stopped(cut: YardCut): void { if (cut.move) throw new Error("移動を完了または取消してから操作する"); }
 export function executeYardCommand(state: MapState, command: YardCommand, fromPlan = false): string {
   if (state.operatingTrains.some((t) => t.state !== "completed") || state.vehiclePlacements.length || Object.values(state.operationExecutions).some((e) => !["completed", "cancelled"].includes(e.status))) throw new Error("操車試験と既存fleetの運転・配置は同時に行えない");
-  state.yard ??= { vehicles: [], cuts: [], plan: [], planIndex: 0, automatic: false, roles: [] };
+  state.yard ??= { formatVersion: 2, cuts: [], plan: [], planLabels: [], planIndex: 0, automatic: false, roles: [] };
   const yard = state.yard;
   if (command.type === "yard.automatic") { yard.automatic = command.running; yard.error = undefined; return command.running ? "仕分計画を開始" : "仕分計画を中断"; }
   if (!fromPlan) yard.automatic = false;
-  if (command.type === "yard.deploy") {
-    if (yard.cuts.some((c) => c.id === command.cutId) || !command.vehicles.length) throw new Error("車両列IDの重複または車両なし");
-    const ids = new Set(yard.vehicles.map((v) => v.id));
-    for (const v of command.vehicles) { if (ids.has(v.id) || !Number.isFinite(v.lengthM) || v.lengthM <= 0 || typeof v.powered !== "boolean") throw new Error("車両定義が不正"); ids.add(v.id); }
+  if (command.type === "yard.place") {
+    const formation = yardFormation(state, { id: command.cutId });
+    if (yard.cuts.some((c) => c.id === command.cutId) || !formation.vehicles.length) throw new Error("編成の重複配置または車両なし");
+    if (state.fleet.trains.some((t) => t.formations.some((f) => f.formationId === formation.id)) || state.operatingTrains.some((t) => t.formationId === formation.id) || Object.values(state.vehicleDuties).some((d) => d.defaultFormationId === formation.id) || Object.values(state.operationExecutions).some((e) => e.formationId === formation.id)) throw new Error("列車・運用から参照中の編成を先に解除する");
     if (![1, -1].includes(command.direction) || !Number.isFinite(command.headM)) throw new Error("配置位置・方向が不正");
-    const length = command.vehicles.reduce((sum, v) => sum + v.lengthM, 0);
+    const length = getFormationLengthM(state.fleet, formation).lengthM;
     const span = { trackId: command.trackId, fromM: command.headM - command.direction * length, toM: command.headM };
     if (Math.min(span.fromM, span.toM) < 0 || Math.max(span.fromM, span.toM) > trackLength(state, span.trackId)) throw new Error("線路長に収まらない");
     if (state.junctions.some((j) => j.ports.some((p) => p.trackId === span.trackId && p.distanceM > Math.min(span.fromM, span.toM) - yardConfig.junctionClearanceM && p.distanceM < Math.max(span.fromM, span.toM) + yardConfig.junctionClearanceM))) throw new Error("分岐付近へ初期配置できない");
-    const cut: YardCut = { id: command.cutId, name: command.name, vehicleIds: command.vehicles.map((v) => v.id), spans: [span] };
+    const cut: YardCut = { id: command.cutId, spans: [span] };
     const reason = conflict(state, cut, cut.spans); if (reason) throw new Error(reason);
-    yard.vehicles.push(...structuredClone(command.vehicles)); yard.cuts.push(cut); return "車両列を配置";
+    yard.cuts.push(cut); return "fleetの編成を線路上へ配置";
   }
   const cut = getCut(state, command.cutId);
   if (command.type === "yard.cancel") { cut.move = undefined; cut.waiting = undefined; yard.automatic = false; return "入換を停止"; }
   stopped(cut);
   if (command.type === "yard.reverse") {
-    cut.vehicleIds.reverse(); cut.spans = cut.spans.reverse().map((s) => ({ ...s, fromM: s.toM, toM: s.fromM })); return "進行方向を反転";
+    const formation = yardFormation(state, cut);
+    formation.vehicles.reverse(); for (const vehicle of formation.vehicles) vehicle.orientation = vehicle.orientation === "forward" ? "reversed" : "forward";
+    formation.warnings = formationWarnings(state.fleet, formation);
+    cut.spans = cut.spans.reverse().map((s) => ({ ...s, fromM: s.toM, toM: s.fromM })); return "進行方向を反転";
   }
   if (command.type === "yard.split") {
-    if (!Number.isInteger(command.rearCount) || command.rearCount < 1 || command.rearCount >= cut.vehicleIds.length || yard.cuts.some((c) => c.id === command.newCutId)) throw new Error("解結位置または新しい車両列IDが不正");
-    const ids = cut.vehicleIds.slice(0, command.rearCount), length = ids.reduce((n, id) => n + yard.vehicles.find((v) => v.id === id)!.lengthM, 0);
+    const formation = yardFormation(state, cut), vehicleIds = yardVehicleIds(state, cut);
+    if (!Number.isInteger(command.rearCount) || command.rearCount < 1 || command.rearCount >= vehicleIds.length || state.fleet.formations.some((f) => f.id === command.newCutId)) throw new Error("解結位置または新しい編成IDが不正");
+    const ids = vehicleIds.slice(0, command.rearCount), length = ids.reduce((n, id) => n + yardVehicle(state, id).lengthM, 0);
     const [rear, front] = splitSpans(cut.spans, length);
-    yard.cuts.push({ id: command.newCutId, name: command.newCutId, vehicleIds: ids, spans: rear });
-    cut.vehicleIds = cut.vehicleIds.slice(command.rearCount); cut.spans = front; return "線路上で解結";
+    const vehicles = formation.vehicles.splice(formation.vehicles.length - command.rearCount);
+    const detached: Formation = { id: command.newCutId, name: "入換編成", vehicles, warnings: [] };
+    state.fleet.formations.push(detached);
+    detached.warnings = formationWarnings(state.fleet, detached);
+    formation.warnings = formationWarnings(state.fleet, formation);
+    formation.name = yardVehicleIds(state, cut).map((id) => yardVehicle(state, id)).some((v) => v.powered) ? "入換編成" : `${yardVehicle(state, vehicleIds.at(-1)!).destination} 出発待ち`;
+    yard.cuts.push({ id: command.newCutId, spans: rear });
+    cut.spans = front; return "同じfleet個体を線路上で解結";
   }
   if (command.type === "yard.couple") {
     const other = getCut(state, command.otherCutId); stopped(other);
     if (cut === other) throw new Error("同じ車両列は連結できない");
     const a = cut.spans.at(-1)!, b = other.spans[0];
     if (a.trackId !== b.trackId || Math.abs(a.toM - b.fromM) > 0.1 || Math.sign(a.toM - a.fromM) !== Math.sign(b.toM - b.fromM)) throw new Error("先端と相手の後端を同じ線路上で接触させ、向きを合わせる");
-    cut.vehicleIds.push(...other.vehicleIds); cut.spans = mergeSpans([...cut.spans, ...other.spans]); yard.cuts = yard.cuts.filter((c) => c !== other); return "線路上で連結";
+    const formation = yardFormation(state, cut), otherFormation = yardFormation(state, other);
+    assertMechanicalConnection(state.fleet, formation.vehicles[0], "front", otherFormation.vehicles.at(-1)!, "rear");
+    formation.vehicles = [...otherFormation.vehicles, ...formation.vehicles];
+    formation.warnings = formationWarnings(state.fleet, formation);
+    formation.name = "機関車＋貨車";
+    state.fleet.formations = state.fleet.formations.filter((f) => f.id !== other.id);
+    cut.spans = mergeSpans([...cut.spans, ...other.spans]); yard.cuts = yard.cuts.filter((c) => c !== other); return "同じfleet個体を線路上で連結";
   }
-  if (!cut.vehicleIds.some((id) => yard.vehicles.find((v) => v.id === id)?.powered)) throw new Error("動力車がない。機関車を連結する必要がある");
+  if (!yardVehicleIds(state, cut).some((id) => yardVehicle(state, id).powered)) throw new Error("動力車がない。機関車を連結する必要がある");
   const speedKph = command.speedKph ?? yardConfig.defaultSpeedKph;
   if (!Number.isFinite(speedKph) || speedKph <= 0 || speedKph > yardConfig.maximumSpeedKph) throw new Error(`入換速度は0超${yardConfig.maximumSpeedKph} km/h以下`);
   const head = cut.spans.at(-1)!;
@@ -208,13 +225,15 @@ export function advanceYard(state: MapState, seconds: number): void {
     cut.spans = occupied; cut.move.spans = remaining;
     if (!remaining.length) { cut.move = undefined; }
   }
+
 }
 
 export function validateYard(state: MapState): void {
   const yard = state.yard; if (!yard) return;
+  if (yard.formatVersion !== 2) throw new Error("旧操車試験セーブは再生成が必要（npm run generate:bekasovo-operation）");
   if (state.vehiclePlacements?.length || state.operatingTrains?.some((t) => t.state !== "completed") || Object.values(state.operationExecutions ?? {}).some((e) => !["completed", "cancelled"].includes(e.status))) throw new Error("操車状態と既存fleetの運転・配置が競合");
-  if (!Array.isArray(yard.vehicles) || !Array.isArray(yard.cuts) || !Array.isArray(yard.plan) || !Array.isArray(yard.roles) || !Number.isInteger(yard.planIndex) || yard.planIndex < 0 || yard.planIndex > yard.plan.length || typeof yard.automatic !== "boolean") throw new Error("操車状態が不正");
-  const vehicles = new Set<string>(), assigned = new Set<string>(), cuts = new Set<string>();
+  if (!Array.isArray(yard.cuts) || !Array.isArray(yard.plan) || !Array.isArray(yard.planLabels) || yard.planLabels.length !== yard.plan.length || yard.planLabels.some((s) => typeof s !== "string") || !Array.isArray(yard.roles) || !Number.isInteger(yard.planIndex) || yard.planIndex < 0 || yard.planIndex > yard.plan.length || typeof yard.automatic !== "boolean") throw new Error("操車状態が不正");
+  const assigned = new Set<string>(), cuts = new Set<string>();
   const assertChain = (spans: YardSpan[]) => {
     for (let i = 1; i < spans.length; i++) {
       const a = spans[i - 1], b = spans[i];
@@ -223,28 +242,28 @@ export function validateYard(state: MapState): void {
       } else {
         const junction = state.junctions.find((j) => j.ports.some((p) => p.trackId === a.trackId && Math.abs(p.distanceM - a.toM) < EPS) && j.ports.some((p) => p.trackId === b.trackId && Math.abs(p.distanceM - b.fromM) < EPS));
         if (!junction) throw new Error("操車経路の接続がない");
-        const first = tangent(state, a.trackId, a.toM, Math.sign(a.toM - a.fromM)), second = tangent(state, b.trackId, b.fromM, Math.sign(b.toM - b.fromM));
         const turnout = state.turnouts.some((t) => t.junctionId === junction.id && [t.throughTrackId, t.divergingTrackId].includes(a.trackId) && [t.throughTrackId, t.divergingTrackId].includes(b.trackId));
+        const first = tangent(state, a.trackId, a.toM, Math.sign(a.toM - a.fromM), turnout), second = tangent(state, b.trackId, b.fromM, Math.sign(b.toM - b.fromM), turnout);
         if (first.x * second.x + first.y * second.y < Math.cos(turnout ? Math.atan(1 / 6) + Math.PI / 36 : Math.PI / 36)) throw new Error("操車経路の方向が不連続");
       }
     }
   };
-  for (const v of yard.vehicles) { if (typeof v.id !== "string" || !v.id || typeof v.name !== "string" || vehicles.has(v.id) || !Number.isFinite(v.lengthM) || v.lengthM <= 0 || typeof v.powered !== "boolean" || typeof v.destination !== "string") throw new Error("操車車両が不正"); vehicles.add(v.id); }
   for (const cut of yard.cuts) {
-    if (typeof cut.id !== "string" || !cut.id || typeof cut.name !== "string" || cuts.has(cut.id) || !Array.isArray(cut.vehicleIds) || !cut.vehicleIds.length || !Array.isArray(cut.spans) || !cut.spans.length) throw new Error("操車車両列が不正"); cuts.add(cut.id);
-    for (const id of cut.vehicleIds) { if (!vehicles.has(id) || assigned.has(id)) throw new Error("操車車両の所属が不正"); assigned.add(id); }
+    if (typeof cut.id !== "string" || !cut.id || cuts.has(cut.id) || !Array.isArray(cut.spans) || !cut.spans.length) throw new Error("操車車両列が不正"); cuts.add(cut.id);
+    const vehicleIds = yardVehicleIds(state, cut);
+    if (!vehicleIds.length) throw new Error("操車編成が空");
+    for (const id of vehicleIds) { if (assigned.has(id)) throw new Error("操車車両の所属が不正"); assigned.add(id); const vehicle = yardVehicle(state, id); if (!Number.isFinite(vehicle.lengthM) || vehicle.lengthM <= 0) throw new Error("操車車両長が不正"); }
     for (const s of [...cut.spans, ...(cut.move?.spans ?? [])]) {
       if (!Number.isFinite(s.fromM) || !Number.isFinite(s.toM) || spanLength(s) < 1e-8 || Math.min(s.fromM, s.toM) < -EPS || Math.max(s.fromM, s.toM) > trackLength(state, s.trackId) + EPS) throw new Error("操車占有区間が不正");
     }
-    if (Math.abs(cutLength(yard, cut) - cut.spans.reduce((n, s) => n + spanLength(s), 0)) > 0.02) throw new Error("車両長と占有長が一致しない");
-    if (cut.move && (!Number.isFinite(cut.move.speedKph) || cut.move.speedKph <= 0 || cut.move.speedKph > yardConfig.maximumSpeedKph || !cut.move.spans.length || !cut.vehicleIds.some((id) => yard.vehicles.find((v) => v.id === id)?.powered))) throw new Error("操車移動が不正");
+    if (Math.abs(cutLength(state, cut) - cut.spans.reduce((n, s) => n + spanLength(s), 0)) > 0.02) throw new Error("車両長と占有長が一致しない");
+    if (cut.move && (!Number.isFinite(cut.move.speedKph) || cut.move.speedKph <= 0 || cut.move.speedKph > yardConfig.maximumSpeedKph || !cut.move.spans.length || !vehicleIds.some((id) => yardVehicle(state, id).powered))) throw new Error("操車移動が不正");
     assertChain([...cut.spans, ...(cut.move?.spans ?? [])]);
   }
-  if (assigned.size !== vehicles.size) throw new Error("操車車両の所属が欠落");
   for (let i = 0; i < yard.cuts.length; i++) for (const other of yard.cuts.slice(i + 1)) if (yard.cuts[i].spans.some((a) => other.spans.some((b) => overlaps(a, b)))) throw new Error("操車車両の占有が重複");
   for (const role of yard.roles) if (typeof role.name !== "string" || !Number.isFinite(role.distanceM) || role.distanceM < 0 || role.distanceM > trackLength(state, role.trackId)) throw new Error("操車役割の位置が不正");
   for (const action of yard.plan) {
-    if (!action || typeof action.cutId !== "string" || !["yard.move", "yard.reverse", "yard.split", "yard.couple"].includes(action.type)) throw new Error("操車計画が不正");
+    if (!action || typeof action.cutId !== "string" || !["yard.move", "yard.reverse", "yard.split", "yard.couple"].includes(action.type)) throw new Error("操車計画が不正（試作専用の命令は試作ブランチで開く）");
     if (action.type === "yard.move" && (!Number.isFinite(action.distanceM) || action.distanceM < 0 || action.distanceM > trackLength(state, action.trackId) || (action.speedKph !== undefined && (!Number.isFinite(action.speedKph) || action.speedKph <= 0 || action.speedKph > yardConfig.maximumSpeedKph)))) throw new Error("操車計画の移動が不正");
     if (action.type === "yard.split" && (!Number.isInteger(action.rearCount) || action.rearCount < 1 || typeof action.newCutId !== "string")) throw new Error("操車計画の解結が不正");
     if (action.type === "yard.couple" && typeof action.otherCutId !== "string") throw new Error("操車計画の連結が不正");
