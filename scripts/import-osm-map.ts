@@ -6,6 +6,8 @@ import { inspectTrackRadii } from "../src/simulation/inspection";
 import { analyzeLine } from "../src/simulation/geometry";
 import { createSaveFile, parseSaveFile, serializeSaveFile } from "../src/simulation/persistence";
 import { trackCatalog } from "../src/data/trackCatalog";
+import { getUsableStablingSpans } from "../src/simulation/stabling";
+import { getStationImportRange } from "../src/simulation/stationImportRange";
 
 // OpenStreetMapの鉄道データ（Overpass APIの応答JSON）からマップを生成する。
 // 取得手順は docs/tasks/2026-11-05_import-osm-railway-data.md を参照する。
@@ -374,8 +376,13 @@ if (stationsPath) {
 }
 
 // 線路上で停車に使える最長の区間を返す。分岐点から FOULING_CLEARANCE_M だけ退く。
-function usableSpan(trackId: string, points: Point[]): { startM: number; endM: number } | undefined {
+function usableSpan(trackId: string, points: Point[], stationAlongM?: number): { startM: number; endM: number } | undefined {
   const total = polylineLength(points);
+  // 旅客ホームに留置線用の曲率・最長区間の選別を適用しない。
+  if (stationAlongM !== undefined) {
+    const track = state.tracks.find((item) => item.id === trackId)!;
+    return getStationImportRange(state, track, stationAlongM, total, STATION_HALF_LENGTH_M);
+  }
   const cuts = [0];
   for (const junction of state.junctions) {
     for (const port of junction.ports) {
@@ -417,7 +424,10 @@ function usableSpan(trackId: string, points: Point[]): { startM: number; endM: n
     if (endM - startM < 2 || blocked(startM, endM)) continue;
     if (!best || endM - startM > best.endM - best.startM) best = { startM, endM };
   }
-  return best;
+  if (!best) return undefined;
+  const track = state.tracks.find((item) => item.id === trackId)!;
+  const spans = getUsableStablingSpans(state, track, best.startM, best.endM);
+  return spans.sort((a, b) => (b.endM - b.startM) - (a.endM - a.startM))[0];
 }
 
 function projectLatLon(lat: number, lon: number): Point {
@@ -545,10 +555,10 @@ for (const candidate of candidates) {
   const createdIds: string[] = [];
   for (const entry of serving) {
     const points = entry.track.points;
-    const usable = usableSpan(entry.track.id, points);
+    const usable = usableSpan(entry.track.id, points, entry.hit.alongM);
     if (!usable) continue; // 分岐器に挟まれて停車できる区間が無い
-    const startAlong = Math.max(usable.startM, Math.min(usable.endM - 2, entry.hit.alongM - STATION_HALF_LENGTH_M));
-    const endAlong = Math.min(usable.endM, Math.max(startAlong + 2, entry.hit.alongM + STATION_HALF_LENGTH_M));
+    const startAlong = usable.startM;
+    const endAlong = usable.endM;
     const id = `station-${state.nextStationId}`;
     try {
       run({

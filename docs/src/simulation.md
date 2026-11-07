@@ -8,6 +8,8 @@ updated: 2026-08-11
 # src/simulation — シミュレーションモジュール
 
 DOM・Canvas・UIフレームワークへ依存しない純粋なゲームロジック層。
+
+留置配置の現在仕様は[編成の留置配置](../features/stabling-placement.md)を参照する。
 入力はユーザー操作・AI操作を問わず `MapCommand` として受け取り、不変な状態オブジェクトを返す。
 
 ---

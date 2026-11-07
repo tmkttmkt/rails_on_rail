@@ -5,3 +5,5 @@ dist/
 
 # OSM由来の生成物（ODbL継承義務を避けるためコミットしない）
 saves/osm-*.json
+saves/osm-*.json.before-bekasovo-i.bak
+saves/osm-*.json.before-station-repair.bak

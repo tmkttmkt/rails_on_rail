@@ -49,6 +49,8 @@ Epicとは独立した、複数Phaseにまたがる設計上の未解決問題�
 
 ## 実装済み機能
 
+- [編成の留置配置](features/stabling-placement.md) — 編成全体の範囲包含と分岐支障の検査
+
 - [ゲーム内時間](features/simulation-clock.md) — 保存される日時、一時停止、時間速度
 
 ## データ定義

@@ -11,6 +11,15 @@ updated: 2026-11-06
 
 ## 進行中
 
+- `review`: [OSM駅範囲の遠隔誤生成を横断修復する](tasks/2026-11-07_repair-imported-station-ranges.md)（Phase -1）
+
+- `review`: [Бекасово I の遠隔停車範囲を修正する](tasks/2026-11-07_fix-bekasovo-i-station.md)（Phase -1）
+
+- `review`: [ベカソヴォの巨大な構内停車場を分割する](tasks/2026-11-07_split-bekasovo-facilities.md)（Phase -1）
+
+- `review`: [留置場の範囲へ分岐支障を反映する](tasks/2026-11-07_show-usable-stabling-ranges.md)（Phase -1）
+
+
 | Status | Task | Epic |
 |---|---|---|
 | `review` | [停車場と線路へ運転上の区分を導入する](tasks/2026-11-06_introduce-operational-classification.md) | [Phase -1](epics/phase-minus-one.md) |
@@ -21,6 +30,8 @@ updated: 2026-11-06
 | `review` | [AI生成マップの確定前に接続状態を確認する](tasks/2026-08-13_inspect-ai-map-connectivity.md) | [Phase -1](epics/phase-minus-one.md) |
 
 ## 完了
+
+- `done`: [編成全体の留置範囲と分岐支障を検査する](tasks/2026-11-07_validate-stabling-placement.md)（Phase -1）
 
 | Status | Task | Epic |
 |---|---|---|

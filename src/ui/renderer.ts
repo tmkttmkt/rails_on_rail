@@ -2,6 +2,7 @@ import { getFormationOperationalStatus, worldToScreen, type Camera, type MapStat
 import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLines } from "../simulation/geometry";
 import type { TrackGeometry } from "../simulation/model";
 import { trackCatalog } from "../data/trackCatalog";
+import { getUsableStablingSpans } from "../simulation/stabling";
 import { alignPathEndsToConnection, alignPathsToConnection, findTrackGroup } from "../simulation/commands";
 
 export interface PlacementPreviewState {
@@ -96,15 +97,20 @@ export function drawMap(
     for (const stopPoint of station.stopPoints) {
       const track = state.tracks.find((item) => item.id === stopPoint.trackId);
       if (!track) continue;
-      const stationRange = slicePathByDistance(sampleTrack(track), stopPoint.startDistanceM, stopPoint.endDistanceM);
-      if (stationRange.length >= 2) {
-        // 旅客の乗降がある駅は強調し、構内の停車場（車両基地・操車場・信号場）は
-        // 控えめに描く。構内は停車地点が多く、同じ強調では地図が読めなくなる。
-        if (station.kind === "station") {
-          strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#d5a642", 7);
-          strokePolyline(context, stationRange, camera, viewport, "#f4f0df", 3);
-        } else {
-          strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#9aa7b4", 3);
+      const spans = station.kind === "station"
+        ? [{ startM: stopPoint.startDistanceM, endM: stopPoint.endDistanceM }]
+        : getUsableStablingSpans(state, track, stopPoint.startDistanceM, stopPoint.endDistanceM);
+      for (const span of spans) {
+        const stationRange = slicePathByDistance(sampleTrack(track), span.startM, span.endM);
+        if (stationRange.length >= 2) {
+          // 旅客の乗降がある駅は強調し、構内の停車場（車両基地・操車場・信号場）は
+          // 控えめに描く。構内は停車地点が多く、同じ強調では地図が読めなくなる。
+          if (station.kind === "station") {
+            strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#d5a642", 7);
+            strokePolyline(context, stationRange, camera, viewport, "#f4f0df", 3);
+          } else {
+            strokePolyline(context, stationRange, camera, viewport, selected ? "#a8322a" : "#9aa7b4", 3);
+          }
         }
       }
     }

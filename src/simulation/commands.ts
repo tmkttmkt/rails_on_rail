@@ -1,6 +1,7 @@
 import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation, type Turnout, type TurnoutSide, type StationKind, type TrackKind, STATION_KINDS, TRACK_KINDS } from "./model";
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
+import { assertStablingClearOfJunctions } from "./stabling";
 import { formationTemplateCatalog } from "../data/formationTemplateCatalog";
 import { TANGENT_ANGLE_TOLERANCE_RAD, TURNOUT_TANGENT_BASELINE_M, analyzeLine, calculateTangentAngleDifferenceRad, closestPointOnSegment, createParallelLines, getTrackPortTangent, getTrackTangentAtPosition, isTangentContinuous, polylineOverlapLength, recommendedCantMm, sampleTrack } from "./geometry";
 import { advanceOperatingTrains, createOperationRoute } from "./operations";
@@ -886,6 +887,10 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       if (occupiedStartDistanceM < -0.001 || occupiedEndDistanceM > trackLengthM + 0.001) {
         throw new Error("配置占有範囲が線路の長さ外へはみ出しています");
       }
+      if (occupiedStartDistanceM < stopPoint.startDistanceM - 0.001 || occupiedEndDistanceM > stopPoint.endDistanceM + 0.001) {
+        throw new Error("編成全体が駅の停車範囲に収まりません");
+      }
+      assertStablingClearOfJunctions(next, track, occupiedStartDistanceM, occupiedEndDistanceM);
       for (const placement of next.vehiclePlacements) {
         if (placement.trackId === command.trackId) {
           if (occupiedStartDistanceM <= placement.occupiedEndDistanceM && placement.occupiedStartDistanceM <= occupiedEndDistanceM) {
