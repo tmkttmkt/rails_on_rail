@@ -1,15 +1,17 @@
 ---
 md_class: status
-updated: 2026-11-06
+updated: 2026-11-07
 ---
 
 # Task一覧
 
 現在は手動で管理する。Taskを作成または更新した変更と同時に、この一覧も更新する。
 
-現在のEpic: [Phase -1 技術プロトタイプ](epics/phase-minus-one.md)
+現在のEpic: [ベカソヴォの操車場を動かす](epics/yard-operations.md)。以下の既存Phase -1 Taskは履歴・残作業として保持する。
 
 ## 進行中
+
+- `review`: [ベカソヴォで貨車の入換を動かす](tasks/2026-11-07_operate-bekasovo-yard.md)（新目的への移行）
 
 - `review`: [OSM駅範囲の遠隔誤生成を横断修復する](tasks/2026-11-07_repair-imported-station-ranges.md)（Phase -1）
 

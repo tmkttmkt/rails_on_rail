@@ -139,3 +139,11 @@ footer { display: flex; align-items: center; justify-content: space-between; pad
 .mt-2 { margin-top: 8px !important; }
 .full { width: 100% !important; }
 .small { padding: 2px 6px !important; font-size: 9px !important; }
+
+#yard-left-container, #yard-right-container { display: grid; gap: 10px; font-size: 12px; }
+#yard-left-container[hidden], #yard-right-container[hidden] { display: none; }
+.yard-form { display: grid; gap: 8px; }
+.yard-form label, #yard-left-container label { display: grid; gap: 4px; }
+.yard-form select, .yard-form input, #yard-cut { width: 100%; min-width: 0; padding: 6px; }
+#yard-status { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; background: #e8edf0; padding: 8px; font-size: 11px; }
+.yard-vehicles { padding-left: 22px; line-height: 1.8; }

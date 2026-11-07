@@ -8,7 +8,8 @@ Rails on Railでは、開発段階の各PhaseをEpicとして扱う。Epicはそ
 
 | Epic | 状態 | 概要 |
 |---|---|---|
-| [Phase -1](phase-minus-one.md) | active | 技術プロトタイプ |
+| [操車場実働化](yard-operations.md) | active | ベカソヴォの入換・仕分・出発 |
+| [Phase -1](phase-minus-one.md) | review | 旧技術プロトタイプ。受入未確認、新規開発は操車場Epicへ移行 |
 | Phase 0 | planned | 鉄道が動く |
 | Phase 1 | planned | 鉄道経営の核 |
 | Phase 2 | planned | 運行 |

@@ -41,8 +41,10 @@ import {
   cancelDutyExecutionOperation,
 } from "./vehicleDuty";
 import type { ServiceDomainCommand } from "./serviceCommands";
+import { advanceYard, executeYardCommand, type YardCommand } from "./yard";
 
 export type MapCommand =
+  | YardCommand
   | { type: "track.create"; kind?: TrackKind; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
   | { type: "track.delete"; trackId: string }
   | { type: "track.setKind"; trackId: string; kind: TrackKind }
@@ -124,6 +126,8 @@ function makeDefaultStopTimes(route: any) {
 
 export function executeCommand(state: MapState, command: MapCommand): CommandResult {
   const next = structuredClone(state);
+  if (command.type.startsWith("yard.")) return { state: next, message: executeYardCommand(next, command as YardCommand) };
+  if (state.yard?.cuts.length && /^(fleet\.|train\.|track\.|turnout\.|vehicleDutyExecution\.|operationExecution\.|execution\.|trainRun\.)/.test(command.type)) throw new Error("操車車両がある間は線路編集・既存fleet運転を行えない。元セーブまたは別セーブを使用する");
 
   switch (command.type) {
     case "track.create":
@@ -950,6 +954,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
         next.clock.currentTimeMs = nextStepTargetMs;
 
         if (stepSeconds > 0) {
+          advanceYard(next, stepSeconds);
           advanceOperatingTrains(next, stepSeconds);
           tickOperationExecutions(next, stepSeconds);
         }
@@ -967,6 +972,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
     case "map.clear":
       return { state: { ...createInitialState(), clock: structuredClone(next.clock) }, message: "マップを空にしました" };
   }
+  throw new Error(`未対応の操作: ${command.type}`);
 }
 
 function removeInvalidRoutesAndTrains(state: MapState): void {

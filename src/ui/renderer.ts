@@ -3,6 +3,7 @@ import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLi
 import type { TrackGeometry } from "../simulation/model";
 import { trackCatalog } from "../data/trackCatalog";
 import { getUsableStablingSpans } from "../simulation/stabling";
+import { yardPoint, spanLength } from "../simulation/yard";
 import { alignPathEndsToConnection, alignPathsToConnection, findTrackGroup } from "../simulation/commands";
 
 export interface PlacementPreviewState {
@@ -115,6 +116,34 @@ export function drawMap(
       }
     }
     drawStation(context, station.position, station.name, camera, viewport, selected);
+  }
+  if (state.yard) {
+    for (const role of state.yard.roles) drawStation(context, yardPoint(state, role.trackId, role.distanceM), role.name, camera, viewport, false);
+    for (const cut of state.yard.cuts) {
+      for (const s of cut.move?.spans ?? []) {
+        const track = state.tracks.find((t) => t.id === s.trackId)!;
+        strokePolyline(context, slicePathByDistance(sampleTrack(track), Math.min(s.fromM, s.toM), Math.max(s.fromM, s.toM)), camera, viewport, "#8b3fb2", 3, [4, 4]);
+      }
+      let offset = 0;
+      for (const id of cut.vehicleIds) {
+        const vehicle = state.yard.vehicles.find((v) => v.id === id)!;
+        let cursor = 0;
+        for (const s of cut.spans) {
+          const length = spanLength(s), from = Math.max(offset, cursor), to = Math.min(offset + vehicle.lengthM, cursor + length);
+          if (to > from) {
+            const sign = Math.sign(s.toM - s.fromM), track = state.tracks.find((t) => t.id === s.trackId)!;
+            const fromM = s.fromM + sign * (from - cursor), toM = s.fromM + sign * (to - cursor);
+            const points = slicePathByDistance(sampleTrack(track), Math.min(fromM, toM), Math.max(fromM, toM));
+            strokePolyline(context, points, camera, viewport, "#fff", 11);
+            strokePolyline(context, points, camera, viewport, vehicle.powered ? "#b42d39" : vehicle.destination === "A方面" ? "#2369bd" : "#c87b16", 8);
+          }
+          cursor += length;
+        }
+        offset += vehicle.lengthM;
+      }
+      const head = cut.spans.at(-1)!;
+      drawPlacedFormation(context, yardPoint(state, head.trackId, head.toM), cut.name, cut.move ? "operating" : "placed", camera, viewport);
+    }
   }
   for (const placement of state.vehiclePlacements) {
     const track = state.tracks.find((item) => item.id === placement.trackId);

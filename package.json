@@ -10,6 +10,7 @@
     "generate:operation-review-map": "vite-node scripts/generate-operation-review-map.ts",
     "generate:large-operation-review-map": "vite-node scripts/generate-large-operation-review-map.ts",
     "generate:bekasovo-yard-map": "vite-node scripts/generate-bekasovo-yard-map.ts",
+    "generate:bekasovo-operation": "vite-node scripts/generate-bekasovo-operation.ts",
     "generate:turnout-sample-map": "vite-node scripts/generate-turnout-sample-map.ts"
   },
   "devDependencies": {

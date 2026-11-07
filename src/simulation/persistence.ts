@@ -1,5 +1,6 @@
 import { trackCatalog } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
+import { validateYard } from "./yard";
 import { createInitialFleetState } from "./fleet";
 import { analyzeLine, createParallelLines, recommendedCantMm, sampleTrack } from "./geometry";
 import {
@@ -94,6 +95,7 @@ function coerceMapState(value: unknown): MapState {
 
 export function validateMapState(value: unknown): asserts value is MapState {
   if (!isRecord(value)) throw new Error("セーブデータの形式が正しくありません");
+  if (value.yard !== undefined) validateYard(value as unknown as MapState);
   if (value.version !== 13) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
   if (!isRecord(value.clock) || !Number.isSafeInteger(value.clock.currentTimeMs) || Math.abs(value.clock.currentTimeMs as number) > 8_640_000_000_000_000 || typeof value.clock.paused !== "boolean" || !(SIMULATION_SPEEDS as readonly unknown[]).includes(value.clock.speedMultiplier)) throw new Error("ゲーム内時計が正しくありません");
   if (!Number.isInteger(value.nextTrackId) || (value.nextTrackId as number) < 1) throw new Error("次の線路IDが正しくありません");

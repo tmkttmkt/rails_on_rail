@@ -27,9 +27,12 @@ import { createInitialScheduleUiState, renderScheduleLeftPanel, renderScheduleRi
 import { createInitialVehicleDutyUiState, renderVehicleDutyLeftPanel, renderVehicleDutyRightPanel, type VehicleDutyUiState } from "./ui/vehicleDutyPanel";
 import { getServiceSystemsByLine } from "./simulation/selectors";
 import { buildOperationRoute } from "./simulation/pathfinding";
+import { prepareYardScenario } from "./simulation/yardScenario";
+import { yardPoint } from "./simulation/yard";
+import { renderYardPanel, yardSummary, type YardUiState } from "./ui/yardPanel";
 
 type Tool = "track" | "station" | "placement";
-type AppMode = "map" | "construction" | "line" | "route" | "schedule" | "vehicleDuty" | "facility" | "vehicle" | "management" | "statistics";
+type AppMode = "map" | "construction" | "line" | "route" | "schedule" | "vehicleDuty" | "yard" | "facility" | "vehicle" | "management" | "statistics";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("#app がありません");
@@ -37,7 +40,7 @@ if (!app) throw new Error("#app がありません");
 app.innerHTML = `
   <header class="topbar">
     <div class="brand"><span class="brand-mark">R</span><div><strong>Rails on Rail</strong><small>鉄道計画</small></div></div>
-    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="facility" disabled>施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
+    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="yard">操車</button><button data-mode="facility" disabled>施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
     <div class="coordinates"><span>座標</span><strong id="coordinates">X 0 · Y 0</strong></div>
   </header>
   <main>
@@ -68,7 +71,7 @@ app.innerHTML = `
         <button id="cancel" class="ghost" disabled>敷設を取消 <kbd>${shortcutLabel("track.cancel")}</kbd></button>
         </div>
       </div>
-      <div id="fleet-left-container" hidden></div>
+      <div id="yard-left-container" hidden></div><div id="fleet-left-container" hidden></div>
       <div id="line-left-container" hidden></div>
       <div id="route-left-container" hidden></div>
       <div id="schedule-left-container" hidden></div>
@@ -105,7 +108,7 @@ app.innerHTML = `
         <div class="divider"></div>
         <button id="clear" class="ghost full">マップを空にする</button>
       </div>
-      <div id="fleet-right-container" hidden></div>
+      <div id="yard-right-container" hidden></div><div id="fleet-right-container" hidden></div>
       <div id="line-right-container" hidden></div>
       <div id="route-right-container" hidden></div>
       <div id="schedule-right-container" hidden></div>
@@ -148,6 +151,9 @@ const SAVE_SLOTS_KEY = "rails-on-rail.save-slots.v1";
 let state: MapState = createInitialState();
 let camera: Camera = createInitialCamera();
 let appMode: AppMode = "construction";
+const yardUi: YardUiState = { cutId: '', trackId: '', distanceM: 0, rearCount: 1, otherCutId: '', follow: true };
+let yardUiSignature = '';
+let yardUiUpdateTime = 0;
 let tool: Tool | null = null;
 let draftGeometry: TrackGeometry = "straight";
 let draftTrackCount = 1;
@@ -255,6 +261,7 @@ function setTool(next: Tool | null): void {
       route: "経路",
       schedule: "運行",
       vehicleDuty: "運用",
+      yard: '操車・入換',
       map: "マップ",
     };
     required("#mode-label").textContent = labelMap[appMode] || appMode;
@@ -284,6 +291,7 @@ function setMode(next: AppMode): void {
     "route",
     "schedule",
     "vehicleDuty",
+    "yard",
     "vehicle",
   ].includes(next);
   updateUi();
@@ -2541,6 +2549,7 @@ function attachVehicleDutyPanelEvents(): void {
 
 function updateUi(): void {
   updateClockUi();
+  required("#zoom-label").textContent = `${Math.round(camera.zoom * 100)}%`;
 
   const constructionTools = required<HTMLElement>("#construction-tools");
   const fleetLeftContainer = required<HTMLElement>("#fleet-left-container");
@@ -2556,6 +2565,9 @@ function updateUi(): void {
   const scheduleRightContainer = required<HTMLElement>("#schedule-right-container");
   const dutyRightContainer = required<HTMLElement>("#duty-right-container");
 
+  required<HTMLElement>("#yard-left-container").hidden = true;
+  required<HTMLElement>("#yard-right-container").hidden = true;
+
   // Hide all dynamic containers by default
   fleetLeftContainer.hidden = true;
   lineLeftContainer.hidden = true;
@@ -2569,6 +2581,24 @@ function updateUi(): void {
   scheduleRightContainer.hidden = true;
   dutyRightContainer.hidden = true;
 
+  if (appMode === "yard") {
+    constructionTools.hidden = true;
+    constructionInspector.hidden = true;
+    const left = required<HTMLElement>("#yard-left-container"), right = required<HTMLElement>("#yard-right-container");
+    left.hidden = false; right.hidden = false;
+    const focus = () => {
+      const cut = state.yard?.cuts.find((c) => c.id === yardUi.cutId) ?? state.yard?.cuts[0];
+      if (cut) { const head = cut.spans.at(-1)!; const point = yardPoint(state, head.trackId, head.toM); camera = { ...camera, x: point.x, y: point.y, zoom: 0.8 }; }
+    };
+    renderYardPanel(left, right, state, yardUi, (command) => {
+      const succeeded = dispatch(command);
+      if (succeeded && ((command.type === "yard.automatic" && command.running) || command.type === "yard.move")) dispatch({ type: "simulation.setPaused", paused: false });
+    }, () => {
+      try { state = prepareYardScenario(state); focus(); showMessage("既存配線上に試験車両を配置した。仕分・出発計画を実行できる"); updateUi(); }
+      catch (error) { showMessage((error as Error).message, true); }
+    }, focus);
+    return;
+  }
   if (appMode === "vehicle") {
     constructionTools.hidden = true;
     constructionInspector.hidden = true;
@@ -2787,6 +2817,17 @@ function frame(timestamp: number): void {
     updateClockUi();
   }
 
+  if (appMode === "yard" && yardUi.follow) {
+    const moving = state.yard?.cuts.find((c) => c.move);
+    if (moving) { const head = moving.spans.at(-1)!; const point = yardPoint(state, head.trackId, head.toM); camera = { ...camera, x: point.x, y: point.y }; }
+  }
+  if (appMode === "yard" && timestamp - yardUiUpdateTime > 500) {
+    yardUiUpdateTime = timestamp;
+    const signature = JSON.stringify([state.yard?.planIndex, state.yard?.cuts.map((c) => [c.id, !!c.move])]);
+    if (signature !== yardUiSignature && !document.activeElement?.closest(".yard-form")) { yardUiSignature = signature; updateUi(); }
+    const status = document.querySelector("#yard-status");
+    if (status) status.textContent = yardSummary(state);
+  }
   // WASD/矢印キーによるカメラパン（テキスト入力中は無効）
   if (!isAnyTextFocused()) {
     const panSpeed = 400 / camera.zoom;

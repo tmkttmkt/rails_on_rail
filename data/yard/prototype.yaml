@@ -1,0 +1,10 @@
+formatVersion: 1
+# 入換プロトタイプの試験設定。実ベカソヴォ・実車の規格値ではない。
+defaultSpeedKph: 10
+maximumSpeedKph: 25
+junctionClearanceM: 12
+wagonLengthM: 12
+locomotiveLengthM: 16
+wagonsPerDestination: 3
+leadClearanceM: 37
+branchClearanceM: 42

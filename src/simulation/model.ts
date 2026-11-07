@@ -1,4 +1,5 @@
 import type { TrackSpecification } from "../data/trackCatalog";
+import type { YardState } from "./yard";
 import { createInitialFleetState, type FleetState } from "./fleet";
 import type {
   CommercialStopType,
@@ -190,6 +191,7 @@ export interface SimulationClock {
 }
 
 export interface MapState {
+  yard?: YardState;
   version: 13;
   clock: SimulationClock;
   tracks: Track[];

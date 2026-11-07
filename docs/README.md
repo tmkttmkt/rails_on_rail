@@ -12,6 +12,9 @@ md_class: operation
 
 ## 現在の開発
 
+- [操車場実働化Epic](epics/yard-operations.md)
+- [ベカソヴォの入換試験](features/yard-operations.md)
+
 - [Epic一覧](epics/README.md)
 - [Phase -1 Epic](epics/phase-minus-one.md)
 - [Task一覧](task-index.md)

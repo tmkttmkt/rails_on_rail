@@ -37,3 +37,7 @@ md_class: operation
 - [円弧チェーンによる曲線敷設](circular-arc-track-building.md)
 - [独立線路と変更可能な線路群](independent-tracks-and-groups.md)
 - [マップのセーブ形式](map-save-format.md)
+
+### 操車・入換
+
+- [ベカソヴォの入換](bekasovo-yard-operations.md)

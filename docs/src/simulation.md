@@ -200,3 +200,7 @@ specs.ts   ← (Phase 1以降)
 ```
 
 simulation/ 内のモジュールは `src/ui/` を import しない。
+
+## yard.ts / yardScenario.ts
+
+入換の任意状態、線路距離と向きを持つ経路探索、複数線路上の占有、連結・解結、実配線上の試験計画を扱う。詳細は[ベカソヴォの入換試験](../features/yard-operations.md)を参照する。

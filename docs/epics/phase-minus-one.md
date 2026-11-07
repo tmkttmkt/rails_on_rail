@@ -3,11 +3,15 @@ md_class: history
 id: epic-phase-minus-one
 type: epic
 phase: -1
-status: active
+status: review
 created: 2026-08-08
 ---
 
 # Epic: Phase -1 技術プロトタイプ
+
+## 2026-11-07の開発目的変更
+
+新規開発は[ベカソヴォの操車場を動かす](yard-operations.md)へ移行した。本Epicの未確認条件は残し、完了とは扱わない。
 
 ## 目的・背景
 
