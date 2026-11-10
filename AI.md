@@ -15,7 +15,7 @@ md_class: operation
 1. [プロジェクト概要](README.md)
 2. [ドキュメント索引](docs/README.md)
 3. [開発ワークフロー](docs/workflow.md)
-4. [Epic一覧](docs/epics/README.md)と、関係するPhase Epic
+4. [実装対象の順序](docs/planning/implementation-targets.md)と、関係するEpic
 5. [Task一覧](docs/task-index.md)と、担当Task
 6. Taskから参照されるDesign、Research、Feature、Impl-note
 
@@ -39,8 +39,8 @@ md_class: operation
 
 ## EpicとTask
 
-- Epicは開発Phaseを表す。ゲーム機能の作業は、原則として関係するPhase Epicへ結びつけること。
-- 軽微な保守、開発基盤、複数Phaseにまたがる横断作業を、無理に単一Epicへ所属させる必要はない。
+- フェーズ区分は採用しない。Epicは必要な場合に個別の実装目標や機能群として扱う。
+- 軽微な保守や横断作業を、無理に単一Epicへ所属させる必要はない。
 - 将来の作業者へ目的や判断を引き継ぐ必要がある作業では、実装前にTaskを作成すること。
 - Taskを作成または更新した場合は、同じ変更でTask一覧も更新すること。
 - 複数案の比較、公開インターフェース、データ形式、将来へ影響する判断はDesignへ分離すること。
