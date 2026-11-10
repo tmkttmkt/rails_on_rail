@@ -10,28 +10,28 @@ md_class: operation
 2. [プロジェクト概要](../README.md)
 3. [開発ワークフロー](workflow.md)
 
-## 現在の開発
+## 現在の開発（読む順番）
+
+現在の主目標は、ベカソヴォの巨大操車場で貨車の入換・仕分・組成を実働させ、最終的にハンプと通常入換の処理能力を比較できるようにすることである。**実施順序は操車場Epic、個々の作業・受入状況はTask、実装済みの挙動はFeature**を正本とする。
+
+1. [操車場実働化Epic](epics/yard-operations.md) — 現在の動機、段階、未実装範囲、試作との分離
+2. [Task一覧](task-index.md) — 進行中・レビュー待ち・完了済みの作業
+3. [ベカソヴォの入換試験](features/yard-operations.md) — `main`で可能な操作・制限・起動方法
+4. [Epic一覧](epics/README.md) — 現行Epicと旧構想の区別
+
+### 関連する現在の技術・マップ
 
 - [構内・車両基地グループと用途領域](features/station-complex-areas.md)
-
 - [側線施設の用途指定と保守車の往復試験](features/siding-facilities.md)
-
 - [OSM旅客ホームの取り込み](features/osm-passenger-import.md)
-
 - [東上線・越生線の車庫／留置線マップ](features/tojo-depot-map.md)
-
-- [操車場実働化Epic](epics/yard-operations.md)
-- [ベカソヴォの入換試験](features/yard-operations.md)
-
-- [Epic一覧](epics/README.md)
-- [Phase -1 Epic](epics/phase-minus-one.md)
-- [Task一覧](task-index.md)
 - [操作とキーボード割当](controls.md)
 
-## 将来構想
+### 旧構想・履歴（現行の実施指示ではない）
 
-- [技術方針](planning/technical-direction.md)
-- [開発段階](planning/development-stages.md)
+- [旧Phase -1 Epic](epics/phase-minus-one.md) — 受入未確認の技術プロトタイプ記録
+- [旧開発段階 Phase -1～6](planning/development-stages.md) — 当初の実装順序。現在は再編対象
+- [長期的な技術方針](planning/technical-direction.md) — 歴史・規格・経営などの構想
 
 ## 長期設計課題
 

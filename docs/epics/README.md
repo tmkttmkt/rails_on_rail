@@ -4,21 +4,14 @@ md_class: status
 
 # Epic一覧
 
-Rails on Railでは、開発段階の各PhaseをEpicとして扱う。Epicはその段階の目的、責任範囲、対象外、完了条件、受入状態を保持する。
+Epicは開発目的、責任範囲、対象外、完了条件、受入状態を保持する。**EpicとPhaseは同義ではない。** 現在の開発優先順位は当初のPhase番号ではなく、進行中Epicを基準とする。
 
-| Epic | 状態 | 概要 |
+| Epic | 状態 | 位置付け |
 |---|---|---|
-| [操車場実働化](yard-operations.md) | active | ベカソヴォの入換・仕分・出発 |
-| [Phase -1](phase-minus-one.md) | review | 旧技術プロトタイプ。受入未確認、新規開発は操車場Epicへ移行 |
-| Phase 0 | planned | 鉄道が動く |
-| Phase 1 | planned | 鉄道経営の核 |
-| Phase 2 | planned | 運行 |
-| Phase 3 | planned | 鉄道工学 |
-| Phase 4 | planned | 鉄道会社 |
-| Phase 5 | planned | 社会と制度 |
-| Phase 6 | planned | 鉄道史 |
+| [ベカソヴォ操車場実働化](yard-operations.md) | `active` | 現在の開発目標。入換・仕分・出発から処理能力比較まで |
+| [Phase -1 技術プロトタイプ](phase-minus-one.md) | `review` | 旧構想の履歴。未確認条件を残し、新規開発の中心ではない |
 
-将来Phaseの概要は[開発段階](../planning/development-stages.md)を構想資料とし、着手準備を始める時点で個別Epic文書を作って正本とする。
+旧Phase 0～6は[開発段階の記録](../planning/development-stages.md)に残す**未着手の構想**であり、着手が決定したEpicや、現在の予定工程を表すものではない。歴史・規格・経営の構想は廃止していない。
 
 ## 規則
 
