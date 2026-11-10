@@ -12,11 +12,11 @@ md_class: operation
 
 ### 1. 現在の状態を読む
 
-`AGENTS.md`または`CLAUDE.md`から`AI.md`へ入り、文書索引、現在のPhase Epic、Task一覧、担当Taskの順に読む。現在のGit差分も確認し、他者の未完了変更を自分の作業として扱わない。
+`AGENTS.md`または`CLAUDE.md`から`AI.md`へ入り、文書索引、実装対象の順序、関連するEpicとTaskの順に読む。現在のGit差分も確認し、他者の未完了変更を自分の作業として扱わない。
 
 ### 2. 作業単位を決める
 
-[AOTP運用](aotp.md#taskを必要とする基準)に従い、必要な場合は実装前に`docs/tasks/`へTaskを作成して`docs/task-index.md`へ追加する。対応するPhaseが明確なら、そのEpicへ関連づける。
+[AOTP運用](aotp.md#taskを必要とする基準)に従い、必要な場合は実装前に`docs/tasks/`へTaskを作成して`docs/task-index.md`へ追加する。関連するEpicがあれば紐づける。フェーズ区分は使わない。
 
 Taskには最低限、次を記載する。
 
