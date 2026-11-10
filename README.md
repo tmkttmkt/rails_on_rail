@@ -156,3 +156,7 @@ npm run dev
 npm run test
 npm run build
 ```
+
+## 東上線の車庫・留置線マップ
+
+`npm run generate:tojo-depots` で既存OSM取込から生成し、開発サーバーの `/?map=tojo-depots` で開く。森林公園・下板橋・上福岡などへ一覧から移動できる。[内容と基準データ](docs/features/tojo-depot-map.md)。

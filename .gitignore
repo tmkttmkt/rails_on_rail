@@ -7,3 +7,11 @@ dist/
 saves/osm-*.json
 saves/osm-*.json.before-bekasovo-i.bak
 saves/osm-*.json.before-station-repair.bak
+
+saves/osm-*.osm
+saves/osm-*.report
+
+saves/osm-*.html
+saves/osm-*.bak
+
+saves/osm-*.png

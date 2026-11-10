@@ -1,3 +1,4 @@
+import { AREA_COLORS, bufferedHull, stationAreaPoints } from "../simulation/stationAreas";
 import { yardFormation, yardVehicle, yardVehicleIds } from "../simulation/yardFleet";
 import { getFormationOperationalStatus, worldToScreen, type Camera, type MapState, type Point, type Viewport } from "../simulation/model";
 import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLines } from "../simulation/geometry";
@@ -23,6 +24,9 @@ export interface PlacementPreviewState {
 }
 
 export interface RenderState {
+  showStationAreas?: boolean;
+  selectedStationComplexId?: string | null;
+  selectedStationAreaId?: string | null;
   draftPoints: Point[];
   pointerWorld: Point | null;
   selectedTrackIds: string[];
@@ -65,6 +69,8 @@ export function drawMap(
   context.translate(-cx, -cy);
 
   drawGrid(context, camera, viewport);
+
+  if (renderState.showStationAreas) drawStationAreaTerritories(context,state,camera,viewport,renderState);
 
   for (const track of state.tracks) {
     const gaugeM = trackCatalog.getGauge(track.specification.gaugeId).gaugeMm / 1000;
@@ -116,8 +122,10 @@ export function drawMap(
         }
       }
     }
-    drawStation(context, station.position, station.name, camera, viewport, selected);
+    if (renderState.showStationAreas && state.stationAreas.some((a) => a.stationId === station.id)) continue;
+    drawStation(context, station.position, station.unresolvedReason ? `${station.name}（ホーム未確定）` : station.name, camera, viewport, selected);
   }
+  if (renderState.showStationAreas) drawStationAreaNumbers(context,state,camera,viewport,renderState);
   if (state.yard) {
     for (const role of state.yard.roles) drawStation(context, yardPoint(state, role.trackId, role.distanceM), role.name, camera, viewport, false);
     for (const cut of state.yard.cuts) {
@@ -504,4 +512,31 @@ function samplePolylineByDistance(points: Point[], spacingM: number): { point: P
     traversed += length;
   }
   return samples;
+}
+
+function visibleAreas(state: MapState,view:RenderState) { return state.stationAreas.filter((a)=>!view.selectedStationComplexId || a.complexId===view.selectedStationComplexId); }
+function drawStationAreaTerritories(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState):void {
+  const areas=visibleAreas(state,view);
+  const polygon=(points:Point[],fill:string,stroke:string,lineWidth:number,dash:number[]=[])=>{
+    if(points.length<3)return; const screen=points.map((p)=>worldToScreen(p,camera,viewport));context.beginPath();screen.forEach((p,i)=>i?context.lineTo(p.x,p.y):context.moveTo(p.x,p.y));context.closePath();context.fillStyle=fill;context.fill();context.strokeStyle=stroke;context.lineWidth=lineWidth;context.setLineDash(dash);context.stroke();context.setLineDash([]);
+  };
+  for(const group of state.stationComplexes.filter((g)=>!view.selectedStationComplexId || g.id===view.selectedStationComplexId)) {
+    const points=areas.filter((a)=>a.complexId===group.id).flatMap((a)=>stationAreaPoints(state,a));
+    polygon(bufferedHull(points,9),"#c5962910","#aa7929",1.8,[8,5]);
+  }
+  for(const area of areas){
+    const color=AREA_COLORS[area.role],selected=area.id===view.selectedStationAreaId;
+    if(["throat","transit"].includes(area.role)) {
+      for(const range of area.ranges){const track=state.tracks.find((t)=>t.id===range.trackId)!;const points=slicePathByDistance(sampleTrack(track),range.startM,range.endM);strokePolyline(context,points,camera,viewport,color+(selected?"88":"44"),Math.max(selected?10:6,camera.zoom*6));}
+    } else polygon(bufferedHull(stationAreaPoints(state,area),3.5),color+(selected?"55":"28"),color,selected?2.5:1.2);
+  }
+}
+function drawStationAreaNumbers(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState):void {
+  const areas=visibleAreas(state,view);
+  areas.forEach((area,index)=>{
+    const points=stationAreaPoints(state,area);if(!points.length)return;
+    const center={x:points.reduce((n,p)=>n+p.x,0)/points.length,y:points.reduce((n,p)=>n+p.y,0)/points.length};
+    const p=worldToScreen(center,camera,viewport);context.beginPath();context.arc(p.x,p.y,9,0,Math.PI*2);context.fillStyle=AREA_COLORS[area.role];context.fill();context.strokeStyle="white";context.lineWidth=2;context.stroke();context.font="bold 11px sans-serif";context.textAlign="center";context.textBaseline="middle";context.fillStyle="white";context.fillText(String(index+1),p.x,p.y);
+    if(area.id===view.selectedStationAreaId){context.textAlign="left";context.font="bold 12px sans-serif";context.lineWidth=4;context.strokeStyle="white";context.strokeText(area.name,p.x+14,p.y-13);context.fillStyle=AREA_COLORS[area.role];context.fillText(area.name,p.x+14,p.y-13);}
+  });context.textAlign="left";context.textBaseline="alphabetic";
 }

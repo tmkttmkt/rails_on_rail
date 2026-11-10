@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { getStationImportRange, restoreStationStopPoint, selectStationImportRange } from "../src/simulation/stationImportRange";
+import { getPlatformImportRange, getStationImportRange, restoreStationStopPoint, selectStationImportRange } from "../src/simulation/stationImportRange";
 import { createInitialState } from "../src/simulation/model";
 import { executeCommand } from "../src/simulation/commands";
 
@@ -33,5 +33,25 @@ describe("駅位置に対応する取り込み範囲", () => {
   it("駅近傍との積集合を取り、範囲を広げない", () => {
     expect(selectStationImportRange([{ startM: 170, endM: 250 }], 200, 90)).toEqual({ startM: 170, endM: 250 });
     expect(selectStationImportRange([{ startM: 199.5, endM: 200.5 }], 200, 90)).toBeUndefined();
+  });
+});
+
+describe("ホーム由来の取込範囲", () => {
+  function setup() { return executeCommand(createInitialState(), { type: "track.create", geometry: "straight", points: [{ x: 0, y: 0 }, { x: 1000, y: 0 }] }).state; }
+  it("実ホームの220 mを保持し固定180 mへ戻さない", () => {
+    const state = setup();
+    expect(getPlatformImportRange(state, state.tracks[0], 100, 320)).toEqual({ startM: 100, endM: 320 });
+  });
+  it("5 m・13 mの断片や分岐で大幅に欠ける範囲を登録しない", () => {
+    const state = setup(), track = state.tracks[0];
+    expect(getPlatformImportRange(state, track, 100, 105)).toBeUndefined();
+    expect(getPlatformImportRange(state, track, 100, 113.5)).toBeUndefined();
+    state.junctions.push({ id: "j", position: { x: 210, y: 0 }, ports: [{ trackId: track.id, distanceM: 210, location: "interior" }, { trackId: "other", distanceM: 0, location: "start" }] });
+    expect(getPlatformImportRange(state, track, 100, 300)).toBeUndefined();
+  });
+  it("線路外・非有限の範囲を拒否する", () => {
+    const state = setup();
+    expect(getPlatformImportRange(state, state.tracks[0], 900, 1100)).toBeUndefined();
+    expect(getPlatformImportRange(state, state.tracks[0], NaN, 300)).toBeUndefined();
   });
 });

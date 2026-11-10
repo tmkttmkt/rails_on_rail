@@ -185,6 +185,6 @@ function aiIntegrationPlugin(): Plugin {
 export default defineConfig({
   plugins: [aiIntegrationPlugin()],
   test: {
-    include: ["tests/**/*.test.ts"],
+    include: ["tests/**/*.test.{ts,js}"],
   },
 });

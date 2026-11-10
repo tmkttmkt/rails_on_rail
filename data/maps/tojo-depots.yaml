@@ -1,0 +1,32 @@
+formatVersion: 1
+source: saves/osm-tobu-tojo.json
+sourceSha256: b2e9560dbe77a632e6a15d4aac70c8319aa53b129da6c234bd843fa8c51f1b2c
+output: saves/osm-tobu-tojo-depots.json
+# 既存OSM取込スナップショット専用。現地線路番号や最新配線の断定ではない。
+anchor: { stationName: 森林公園, x: -7735.107641845061, y: -13529.923153918407 }
+mainTrack: track-1
+stations: [池袋, 北池袋, 下板橋, 大山, 中板橋, ときわ台, 上板橋, 東武練馬, 下赤塚, 成増, 和光市, 朝霞, 朝霞台, 志木, 柳瀬川, みずほ台, 鶴瀬, ふじみ野, 上福岡, 新河岸, 川越, 川越市, 霞ヶ関, 鶴ヶ島, 若葉, 坂戸, 北坂戸, 高坂, 東松山, 森林公園, つきのわ, 武蔵嵐山, 小川町, 東武竹沢, みなみ寄居, 男衾, 鉢形, 玉淀, 寄居, 一本松, 西大家, 川角, 武州長瀬, 東毛呂, 武州唐沢, 越生]
+# 対象スナップショット限定。根拠は docs/research/tojo-station-track-corrections.md。
+passengerTrackOverrides:
+  - { station: 朝霞, keep: [1, 10, 60, 61], remove: [287], reason: ホーム外の非電化構内線を除外 }
+  - { station: 志木, keep: [1, 10, 61, 159], remove: [280], reason: ホーム外の側線を除外 }
+  - { station: 新河岸, keep: [1, 10], remove: [308, 310], reason: 島式ホームに面しない非電化構内線を除外 }
+  - { station: 川越市, keep: [1, 10, 139, 261], remove: [143, 144], reason: ホーム外の構内線を除外 }
+  - { station: 坂戸, keep: [1, 5, 10, 284], remove: [130], reason: ホーム外の5m断片を除外 }
+  - { station: 高坂, keep: [1, 128], remove: [124, 125], reason: 島式ホームの外側の側線を除外 }
+  - { station: 森林公園, keep: [1, 128, 237, 238], remove: [236], reason: 二つの島式ホームの外側の側線を除外 }
+  - { station: 小川町, keep: [1, 164, 165, 171], remove: [168], reason: ホーム縁の最寄り線路を残し外側の非ホーム側線を除外 }
+  - { station: 寄居, keep: [2, 295], remove: [7, 239, 241, 247, 249, 253, 317], reason: 東武ホーム2線のみ残し東武側線とJR秩父鉄道の線路を除外 }
+  - { station: 越生, keep: [3, 260], remove: [259], reason: 東武島式ホーム外の側線を除外 }
+facilities:
+  - { name: 下板橋留置線, station: 下板橋, kind: depot, tracks: [34, 35, 36, 37, 43, 44, 45, 47] }
+  - { name: 上板橋引上げ線, station: 上板橋, kind: yard, tracks: [52, 53] }
+  - { name: 成増構内側線, station: 成増, kind: yard, tracks: [56, 58, 59] }
+  - { name: 志木留置・引上げ線, station: 志木, kind: yard, tracks: [267, 272, 276, 278, 279, 280] }
+  - { name: 上福岡留置線, station: 上福岡, kind: yard, tracks: [155] }
+  - { name: 川越市北側留置線, station: 川越市, kind: yard, tracks: [142, 160] }
+  - { name: 川越市構内側線（OSM・経路未確認）, station: 川越市, kind: depot, tracks: [145, 146, 147, 149, 150, 151, 152, 153, 154], retainWithoutRoute: true }
+  - { name: 森林公園検修区, station: 森林公園, kind: depot, trackRange: [173, 229] }
+  - { name: 森林公園駅構内側線, station: 森林公園, kind: yard, tracks: [232, 233, 236, 237, 238] }
+  - { name: 小川町留置線, station: 小川町, kind: yard, tracks: [167, 170, 171] }
+  - { name: 和光検車区（東京メトロ・参考）, station: 和光市, kind: depot, trackRange: [62, 122] }

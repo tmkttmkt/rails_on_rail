@@ -22,7 +22,7 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
 
     const json = serializeMapState(state);
     const restored = parseMapState(json);
-    expect(restored.version).toBe(13);
+    expect(restored.version).toBe(15);
     expect(restored).toEqual(state);
   });
 
@@ -251,7 +251,7 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
     };
 
     const migrated = parseMapState(JSON.stringify(v10Data));
-    expect(migrated.version).toBe(13);
+    expect(migrated.version).toBe(15);
     expect(migrated.lines["line-1"]).toBeDefined();
     expect(migrated.lines["line-1"].name).toBe("東海道線");
 
@@ -363,7 +363,7 @@ describe("P5: 保存形式 v11 および v10 からの移行テスト", () => {
     delete rawState.operations[opId].lineAssignments;
 
     const normalized = parseMapState(JSON.stringify(rawState));
-    expect(normalized.version).toBe(13);
+    expect(normalized.version).toBe(15);
     expect((normalized.routes[routeId] as unknown as Record<string, unknown>).lineSections).toBeUndefined();
     expect(normalized.operations[opId].lineAssignments).toEqual([
       { lineId, serviceSystemId: sysId },

@@ -134,13 +134,27 @@ export const STATION_KIND_LABELS: Record<StationKind, string> = {
   "depot": "車両基地",
 };
 
+export const FACILITY_USES = ["unknown", "stabling", "headshunt", "maintenance", "depot"] as const;
+export type FacilityUse = typeof FACILITY_USES[number];
+export const FACILITY_USE_LABELS: Record<FacilityUse, string> = { unknown: "用途未確認", stabling: "留置線", headshunt: "引上げ線", maintenance: "保守用側線", depot: "車庫・検修施設" };
+
 export interface Station {
   id: string;
   name: string;
   kind: StationKind;
   position: Point;
   stopPoints: StationStopPoint[];
+  /** 駅の存在は確認済みだが旅客停車範囲は未確定。範囲の代用を作らない。 */
+  unresolvedReason?: string;
+  facilityUse?: FacilityUse;
 }
+
+export const STATION_AREA_ROLES = ["platform", "stabling", "headshunt", "workshop", "maintenance", "throat", "transit", "unknown"] as const;
+export type StationAreaRole = typeof STATION_AREA_ROLES[number];
+export const STATION_AREA_LABELS: Record<StationAreaRole, string> = { platform: "旅客ホーム", stabling: "留置線群", headshunt: "引上げ線", workshop: "検修・作業線群", maintenance: "保守用側線", throat: "分岐・咽喉部", transit: "入出庫・接続通路", unknown: "用途未確認" };
+export interface StationComplex { id: string; name: string }
+export interface StationAreaRange { trackId: string; startM: number; endM: number }
+export interface StationArea { id: string; complexId: string; name: string; role: StationAreaRole; ranges: StationAreaRange[]; stationId?: string; basis: "source" | "layout"; note?: string }
 
 export interface TrackGroup {
   id: string;
@@ -192,13 +206,17 @@ export interface SimulationClock {
 
 export interface MapState {
   yard?: YardState;
-  version: 13;
+  version: 15;
   clock: SimulationClock;
   tracks: Track[];
   trackGroups: TrackGroup[];
   junctions: TrackJunction[];
   turnouts: Turnout[];
   stations: Station[];
+  stationComplexes: StationComplex[];
+  stationAreas: StationArea[];
+  nextStationComplexId: number;
+  nextStationAreaId: number;
   lines: Record<string, Line>;
   serviceSystems: Record<string, ServiceSystem>;
   routes: Record<string, Route>;
@@ -250,13 +268,14 @@ export interface Viewport {
 
 export function createInitialState(): MapState {
   const state: MapState = {
-    version: 13,
+    version: 15,
     clock: createInitialClock(),
     tracks: [],
     trackGroups: [],
     junctions: [],
     turnouts: [],
     stations: [],
+    stationComplexes: [], stationAreas: [], nextStationComplexId: 1, nextStationAreaId: 1,
     lines: {},
     serviceSystems: {},
     routes: {},

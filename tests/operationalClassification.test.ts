@@ -80,7 +80,7 @@ describe("停車場と線路の運転上の区分", () => {
     for (const station of raw.stations as Record<string, unknown>[]) delete station.kind;
 
     const migrated = parseMapState(JSON.stringify(raw));
-    expect(migrated.version).toBe(13);
+    expect(migrated.version).toBe(15);
     expect(migrated.tracks[0].kind).toBe("main");
     expect(migrated.stations[0].kind).toBe("station");
   });

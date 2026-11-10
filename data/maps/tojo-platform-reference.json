@@ -1,0 +1,327 @@
+{
+  "method": "公式構内図の線路本数による監査用参考値。線路IDの自動修正には使用しない。",
+  "stations": [
+    {
+      "name": "池袋",
+      "passengerTrackCount": 3,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7105.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "北池袋",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7201.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "下板橋",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7202.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "大山",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7203.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "中板橋",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7204.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "ときわ台",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7205.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "上板橋",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7206.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "東武練馬",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7207.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "下赤塚",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7208.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "成増",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7209.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "和光市",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7304.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "朝霞",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7305.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "朝霞台",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7307.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "志木",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7308.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "柳瀬川",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7320.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "みずほ台",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7309.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "鶴瀬",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7310.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "ふじみ野",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7311.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "上福岡",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7312.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "新河岸",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7313.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "川越",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7315.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "川越市",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7316.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "霞ヶ関",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7401.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "鶴ヶ島",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7402.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "若葉",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7403.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "坂戸",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7404.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "北坂戸",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7406.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "高坂",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7407.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "東松山",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7408.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "森林公園",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7409.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "つきのわ",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7410.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "武蔵嵐山",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7501.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "小川町",
+      "passengerTrackCount": 4,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7504.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "東武竹沢",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7505.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "みなみ寄居",
+      "passengerTrackCount": 1,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7513.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "男衾",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7506.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "鉢形",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7507.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "玉淀",
+      "passengerTrackCount": 1,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7508.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "寄居",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/7512.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "一本松",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8102.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "西大家",
+      "passengerTrackCount": 1,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8103.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "川角",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8104.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "武州長瀬",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8106.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "東毛呂",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8108.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "武州唐沢",
+      "passengerTrackCount": 1,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8109.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    },
+    {
+      "name": "越生",
+      "passengerTrackCount": 2,
+      "source": "https://www.tobu.co.jp/railway/guide/station/info/8112.html",
+      "reviewed": "2026-11-08",
+      "note": "東武公式構内図の自社旅客線路を目視計数。番線表示数や他社線を含めない。池袋は乗降面を共有する3線。"
+    }
+  ]
+}

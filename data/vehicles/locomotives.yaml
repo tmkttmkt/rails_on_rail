@@ -110,3 +110,25 @@ items:
         couplerSystemId: center-buffer-light
         throughBrakeSystemIds: [vacuum-automatic]
     sources: []
+
+  - id: prototype-maintenance-car-1067
+    name: 保守用動力車（操作試験用）
+    status: draft
+    manufacturerId: generic-railway-workshop
+    manufacturerModelName: SIDING-TRIAL-12M
+    dimensions:
+      lengthOverCouplersM: 12
+      maximumWidthM: 2.7
+    runningGear:
+      gaugeMm: 1067
+    capabilities:
+      selfPropelled: true
+      canHaulOtherVehicles: false
+    connections:
+      front:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+      rear:
+        couplerSystemId: center-buffer-light
+        throughBrakeSystemIds: [vacuum-automatic]
+    sources: []

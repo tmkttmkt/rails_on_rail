@@ -1,0 +1,7 @@
+formatVersion: 1
+minimumRangeM: 20
+platformClearanceM: 5
+mainlineClearanceM: 45
+maximumPathM: 1200
+speedKph: 10
+vehicleDesignId: prototype-maintenance-car-1067

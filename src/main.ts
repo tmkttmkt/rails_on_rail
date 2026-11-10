@@ -13,6 +13,8 @@ import {
   type TrackGeometry,
   type Viewport,
   STATION_KIND_LABELS,
+  FACILITY_USE_LABELS,
+  STATION_AREA_LABELS,
   TRACK_KIND_LABELS,
 } from "./simulation/model";
 import { drawMap, type PlacementPreviewState } from "./ui/renderer";
@@ -29,6 +31,9 @@ import { getServiceSystemsByLine } from "./simulation/selectors";
 import { buildOperationRoute } from "./simulation/pathfinding";
 import { prepareYardScenario } from "./simulation/yardScenario";
 import { yardPoint } from "./simulation/yard";
+import { renderStationComplexPanel } from "./ui/stationComplexPanel";
+import { stationAreaPoints, type StationAreaCommand } from "./simulation/stationAreas";
+import { renderFacilityPanel } from "./ui/facilityPanel";
 import { renderYardPanel, yardSummary, type YardUiState } from "./ui/yardPanel";
 
 type Tool = "track" | "station" | "placement";
@@ -40,7 +45,7 @@ if (!app) throw new Error("#app がありません");
 app.innerHTML = `
   <header class="topbar">
     <div class="brand"><span class="brand-mark">R</span><div><strong>Rails on Rail</strong><small>鉄道計画</small></div></div>
-    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="yard">操車</button><button data-mode="facility" disabled>施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
+    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="yard">操車</button><button data-mode="facility">施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
     <div class="coordinates"><span>座標</span><strong id="coordinates">X 0 · Y 0</strong></div>
   </header>
   <main>
@@ -71,7 +76,7 @@ app.innerHTML = `
         <button id="cancel" class="ghost" disabled>敷設を取消 <kbd>${shortcutLabel("track.cancel")}</kbd></button>
         </div>
       </div>
-      <div id="yard-left-container" hidden></div><div id="fleet-left-container" hidden></div>
+      <section id="complex-panel" class="complex-panel" hidden></section><div id="yard-left-container" hidden></div><div id="fleet-left-container" hidden></div>
       <div id="line-left-container" hidden></div>
       <div id="route-left-container" hidden></div>
       <div id="schedule-left-container" hidden></div>
@@ -85,7 +90,7 @@ app.innerHTML = `
       <div class="canvas-wrap"><canvas id="map"></canvas><div class="map-hint">ホイール: 拡大縮小 · 中/右ドラッグ: 移動</div><div id="toast" class="toast">準備完了</div></div>
     </section>
     <aside class="panel inspector">
-      <div id="construction-inspector">
+      <section id="facility-panel" class="facility-panel" hidden></section><div id="construction-inspector">
         <p class="eyebrow">地図状態</p>
         <div class="metrics"><div><strong id="track-count">0</strong><span>TRACKS</span></div><div><strong id="station-count">0</strong><span>STATIONS</span></div><div><strong id="point-count">0</strong><span>POINTS</span></div></div>
         <div class="divider"></div>
@@ -177,6 +182,8 @@ let connectionCandidateIndex = 0;
 let hoverSnapTrackId: string | null = null;
 const selectedTrackIds = new Set<string>();
 let selectedStationId: string | null = null;
+let selectedStationComplexId: string | null = null;
+let selectedStationAreaId: string | null = null;
 const selectedStationIds = new Set<string>();
 let pendingStationRange: { trackId: string; startPosition: Point; endPosition: Point } | null = null;
 let stationRangeStart: { trackId: string; position: Point } | null = null;
@@ -256,6 +263,7 @@ function setTool(next: Tool | null): void {
   if (next === null) {
     const labelMap: Record<string, string> = {
       construction: "建設",
+      facility: "施設管理",
       vehicle: "車両管理",
       line: "路線・系統",
       route: "経路",
@@ -287,6 +295,7 @@ function setMode(next: AppMode): void {
   // parent visible in every mode that renders a left-hand management panel.
   required<HTMLElement>("#tools-panel").hidden = ![
     "construction",
+    "facility",
     "line",
     "route",
     "schedule",
@@ -359,6 +368,10 @@ function cancelDraft(): void {
 }
 
 function resetTransientState(): void {
+  selectedStationComplexId = null; selectedStationAreaId = null;
+  required<HTMLElement>("#complex-panel").dataset.signature = "";
+  document.querySelector(".map-bookmarks")?.remove();
+  document.title = "Rails on Rail";
   draftPoints = [];
   draftStartTangent = null;
   draftEndTangent = null;
@@ -574,6 +587,7 @@ function distanceAlongPathAtPoint(path: Point[], point: Point): number {
 }
 
 function deleteSelected(): void {
+  if (appMode !== "construction") return;
   if (selectedStationIds.size > 0) {
     for (const stationId of selectedStationIds) state = executeCommand(state, { type: "station.delete", stationId }).state;
     showMessage(`${selectedStationIds.size}駅を撤去しました`);
@@ -2547,7 +2561,45 @@ function attachVehicleDutyPanelEvents(): void {
   }
 }
 
+function focusStationComplex(complexId: string, areaId?: string): void {
+  selectedStationComplexId = complexId; selectedStationAreaId = areaId ?? null;
+  const area = state.stationAreas.find((a) => a.id === areaId);
+  selectedStationIds.clear(); selectedTrackIds.clear(); selectedStationId = area?.stationId ?? null;
+  if (selectedStationId) selectedStationIds.add(selectedStationId);
+  const areas = area ? [area] : state.stationAreas.filter((a) => a.complexId === complexId);
+  const points = areas.flatMap((a) => stationAreaPoints(state,a));
+  if (points.length) {
+    const minX=Math.min(...points.map((p)=>p.x)),maxX=Math.max(...points.map((p)=>p.x)),minY=Math.min(...points.map((p)=>p.y)),maxY=Math.max(...points.map((p)=>p.y));
+    const panelWidth = 0;
+    const zoom=Math.min(3,Math.max(.05,Math.min((canvas.width-panelWidth-40)/(maxX-minX+60),(canvas.height-100)/(maxY-minY+60))));
+    camera={x:(minX+maxX)/2-panelWidth/2/zoom,y:(minY+maxY)/2,zoom,rotation:0};
+  }
+  updateUi();
+}
+function dispatchStationArea(command: StationAreaCommand): void {
+  const previousStationId=selectedStationId,previousTrackIds=[...selectedTrackIds];
+  if (!dispatch(command)) return;
+  if (command.type === "stationComplex.create") { focusStationComplex(state.stationComplexes.at(-1)!.id);selectedStationId=previousStationId;if(previousStationId)selectedStationIds.add(previousStationId);for(const id of previousTrackIds)selectedTrackIds.add(id);updateUi(); }
+  else if (command.type === "stationArea.create") { const area=state.stationAreas.at(-1)!;focusStationComplex(area.complexId,area.id); }
+  else if (command.type === "stationArea.split") { const area=state.stationAreas.at(-command.parts.length)!;focusStationComplex(area.complexId,area.id); }
+  else if (command.type.startsWith("stationArea.")) { const area=state.stationAreas.find((a)=>a.id===selectedStationAreaId);if(area)focusStationComplex(area.complexId,area.id);else focusStationComplex(selectedStationComplexId!); }
+}
+
 function updateUi(): void {
+  const hasComplexes = state.stationComplexes.length > 0;
+  required<HTMLElement>(".operation-title").hidden = appMode === "facility";
+  required<HTMLElement>(".operation-actions").hidden = appMode === "facility";
+  const areaView = appMode === "facility" && hasComplexes;
+  if (areaView && !state.stationComplexes.some((g) => g.id === selectedStationComplexId)) selectedStationComplexId = state.stationComplexes[0].id;
+  const complexPanel = required<HTMLElement>("#complex-panel");
+  complexPanel.hidden = appMode !== "facility";
+  if (appMode === "facility") renderStationComplexPanel(complexPanel, state, selectedStationComplexId, selectedStationAreaId, selectedStationId, [...selectedTrackIds], focusStationComplex, dispatchStationArea);
+  const facilityPanel = required<HTMLElement>("#facility-panel");
+  renderFacilityPanel(facilityPanel, state, selectedStationId, selectedTrackIds.size === 1 ? [...selectedTrackIds][0] : null, (appMode === "facility" && !state.stationAreas.some((area) => area.stationId === selectedStationId)) || appMode === "construction", (command) => {
+    if (dispatch(command) && command.type === "facility.registerTrack") {
+      const station = state.stations.at(-1)!; selectedStationId = station.id; selectedStationIds.clear(); selectedStationIds.add(station.id); updateUi();
+    }
+  }, appMode === "facility" ? "management" : "construction");
   updateClockUi();
   required("#zoom-label").textContent = `${Math.round(camera.zoom * 100)}%`;
 
@@ -2691,7 +2743,7 @@ function updateUi(): void {
       ].join(" / ")
     : "";
   required("#selection").innerHTML = selectedStation
-    ? `<strong>${escapeHtml(selectedStation.name)}</strong><span>${STATION_KIND_LABELS[selectedStation.kind]} · ${selectedStation.id.replace("station-", "停車場 ")} · 停車地点 ${selectedStation.stopPoints.length}箇所</span><span>${selectedStation.stopPoints.map((stopPoint) => `${stopPoint.trackId} · ${Math.round(stopPoint.endDistanceM - stopPoint.startDistanceM)} m`).join(" / ")}</span>`
+    ? `<strong>${escapeHtml(selectedStation.name)}</strong><span>${selectedStation.kind === "station" ? STATION_KIND_LABELS[selectedStation.kind] : FACILITY_USE_LABELS[selectedStation.facilityUse ?? "unknown"]} · ${selectedStation.id.replace("station-", "停車場 ")} · 停車地点 ${selectedStation.stopPoints.length}箇所</span><span>${selectedStation.unresolvedReason ? `ホーム未確定：${escapeHtml(selectedStation.unresolvedReason)}` : selectedStation.stopPoints.map((stopPoint) => `${stopPoint.trackId} · ${Math.round(stopPoint.endDistanceM - stopPoint.startDistanceM)} m`).join(" / ")}</span>`
     : selectedStations.length > 1
       ? `<strong>${selectedStations.length}駅を選択</strong><span>${selectedStations.map((station) => escapeHtml(station.name)).join(" / ")}</span><span>「駅を統合」で最初に選択した駅へまとめます</span>`
     : selected
@@ -2699,6 +2751,11 @@ function updateUi(): void {
     : selectedTracks.length > 1
       ? `<strong>${selectedTracks.length}本を選択</strong><span>${[...new Set(selectedTracks.map((track) => findTrackGroup(state, track.id)?.name ?? "単独線路"))].join(" / ")}</span><span>Shift＋クリックで選択を追加・解除できます</span>`
       : `<span>線路を選択していません</span>`;
+  if (areaView) {
+    const group=state.stationComplexes.find((g)=>g.id===selectedStationComplexId),area=state.stationAreas.find((a)=>a.id===selectedStationAreaId);
+    if(area){const linked=state.stations.find((st)=>st.id===area.stationId);required("#selection").innerHTML=`<strong>${escapeHtml(area.name)}</strong><span>${escapeHtml(group?.name??"")} / ${STATION_AREA_LABELS[area.role]}</span><span>${new Set(area.ranges.map((r)=>r.trackId)).size}線・${area.ranges.length}所属区間 / ${linked?.stopPoints.length??0}停車可能区間 · 最長${Math.max(0,...(linked?.stopPoints.map((p)=>p.endDistanceM-p.startDistanceM)??[])).toFixed(1)} m</span><span>${["transit","throat","unknown","headshunt"].includes(area.role)?"長期留置不可":"分岐支障を除いた停車区間を使用"}</span><span>${escapeHtml(area.note??"")}</span>`;}
+    else if(group)required("#selection").innerHTML=`<strong>${escapeHtml(group.name)}</strong><span>構内・車両基地グループ</span><span>${state.stationAreas.filter((a)=>a.complexId===group.id).length}用途領域を管理</span>`;
+  }
   const selectedGroups = [...new Set(selectedTracks.flatMap((track) => findTrackGroup(state, track.id)?.id ?? []))];
   const ungroupedCount = selectedTracks.filter((track) => !findTrackGroup(state, track.id)).length;
   required<HTMLButtonElement>("#group-create").disabled = selectedTracks.length < 2 || ungroupedCount !== selectedTracks.length;
@@ -2707,11 +2764,13 @@ function updateUi(): void {
   required<HTMLButtonElement>("#group-dissolve").disabled = selectedGroups.length === 0;
   required<HTMLButtonElement>("#station-rename").disabled = selectedStations.length !== 1;
   required<HTMLButtonElement>("#station-delete").disabled = selectedStations.length === 0;
-  required<HTMLButtonElement>("#station-extend").disabled = selectedStations.length !== 1;
+  required<HTMLButtonElement>("#station-extend").disabled = selectedStations.length !== 1 || selectedStations[0].stopPoints.length === 0;
   required<HTMLButtonElement>("#station-merge").disabled = selectedStations.length < 2;
   required<HTMLButtonElement>("#route-create").disabled = selectedStations.length < 2;
-  required<HTMLElement>("#group-actions").hidden = selectedTracks.length === 0;
-  required<HTMLElement>("#station-actions").hidden = selectedStations.length === 0;
+  required<HTMLElement>("#group-actions").hidden = appMode !== "construction" || selectedTracks.length === 0;
+  required<HTMLElement>("#station-actions").hidden = selectedStations.length === 0 || !["facility", "construction"].includes(appMode);
+  required<HTMLElement>("#station-rename").hidden = appMode !== "facility" || state.stationAreas.some((area) => area.stationId === selectedStationId);
+  for (const id of ["station-extend", "station-merge", "station-delete", "delete", "clear"]) required<HTMLElement>(`#${id}`).hidden = appMode !== "construction";
   const routes = Object.values(state.operationRoutes || {});
   const routeSelect = required<HTMLSelectElement>("#route-select");
   if (selectedRouteId && !routes.some((route) => route.id === selectedRouteId)) selectedRouteId = null;
@@ -2817,7 +2876,7 @@ function frame(timestamp: number): void {
     updateClockUi();
   }
 
-  if (appMode === "yard" && yardUi.follow) {
+  if ((appMode === "yard" || (appMode === "map" && state.yard?.facilityTrial && state.yard.cuts.some((c) => c.move))) && yardUi.follow) {
     const moving = state.yard?.cuts.find((c) => c.move);
     if (moving) { const head = moving.spans.at(-1)!; const point = yardPoint(state, head.trackId, head.toM); camera = { ...camera, x: point.x, y: point.y }; }
   }
@@ -2827,6 +2886,10 @@ function frame(timestamp: number): void {
     if (signature !== yardUiSignature && !document.activeElement?.closest(".yard-form")) { yardUiSignature = signature; updateUi(); }
     const status = document.querySelector("#yard-status");
     if (status) status.textContent = yardSummary(state);
+  }
+  if (state.yard?.facilityTrial && appMode === "construction") {
+    const facilityPanel = document.querySelector<HTMLElement>("#facility-panel");
+    if (facilityPanel) renderFacilityPanel(facilityPanel, state, selectedStationId, selectedTrackIds.size === 1 ? [...selectedTrackIds][0] : null, true, (command) => dispatch(command));
   }
   // WASD/矢印キーによるカメラパン（テキスト入力中は無効）
   if (!isAnyTextFocused()) {
@@ -2870,6 +2933,8 @@ function frame(timestamp: number): void {
   }
 
   drawMap(context, state, camera, {
+    showStationAreas: appMode === "facility",
+    selectedStationComplexId, selectedStationAreaId,
     draftPoints,
     pointerWorld,
     selectedTrackIds: [...selectedTrackIds],
@@ -2898,3 +2963,60 @@ window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 updateUi();
 requestAnimationFrame(frame);
+
+
+// 地図成果物を同じURLで開き、施設へ移動するための専用入口。
+async function openTojoDepotMap(): Promise<void> {
+  try {
+    const imported = new URLSearchParams(location.search).get("map") === "tojo-import";
+    const sidingTrial = new URLSearchParams(location.search).get("map") === "siding-trial";
+    if (!imported && !sidingTrial) { const regions=await fetch("/api/server-saves/osm-tobu-tojo-areas.json");if(regions.ok){await openTojoStationAreas(regions);return;} }
+    const response = await fetch(sidingTrial ? "/api/server-saves/osm-tojo-siding-trial.json" : imported ? "/api/server-saves/osm-tojo-import-regression.json" : "/api/server-saves/osm-tobu-tojo-depots.json");
+    if (!response.ok) throw new Error("地図がない。npm run generate:tojo-depots を実行する");
+    state = parseSaveFile(await response.text()).state;
+    state.clock.paused = true;
+    resetTransientState();
+    setMode("map");
+    document.title = sidingTrial ? "上福岡｜小側線の保守車往復試験" : imported ? "東上線｜OSM再取込・未確定駅を表示" : "東武東上線｜車庫・留置線（OSM）";
+    const focus = (name: string) => {
+      const station = state.stations.find((s) => s.name === name);
+      const tracks = station ? station.stopPoints.map((p) => ({ points: [p.startPosition, p.endPosition] })) : state.tracks;
+      const points = tracks.length ? tracks.flatMap((t) => t.points) : [station!.position];
+      const minX = Math.min(...points.map((p) => p.x)), maxX = Math.max(...points.map((p) => p.x));
+      const minY = Math.min(...points.map((p) => p.y)), maxY = Math.max(...points.map((p) => p.y));
+      camera = { x: (minX + maxX) / 2, y: (minY + maxY) / 2, zoom: Math.min(2, Math.min(canvas.width / (maxX - minX + 180), canvas.height / (maxY - minY + 180))), rotation: 0 };
+      selectedStationIds.clear(); if (station) selectedStationIds.add(station.id);
+      selectedStationId = station?.id ?? null;
+      updateUi();
+    };
+    const nav = document.createElement("div"); nav.className = "map-bookmarks";
+    const title = document.createElement("strong"); title.textContent = sidingTrial ? "上福岡｜小側線の操作試験" : imported ? "東上線｜OSM再取込（未確定駅を表示）" : "東上線・越生線｜車庫・留置線（OSM）";
+    const select = document.createElement("select"); select.setAttribute("aria-label", imported ? "駅・施設へ移動" : "車庫・留置線へ移動");
+    for (const name of ["全線", ...state.stations.filter((s) => imported || s.kind !== "station").map((s) => s.name)]) {
+      const option = document.createElement("option"); option.value = name; option.textContent = name; select.append(option);
+    }
+    const requested = new URLSearchParams(location.search).get("focus") ?? (sidingTrial ? "上福岡留置線" : imported ? "全線" : "森林公園検修区");
+    select.value = requested;
+    select.addEventListener("change", () => focus(select.value));
+    nav.append(title, select);
+    document.querySelector(".canvas-wrap")!.append(nav);
+    focus(select.value);
+    showMessage(sidingTrial ? "試験用保守車を配置済み。左下の「本線へ出て側線へ戻る」で往復を開始できる" : imported ? "全駅の存在を保持。ホーム未確定の駅は位置と理由を表示し、車両の配置には使用できない" : "OSM取込配線を基に作成。赤い範囲は選択した留置施設。上の一覧で施設へ移動できる");
+  } catch (error) { showMessage((error as Error).message, true); }
+}
+if (new URLSearchParams(location.search).get("map") === "tojo-depots" || new URLSearchParams(location.search).get("map") === "tojo-import" || new URLSearchParams(location.search).get("map") === "siding-trial") void openTojoDepotMap();
+
+async function openTojoStationAreas(loadedResponse?: Response): Promise<void> {
+  try {
+    const response=loadedResponse??await fetch("/api/server-saves/osm-tobu-tojo-areas.json");
+    if(!response.ok)throw new Error("構内領域マップがない。npm run generate:tojo-areas を実行する");
+    state=parseSaveFile(await response.text()).state;state.clock.paused=true;resetTransientState();setMode("map");
+    document.title="東上線｜構内・車両基地の領域分割";
+    const requested=new URLSearchParams(location.search).get("focus")??"complex-kawagoeshi";
+    const area=state.stationAreas.find((a)=>a.id===requested || a.name===requested);
+    const prefixArea=state.stationAreas.find((a)=>a.name.startsWith(`${requested}・`));
+    const group=area?.complexId??prefixArea?.complexId??state.stationComplexes.find((g)=>g.id===requested)?.id??state.stationComplexes[0].id;
+    focusStationComplex(group,area?.id);showMessage("構内の区分を確認・編集するには、最上部の「施設」タブを開く");
+  } catch(error){showMessage((error as Error).message,true);}
+}
+if(new URLSearchParams(location.search).get("map")==="tojo-areas")void openTojoStationAreas();

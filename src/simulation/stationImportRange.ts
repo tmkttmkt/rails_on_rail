@@ -1,3 +1,4 @@
+import { MIN_PASSENGER_IMPORT_LENGTH_M } from "./osmStationPlatforms";
 import type { StablingSpan } from "./stabling";
 import { closestPointOnSegment, sampleTrack } from "./geometry";
 import type { MapState, Point, StationStopPoint, Track } from "./model";
@@ -61,4 +62,14 @@ export function selectStationImportRange(spans: StablingSpan[], alongM: number, 
     .map((span) => ({ startM: Math.max(span.startM, alongM - halfLengthM), endM: Math.min(span.endM, alongM + halfLengthM) }))
     .filter((span) => span.endM - span.startM >= 2);
   return candidates.sort((a, b) => (b.endM - b.startM) - (a.endM - a.startM))[0];
+}
+
+/** ホームから得た範囲を分岐で切る。極短化・大幅な欠落を成功として扱わない。 */
+export function getPlatformImportRange(state: MapState, track: Track, startM: number, endM: number): StablingSpan | undefined {
+  if (!Number.isFinite(startM) || !Number.isFinite(endM) || startM < 0 || endM - startM < MIN_PASSENGER_IMPORT_LENGTH_M) return undefined;
+  const points = sampleTrack(track);
+  const totalM = points.slice(1).reduce((sum, p, i) => sum + Math.hypot(p.x - points[i].x, p.y - points[i].y), 0);
+  if (endM > totalM + 0.001) return undefined;
+  const span = getStationImportRange(state, track, (startM + endM) / 2, totalM, (endM - startM) / 2);
+  return span && span.endM - span.startM >= Math.max(MIN_PASSENGER_IMPORT_LENGTH_M, (endM - startM) * 0.8) ? span : undefined;
 }

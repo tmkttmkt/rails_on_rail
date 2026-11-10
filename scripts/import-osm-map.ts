@@ -7,7 +7,8 @@ import { analyzeLine } from "../src/simulation/geometry";
 import { createSaveFile, parseSaveFile, serializeSaveFile } from "../src/simulation/persistence";
 import { trackCatalog } from "../src/data/trackCatalog";
 import { getUsableStablingSpans } from "../src/simulation/stabling";
-import { getStationImportRange } from "../src/simulation/stationImportRange";
+import { getPlatformImportRange } from "../src/simulation/stationImportRange";
+import { matchStationPlatforms, MIN_PASSENGER_IMPORT_LENGTH_M, type OsmPassengerTrack, type OsmPlatform } from "../src/simulation/osmStationPlatforms";
 
 // OpenStreetMapの鉄道データ（Overpass APIの応答JSON）からマップを生成する。
 // 取得手順は docs/tasks/2026-11-05_import-osm-railway-data.md を参照する。
@@ -50,18 +51,12 @@ const STABLING_MIN_RADIUS_M = 250;
 // 留置には編成が収まる有効長が要る。咽喉部の短い渡り線などは停車地点にしない。
 const STABLING_MIN_USABLE_M = 150;
 const STATION_MAX_DISTANCE_M = 150;  // 駅ノードからこの距離内の線路へ設置する
-const STATION_HALF_LENGTH_M = 90;    // 駅範囲の片側長
 const STATION_DUPLICATE_M = 300;     // 同名駅がこの距離内にあれば同一とみなす
 // 別名の駅がこの距離内にある場合は、線路に近い方だけを残す。
 // 他社の隣接駅（乗換駅）が、地図に無い自社線の代わりに本線へ付くのを防ぐ。
 const STATION_MIN_SEPARATION_M = 250;
-// 駅ノードからこの距離内の線路すべてに停車地点を作り、station.merge で1駅へ統合する。
-// 複線の両方向に停車地点を持たせるために必要。広げすぎると構内の側線まで
-// 停車地点になるため、ホーム周りに収まる範囲に留める。
-const STATION_TRACK_RADIUS_M = 40;
-// ホーム（railway=platform）が与えられた場合は、ホームからこの距離内の線路だけを
-// 停車地点にする。構内の側線や通過線を停車地点にしないための絞り込み。
-const PLATFORM_TRACK_RADIUS_M = 8;
+// ホーム照合候補を駅の近傍へ限定する距離。距離だけでは旅客線路として採用しない。
+const STATION_TRACK_RADIUS_M = 150;
 
 // ---- 入力 ---------------------------------------------------------------
 interface OsmNode { type: "node"; id: number; lat: number; lon: number }
@@ -127,7 +122,7 @@ for (const nodes of wayNodes) {
 const isKeyNode = (id: number): boolean => (incidence.get(id) ?? 0) !== 2;
 
 // ---- 辺（キーノード間のポリライン）へ分解 -------------------------------
-interface Edge { id: number; from: number; to: number; nodes: number[]; side: boolean; yard: boolean }
+interface Edge { id: number; from: number; to: number; nodes: number[]; side: boolean; yard: boolean; tags: Record<string, string> }
 const edges: Edge[] = [];
 wayNodes.forEach((nodes, wayIndex) => {
   let start = 0;
@@ -135,7 +130,7 @@ wayNodes.forEach((nodes, wayIndex) => {
     if (isKeyNode(nodes[index]) || index === nodes.length - 1) {
       const slice = nodes.slice(start, index + 1);
       if (slice.length >= 2) {
-        edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice, side: waySideness[wayIndex], yard: wayIsYard[wayIndex] });
+        edges.push({ id: edges.length, from: slice[0], to: slice[slice.length - 1], nodes: slice, side: waySideness[wayIndex], yard: wayIsYard[wayIndex], tags: osmWays[wayIndex].tags ?? {} });
       }
       start = index;
     }
@@ -361,28 +356,21 @@ for (const [nodeId, routeIds] of routesAtNode) {
 console.log(`Phase 2 転記: 継目=${stats.joints} 転てつ器=${stats.turnouts} 継目失敗=${stats.jointFailed} 転てつ器失敗=${stats.turnoutFailed} 途中どうしで未接続=${stats.passingSkipped}`);
 
 // ---- Phase 3: 駅を設置する ---------------------------------------------
-// OSMの駅ノードを、最寄りの線路へ範囲付きで設置する。
-// 線路は1つの線路群にしか属せないため多番線へはまたげない。
-// 本線へ付けるよう、距離内で最も長い線路を選ぶ。
-interface StationNode { lat: number; lon: number; name: string; operator: string }
+// 駅付近のホーム縁と元way属性から旅客線路・端点を決める。未確定を近傍線路で補わない。
+interface StationNode { lat: number; lon: number; name: string; operator: string; network: string; ref: string }
 const stationNodes: StationNode[] = [];
 if (stationsPath) {
   const raw = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), stationsPath), "utf8")) as { elements: any[] };
   for (const element of raw.elements) {
     const name = element?.tags?.name;
-    if (element.type !== "node" || typeof name !== "string" || typeof element.lat !== "number") continue;
-    stationNodes.push({ lat: element.lat, lon: element.lon, name, operator: element.tags.operator ?? "" });
+    if (element.type !== "node" || typeof name !== "string" || !Number.isFinite(element.lat) || !Number.isFinite(element.lon)) continue;
+    stationNodes.push({ lat: element.lat, lon: element.lon, name, operator: element.tags.operator ?? "", network: element.tags.network ?? "", ref: element.tags.ref ?? "" });
   }
 }
 
 // 線路上で停車に使える最長の区間を返す。分岐点から FOULING_CLEARANCE_M だけ退く。
-function usableSpan(trackId: string, points: Point[], stationAlongM?: number): { startM: number; endM: number } | undefined {
+function usableSpan(trackId: string, points: Point[]): { startM: number; endM: number } | undefined {
   const total = polylineLength(points);
-  // 旅客ホームに留置線用の曲率・最長区間の選別を適用しない。
-  if (stationAlongM !== undefined) {
-    const track = state.tracks.find((item) => item.id === trackId)!;
-    return getStationImportRange(state, track, stationAlongM, total, STATION_HALF_LENGTH_M);
-  }
   const cuts = [0];
   for (const junction of state.junctions) {
     for (const port of junction.ports) {
@@ -469,45 +457,34 @@ function pointAlong(points: Point[], alongM: number): Point {
   return points[points.length - 1];
 }
 
-// ---- ホーム（任意） -----------------------------------------------------
-const platformPolylines: Point[][] = [];
+// ---- ホーム（旅客駅の確定には必要） -----------------------------------------------------
+const platformPolylines: OsmPlatform[] = [];
 if (platformsPath) {
   const raw = JSON.parse(fs.readFileSync(path.resolve(process.cwd(), platformsPath), "utf8")) as { elements: any[] };
+  const nodes = new Map(raw.elements.filter((e) => e.type === "node").map((e) => [e.id, e]));
   for (const element of raw.elements) {
-    if (!Array.isArray(element?.geometry)) continue;
-    const points = element.geometry
-      .filter((g: any) => typeof g?.lat === "number")
-      .map((g: any) => projectLatLon(g.lat, g.lon));
-    if (points.length >= 2) platformPolylines.push(densify(points, 10));
+    if (element.type !== "way" || (element.tags?.railway !== "platform" && element.tags?.public_transport !== "platform")) continue;
+    const geometry = element.geometry ?? element.nodes?.map((id: number) => nodes.get(id));
+    if (!Array.isArray(geometry) || geometry.some((g: any) => !Number.isFinite(g?.lat) || !Number.isFinite(g?.lon))) continue;
+    const points = geometry.map((g: any) => projectLatLon(g.lat, g.lon));
+    if (points.length >= 2) platformPolylines.push({ id: `way/${element.id}`, points, operator: element.tags.operator });
   }
 }
+const passengerTracks: OsmPassengerTrack[] = routes.flatMap((route) => {
+  const trackId = trackIdOfRoute.get(route.id), track = state.tracks.find((t) => t.id === trackId);
+  return track ? [{ id: track.id, points: track.points, sections: route.edgeIds.map((id) => ({ points: edges[id].nodes.map(project), operator: edges[id].tags.operator, service: edges[id].tags.service })) }] : [];
+});
+const stationDiagnostics: { name: string; operator: string; status: string; warnings: string[]; ranges: unknown[] }[] = [];
 
-// 頂点が疎なホーム線でも距離判定が効くよう、一定間隔へ刻む
-function densify(points: Point[], stepM: number): Point[] {
-  const result: Point[] = [points[0]];
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const a = points[index];
-    const b = points[index + 1];
-    const length = Math.hypot(b.x - a.x, b.y - a.y);
-    const steps = Math.max(1, Math.ceil(length / stepM));
-    for (let k = 1; k <= steps; k += 1) {
-      result.push({ x: a.x + (b.x - a.x) * (k / steps), y: a.y + (b.y - a.y) * (k / steps) });
-    }
-  }
-  return result;
+// operatorが欠けても駅の存在は保持する。所属の解決は根拠を別に記録する。
+const knownRailOperators = new Set(passengerTracks.flatMap((t) => t.sections.flatMap((s) => (s.operator ?? "").split(";").map((v) => v.trim()).filter(Boolean))));
+const refOperators = new Map<string, Set<string>>();
+for (const node of stationNodes) {
+  const prefix = node.ref.match(/^[A-Za-z]+/)?.[0];
+  if (!prefix || !knownRailOperators.has(node.operator)) continue;
+  const operators = refOperators.get(prefix) ?? new Set<string>(); operators.add(node.operator); refOperators.set(prefix, operators);
 }
-
-function nearPlatform(points: Point[], target: Point, radiusM: number): boolean {
-  for (const platform of platformPolylines) {
-    // 駅の近傍にあるホームだけを見る
-    if (Math.hypot(platform[0].x - target.x, platform[0].y - target.y) > 400) continue;
-    for (const vertex of platform) {
-      if (nearestOnTrack(points, vertex).distance <= radiusM) return true;
-    }
-  }
-  return false;
-}
-
+const pendingStations: { node: StationNode; target: Point; reason: string }[] = [];
 const stationStats = { placed: 0, tooFar: 0, duplicate: 0, crowded: 0, failed: 0, stopPoints: 0 };
 const placedStations: { name: string; point: Point }[] = [];
 
@@ -527,36 +504,46 @@ for (const node of stationNodes) {
       chosen = { node, target, distance: hit.distance, trackId: track.id, points: track.points, alongM: hit.alongM, lengthM };
     }
   }
-  if (chosen) candidates.push(chosen); else stationStats.tooFar += 1;
+  if (chosen) candidates.push(chosen); else { stationStats.tooFar += 1; stationDiagnostics.push({ name: node.name, operator: node.operator, status: "skipped-too-far", warnings: ["no-track-within-station-radius"], ranges: [] }); }
 }
 candidates.sort((a, b) => a.distance - b.distance);
 
 for (const candidate of candidates) {
   const { node, target } = candidate;
   if (placedStations.some((s) => s.name === node.name && Math.hypot(s.point.x - target.x, s.point.y - target.y) < STATION_DUPLICATE_M)) {
+    stationDiagnostics.push({ name: node.name, operator: node.operator, status: "skipped-duplicate", warnings: [], ranges: [] });
     stationStats.duplicate += 1;
     continue;
   }
   if (placedStations.some((s) => Math.hypot(s.point.x - target.x, s.point.y - target.y) < STATION_MIN_SEPARATION_M)) {
+    stationDiagnostics.push({ name: node.name, operator: node.operator, status: "unresolved", warnings: ["nearby-other-station"], ranges: [] });
     stationStats.crowded += 1;
     continue;
   }
-  // 駅ノードの近くを通る線路すべてへ停車地点を作り、1駅へ統合する
-  const nearby = state.tracks
-    .map((track) => ({ track, hit: nearestOnTrack(track.points, target) }))
-    .filter((entry) => entry.hit.distance <= STATION_TRACK_RADIUS_M || entry.track.id === candidate.trackId);
-  // ホームが与えられていれば、ホームに面した線路だけへ絞る。
-  // 絞った結果が空になる場合（ホーム未整備の駅）は近傍の線路をそのまま使う。
-  const withPlatform = platformPolylines.length > 0
-    ? nearby.filter((entry) => entry.track.id === candidate.trackId || nearPlatform(entry.track.points, target, PLATFORM_TRACK_RADIUS_M))
-    : nearby;
-  const serving = withPlatform.length > 0 ? withPlatform : nearby;
-
+  const nearby = passengerTracks.filter((track) => nearestOnTrack(track.points, target).distance <= STATION_TRACK_RADIUS_M);
+  const localOperators = [...new Set(nearby.flatMap((t) => t.sections.flatMap((s) => (s.operator ?? "").split(";").map((v) => v.trim()).filter(Boolean))))];
+  let resolvedOperator = node.operator, operatorEvidence = "station-operator";
+  if (!localOperators.includes(resolvedOperator)) {
+    const prefix = node.ref.match(/^[A-Za-z]+/)?.[0];
+    const refOwners = prefix ? [...(refOperators.get(prefix) ?? [])].filter((op) => localOperators.includes(op)) : [];
+    if (node.network && localOperators.includes(node.network)) { resolvedOperator = node.network; operatorEvidence = "station-network"; }
+    else if (refOwners.length === 1) { resolvedOperator = refOwners[0]; operatorEvidence = "consistent-station-ref-prefix"; }
+    else if (!node.operator) {
+      const matchingOwners = localOperators.filter((op) => matchStationPlatforms(target, op, nearby, platformPolylines).matches.length > 0);
+      if (matchingOwners.length === 1) { resolvedOperator = matchingOwners[0]; operatorEvidence = "unique-local-platform-operator"; }
+    }
+  }
+  const matching = matchStationPlatforms(target, resolvedOperator, nearby, platformPolylines);
+  const diagnostic = { name: node.name, operator: node.operator, status: "unresolved", warnings: [...matching.warnings], resolvedOperator, operatorEvidence, ranges: [] as unknown[] };
+  stationDiagnostics.push(diagnostic);
   const createdIds: string[] = [];
-  for (const entry of serving) {
-    const points = entry.track.points;
-    const usable = usableSpan(entry.track.id, points, entry.hit.alongM);
-    if (!usable) continue; // 分岐器に挟まれて停車できる区間が無い
+  for (const match of matching.matches) {
+    const track = state.tracks.find((t) => t.id === match.trackId)!;
+    const points = track.points;
+    const usable = getPlatformImportRange(state, track, match.startM, match.endM);
+    if (!usable) {
+      diagnostic.warnings.push(`junction-clipped-platform:${track.id}`); continue;
+    }
     const startAlong = usable.startM;
     const endAlong = usable.endM;
     const id = `station-${state.nextStationId}`;
@@ -564,25 +551,40 @@ for (const candidate of candidates) {
       run({
         type: "station.createRange",
         name: node.name,
-        trackId: entry.track.id,
+        trackId: track.id,
         startPosition: pointAlong(points, startAlong),
         endPosition: pointAlong(points, endAlong),
         includeTrackGroup: false,
       });
       createdIds.push(id);
-    } catch { /* 範囲を取れない線路は飛ばす */ }
+      diagnostic.ranges.push({ ...match, startM: usable.startM, endM: usable.endM });
+    } catch { diagnostic.warnings.push(`range-command-failed:${track.id}`); }
   }
-  if (createdIds.length === 0) { stationStats.failed += 1; continue; }
+  if (createdIds.length === 0) {
+    stationStats.failed += 1;
+    const reason = !resolvedOperator || !localOperators.includes(resolvedOperator) ? "ホームに対応する事業者・路線の所属を確定できない" : matching.warnings.includes("platform-geometry-missing") ? "元OSMに対応するホーム形状がない" : "ホーム形状と線路の対応範囲を確定できない";
+    pendingStations.push({ node, target, reason }); continue;
+  }
   if (createdIds.length > 1) {
     try {
       run({ type: "station.merge", stationIds: createdIds });
     } catch { /* 統合できなければ個別のまま残す */ }
   }
+  diagnostic.status = diagnostic.warnings.length ? "imported-with-warnings" : "imported";
   placedStations.push({ name: node.name, point: target });
   stationStats.placed += 1;
   stationStats.stopPoints += createdIds.length;
 }
+// 確定できる同名駅を先に作り、未確定ノードがそちらを阻害しないよう最後に保持する。
+for (const pending of pendingStations) {
+  if (placedStations.some((s) => Math.hypot(s.point.x - pending.target.x, s.point.y - pending.target.y) < (s.name === pending.node.name ? STATION_DUPLICATE_M : STATION_MIN_SEPARATION_M))) continue;
+  run({ type: "station.createUnresolved", name: pending.node.name, position: pending.target, reason: pending.reason });
+  placedStations.push({ name: pending.node.name, point: pending.target });
+}
 if (stationsPath) {
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(`${outputPath}.stations.report`, JSON.stringify({ policy: "platform-edge-local-operator-no-fallback", source: inputPath, stationSource: stationsPath, platformSource: platformsPath ?? null, minimumRangeM: MIN_PASSENGER_IMPORT_LENGTH_M, summary: { imported: stationStats.placed, unresolved: stationDiagnostics.filter((d) => d.status === "unresolved").length, retainedUnresolved: state.stations.filter((s) => s.unresolvedReason).length, importedWithWarnings: stationDiagnostics.filter((d) => d.status === "imported-with-warnings").length }, stations: stationDiagnostics }, null, 2));
+  console.log(`旅客駅診断: ${outputPath}.stations.report（ホーム・事業者の欠損や曖昧な対応は未確定。近傍線路への代用なし）`);
   console.log(`Phase 3 駅: 設置=${stationStats.placed}（停車地点${stationStats.stopPoints}, ホーム${platformPolylines.length}本） 線路から遠い=${stationStats.tooFar} 同名重複=${stationStats.duplicate} 近接で除外=${stationStats.crowded} 失敗=${stationStats.failed}`);
 }
 
@@ -678,7 +680,7 @@ function createFacility(parts: { trackId: string; points: Point[]; startM: numbe
         includeTrackGroup: false,
       });
       createdIds.push(id);
-    } catch { /* 範囲を取れない線路は飛ばす */ }
+    } catch { /* 範囲を取れない構内線は飛ばす */ }
   }
   if (createdIds.length === 0) return false;
   if (createdIds.length > 1) {
@@ -754,7 +756,7 @@ const topology = inspection.topology;
 console.log(`接続成分=${topology.connectedComponents.length} 孤立線路=${topology.isolatedTrackIds.length} 未接続端=${topology.unconnectedEndpoints.length} 接続漏れ候補=${topology.nearMisses.length} 不正接続=${topology.invalidConnections.length}`);
 const radii = state.tracks.map((t) => t.engineering.builtMinimumRadiusM).filter((v): v is number => typeof v === "number").sort((a, b) => a - b);
 const percentile = (p: number): number => radii[Math.min(radii.length - 1, Math.floor(radii.length * p))];
-console.log(`曲線半径: 最小=${radii[0]?.toFixed(1)} 5%=${percentile(0.05).toFixed(1)} 中央=${percentile(0.5).toFixed(0)} m / 50 m未満=${radii.filter((v) => v < 50).length}本`);
+console.log(`曲線半径: 最小=${radii[0]?.toFixed(1)} 5%=${percentile(0.05)?.toFixed(1) ?? "なし"} 中央=${percentile(0.5)?.toFixed(0) ?? "なし"} m / 50 m未満=${radii.filter((v) => v < 50).length}本`);
 if (topology.connectedComponents.length > 1) {
   const sizes = topology.connectedComponents.map((c) => c.length).sort((a, b) => b - a);
   console.log(`成分サイズ上位: ${sizes.slice(0, 8).join(", ")}`);

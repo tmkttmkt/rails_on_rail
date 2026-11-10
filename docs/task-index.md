@@ -11,6 +11,24 @@ updated: 2026-11-08
 
 ## 進行中
 
+- `review`: [建設と施設の操作を分離する](tasks/2026-11-10_facility-navigation.md)
+
+- `review`: [構内を用途領域に分割し車両基地グループへまとめる](tasks/2026-11-08_station-complex-areas.md)（川越市の所属範囲と構内編集パネルを調整）
+
+- `review`: [小さな側線で用途指定・車両配置・本線往復を成立させる](tasks/2026-11-08_small-siding-facility-trial.md)
+
+- `review`: [OSMの未確定駅を保持し欠落を解消する](tasks/2026-11-08_preserve-unresolved-osm-stations.md)
+
+- `review`: [OSM再取込で欠落した9駅の原因を個別調査](tasks/2026-11-08_investigate-missing-osm-stations.md)
+
+- `review`: [OSM取込の旅客ホーム対応を修正](tasks/2026-11-08_fix-osm-passenger-platform-matching.md)
+
+- `review`: [東上線の旅客線路数不一致10駅を修正](tasks/2026-11-08_fix-tojo-station-tracks.md)
+
+- `review`: [東上線・越生線の全旅客駅形状を監査](tasks/2026-11-08_audit-tojo-stations.md)
+
+- `review`: [OSM東上線の車庫・留置線マップ](tasks/2026-11-08_tojo-depot-map.md)
+
 - `review`: [操車基盤と試作ブランチを分離](tasks/2026-11-08_split-yard-prototype.md)
 
 - `review`: [ベカソヴォで貨車の入換を動かす](tasks/2026-11-07_operate-bekasovo-yard.md)（新目的への移行）

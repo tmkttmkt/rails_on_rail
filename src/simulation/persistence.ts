@@ -1,3 +1,5 @@
+import { validateStationAreas } from "./stationAreas";
+import { validateFacilityTrial } from "./facilities";
 import { trackCatalog } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
 import { validateYard } from "./yard";
@@ -10,6 +12,7 @@ import {
   type Point,
   type Track,
   STATION_KINDS,
+  FACILITY_USES,
   TRACK_KINDS,
   type VehiclePlacement,
 } from "./model";
@@ -89,6 +92,8 @@ function coerceMapState(value: unknown): MapState {
   if (value.version === 11) return normalizeVersion11(value);
   if (value.version === 12) return normalizeVersion12(value);
   if (value.version === 13) return normalizeVersion13(value);
+  if (value.version === 14) return normalizeVersion14(value);
+  if (value.version === 15) { validateMapState(value); return structuredClone(value) as MapState; }
   validateMapState(value);
   return structuredClone(value);
 }
@@ -96,7 +101,7 @@ function coerceMapState(value: unknown): MapState {
 export function validateMapState(value: unknown): asserts value is MapState {
   if (!isRecord(value)) throw new Error("セーブデータの形式が正しくありません");
   if (value.yard !== undefined) validateYard(value as unknown as MapState);
-  if (value.version !== 13) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
+  if (value.version !== 15) throw new Error(`対応していないセーブ形式です: ${String(value.version)}`);
   if (!isRecord(value.clock) || !Number.isSafeInteger(value.clock.currentTimeMs) || Math.abs(value.clock.currentTimeMs as number) > 8_640_000_000_000_000 || typeof value.clock.paused !== "boolean" || !(SIMULATION_SPEEDS as readonly unknown[]).includes(value.clock.speedMultiplier)) throw new Error("ゲーム内時計が正しくありません");
   if (!Number.isInteger(value.nextTrackId) || (value.nextTrackId as number) < 1) throw new Error("次の線路IDが正しくありません");
   if (!Number.isInteger(value.nextTrackGroupId) || (value.nextTrackGroupId as number) < 1) throw new Error("次の線路群IDが正しくありません");
@@ -174,8 +179,11 @@ export function validateMapState(value: unknown): asserts value is MapState {
   const stationIds = new Set<string>();
   const allStopPointIds = new Set<string>();
   for (const station of value.stations) {
-    if (!isRecord(station) || typeof station.id !== "string" || stationIds.has(station.id) || typeof station.name !== "string" || station.name.trim().length < 1 || station.name.length > 60 || !isPoint(station.position) || !Array.isArray(station.stopPoints) || station.stopPoints.length < 1) throw new Error("駅が正しくありません");
+    if (!isRecord(station) || typeof station.id !== "string" || stationIds.has(station.id) || typeof station.name !== "string" || station.name.trim().length < 1 || station.name.length > 60 || !isPoint(station.position) || !Array.isArray(station.stopPoints)) throw new Error("駅が正しくありません");
+    if (station.unresolvedReason !== undefined && (typeof station.unresolvedReason !== "string" || !station.unresolvedReason.trim() || station.unresolvedReason.length > 1000 || station.kind !== "station")) throw new Error("未確定駅の理由が正しくありません");
+    if (!station.stopPoints.length && !station.unresolvedReason) throw new Error("駅の停車範囲または未確定理由が必要です");
     if (!STATION_KINDS.includes(station.kind as never)) throw new Error(`${station.id}の停車場種類が正しくありません`);
+    if (station.facilityUse !== undefined && (!(FACILITY_USES as readonly unknown[]).includes(station.facilityUse) || station.kind === "station")) throw new Error("施設用途が正しくありません");
     stationIds.add(station.id);
     const trackRanges = new Map<string, { start: number; end: number }[]>();
     for (const stopPoint of station.stopPoints) {
@@ -189,6 +197,8 @@ export function validateMapState(value: unknown): asserts value is MapState {
       if (stopPoint.endDistanceM > analyzeLine(sampleTrack(track)).lengthM + 0.001) throw new Error(`${station.id}の停車地点距離が線路長を超えています`);
     }
   }
+  validateStationAreas(value as unknown as MapState);
+  validateFacilityTrial(value as unknown as MapState);
   assertNextIdIsUnused(value.nextTrackId as number, ids, "track-", "次の線路ID");
   assertNextIdIsUnused(value.nextTrackGroupId as number, groupIds, "track-group-", "次の線路群ID");
   assertNextIdIsUnused(value.nextJunctionId as number, junctionIds, "junction-", "次の接続点ID");
@@ -1070,8 +1080,17 @@ function migrateVersion12(value: Record<string, any>): MapState {
 
 function normalizeVersion13(raw: Record<string, any>): MapState {
   const state = structuredClone(raw);
+  state.version = 14;
   for (const track of state.tracks ?? []) if (!track.kind) track.kind = "main";
   for (const station of state.stations ?? []) if (!station.kind) station.kind = "station";
+  return normalizeVersion14(state);
+}
+
+function normalizeVersion14(raw: Record<string, any>): MapState {
+  const state = structuredClone(raw);
+  state.version = 15;
+  state.stationComplexes ??= []; state.stationAreas ??= [];
+  state.nextStationComplexId ??= 1; state.nextStationAreaId ??= 1;
   validateMapState(state);
   return state as MapState;
 }

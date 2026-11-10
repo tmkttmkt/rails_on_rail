@@ -12,6 +12,14 @@ md_class: operation
 
 ## 現在の開発
 
+- [構内・車両基地グループと用途領域](features/station-complex-areas.md)
+
+- [側線施設の用途指定と保守車の往復試験](features/siding-facilities.md)
+
+- [OSM旅客ホームの取り込み](features/osm-passenger-import.md)
+
+- [東上線・越生線の車庫／留置線マップ](features/tojo-depot-map.md)
+
 - [操車場実働化Epic](epics/yard-operations.md)
 - [ベカソヴォの入換試験](features/yard-operations.md)
 

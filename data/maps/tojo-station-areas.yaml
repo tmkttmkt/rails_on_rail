@@ -1,0 +1,36 @@
+formatVersion: 1
+source: saves/osm-tobu-tojo-depots.json
+output: saves/osm-tobu-tojo-areas.json
+maximumTracksPerArea: 6
+complexes:
+  - { id: complex-shimoitabashi, name: 下板橋駅・留置施設, station: 下板橋, facilities: [{ name: 下板橋留置線, role: stabling }] }
+  - { id: complex-kamiitabashi, name: 上板橋駅構内, station: 上板橋, facilities: [{ name: 上板橋引上げ線, role: headshunt }] }
+  - { id: complex-narimasu, name: 成増駅構内, station: 成増, facilities: [{ name: 成増構内側線, role: stabling }] }
+  - { id: complex-shiki, name: 志木駅・留置施設, station: 志木, facilities: [{ name: 志木留置・引上げ線, role: stabling }] }
+  - { id: complex-kamifukuoka, name: 上福岡駅・留置施設, station: 上福岡, facilities: [{ name: 上福岡留置線, role: stabling }] }
+  - { id: complex-shinrin, name: 森林公園駅・検修区, station: 森林公園, facilities: [{ name: 森林公園検修区, role: workshop }, { name: 森林公園駅構内側線, role: stabling }] }
+  - { id: complex-ogawa, name: 小川町駅・留置施設, station: 小川町, facilities: [{ name: 小川町留置線, role: stabling }] }
+  - { id: complex-wako, name: 和光市駅・和光検車区（参考）, station: 和光市, facilities: [{ name: 和光検車区（東京メトロ・参考）, role: workshop }] }
+kawagoe:
+  id: complex-kawagoeshi
+  name: 川越市駅・旧工場側構内
+  station: 川越市
+  replaceFacilities: [川越市構内側線（OSM・経路未確認）]
+  mainlineMarginM: 350
+  scopeTracks: [135, 136, 137, 138, 139, 140, 141, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 261, 292, 294]
+  areas:
+    - { id: north-service, name: 北側保守用側線（仮区分）, role: maintenance, tracks: [292], safeOnly: true }
+    - id: station-west
+      name: 駅西側待機線群（仮区分）
+      role: stabling
+      tracks: [143]
+      ranges: [{ track: 144, from: 0, to: 310 }]
+      safeOnly: true
+    - id: south-shunt
+      name: 南側引上げ線（仮区分）
+      role: headshunt
+      ranges: [{ track: 144, from: 310 }]
+    - { id: old-west, name: 旧工場側・西留置線群（仮区分）, role: stabling, tracks: [145, 146, 152, 154], safeOnly: true }
+    - { id: old-east, name: 旧工場側・作業線群（用途未確認）, role: workshop, tracks: [147, 149, 150, 151], safeOnly: true }
+  # 上記に割り当てない構内区間は北・南の分岐/接続通路とする。
+  # 現役用途・番線・引上げ可能編成長を現地確定したものではない。

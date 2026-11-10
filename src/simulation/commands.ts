@@ -1,3 +1,5 @@
+import { executeStationAreaCommand, assertAreaAllowsStabling, type StationAreaCommand } from "./stationAreas";
+import { executeFacilityCommand, type FacilityCommand } from "./facilities";
 import { SIMULATION_SPEEDS, createInitialState, getFormationOperationalStatus, type MapState, type Point, type SimulationSpeed, type Track, type TrackGeometry, type TrackGroup, type TrackJunctionPortLocation, type Turnout, type TurnoutSide, type StationKind, type TrackKind, STATION_KINDS, TRACK_KINDS } from "./model";
 import { trackCatalog, type TrackSpecification } from "../data/trackCatalog";
 import { vehicleCatalog } from "../data/vehicleCatalog";
@@ -44,6 +46,8 @@ import type { ServiceDomainCommand } from "./serviceCommands";
 import { advanceYard, executeYardCommand, type YardCommand } from "./yard";
 
 export type MapCommand =
+  | StationAreaCommand
+  | FacilityCommand
   | YardCommand
   | { type: "track.create"; kind?: TrackKind; geometry: TrackGeometry; points: Point[]; trackCount?: number; trackSpacing?: number; specification?: TrackSpecification; designSpeedKmh?: number; connectionAlignmentIndex?: number; endConnectionAlignmentIndex?: number; startTangent?: Point; endTangent?: Point; startConnectionTrackId?: string; endConnectionTrackId?: string }
   | { type: "track.delete"; trackId: string }
@@ -57,6 +61,7 @@ export type MapCommand =
   | { type: "trackGroup.removeTrack"; groupId: string; trackId: string }
   | { type: "trackGroup.dissolve"; groupId: string }
   | { type: "station.createRange"; name: string; trackId: string; startPosition: Point; endPosition: Point; includeTrackGroup?: boolean; kind?: StationKind }
+  | { type: "station.createUnresolved"; name: string; position: Point; reason: string }
   | { type: "station.setKind"; stationId: string; kind: StationKind }
   | { type: "station.rename"; stationId: string; name: string }
   | { type: "station.extend"; stationId: string; trackId: string; position: Point }
@@ -126,10 +131,16 @@ function makeDefaultStopTimes(route: any) {
 
 export function executeCommand(state: MapState, command: MapCommand): CommandResult {
   const next = structuredClone(state);
+  if ((command.type === "station.extend" || command.type === "station.setKind" || command.type === "facility.setUse") && state.stationAreas.some((a) => a.stationId === command.stationId)) throw new Error("停車場の範囲・用途は構内領域から変更してください");
+  if (command.type.startsWith("stationComplex.") || command.type.startsWith("stationArea.")) return { state: next, message: executeStationAreaCommand(next, command as StationAreaCommand) };
+  if (command.type.startsWith("facility.")) return { state: next, message: executeFacilityCommand(next, command as FacilityCommand) };
   if (command.type.startsWith("yard.")) return { state: next, message: executeYardCommand(next, command as YardCommand) };
   if (state.yard?.cuts.length && /^(train\.|track\.|turnout\.|vehicleDutyExecution\.|operationExecution\.|execution\.|trainRun\.|fleet\.dispatch\.)/.test(command.type)) throw new Error("操車中の線路編集・本線との同時運転は未対応");
   if (command.type.startsWith("fleet.") && "formationId" in command && typeof command.formationId === "string" && state.yard?.cuts.some((c) => c.id === command.formationId) && command.type !== "fleet.formation.rename") throw new Error("線路上の編成は操車画面から連結・解結する");
 
+  const areaTrackOwned = (id: string | undefined) => id && state.stationAreas.some((a) => a.ranges.some((r) => r.trackId === id));
+  if ((command.type === "track.connect" && (areaTrackOwned(command.trackId) || areaTrackOwned(command.otherTrackId))) || (command.type === "turnout.create" && areaTrackOwned(command.trackId)) || (command.type === "turnout.attach" && (areaTrackOwned(command.trackId) || areaTrackOwned(command.divergingTrackId))) || (command.type === "track.create" && (areaTrackOwned(command.startConnectionTrackId) || areaTrackOwned(command.endConnectionTrackId))) || (command.type === "turnout.delete" && state.turnouts.some((t)=>t.id===command.turnoutId && (areaTrackOwned(t.throughTrackId) || areaTrackOwned(t.divergingTrackId))))) throw new Error("構内領域を再編してから接続・分岐を編集してください");
+  if (state.yard?.facilityTrial && command.type.startsWith("station.") && command.type !== "station.rename" && (("stationId" in command && command.stationId === state.yard.facilityTrial.stationId) || ("stationIds" in command && command.stationIds.includes(state.yard.facilityTrial.stationId)))) throw new Error("試験車を撤収してから施設を編集してください");
   switch (command.type) {
     case "track.create":
       return createTracks(next, command);
@@ -143,6 +154,8 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       const station = next.stations.find((item) => item.id === command.stationId);
       if (!station) throw new Error("停車場が存在しません");
       if (!STATION_KINDS.includes(command.kind)) throw new Error("停車場の種類が正しくありません");
+      if (station.unresolvedReason && command.kind !== "station") throw new Error("ホーム未確定の駅は他の停車場種類へ変更できません");
+      if (command.kind === "station") delete station.facilityUse;
       station.kind = command.kind;
       return { state: next, message: `停車場「${station.name}」の種類を変更しました` };
     }
@@ -155,6 +168,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
     case "turnout.delete":
       return deleteTurnout(next, command);
     case "track.delete": {
+      if (next.stationAreas.some((a) => a.ranges.some((r) => r.trackId === command.trackId))) throw new Error("構内領域の区分を解除してから線路を撤去してください");
       const track = next.tracks.find((t) => t.id === command.trackId);
       if (!track) throw new Error("線路が存在しません");
       const placed = next.vehiclePlacements.find((p) => p.trackId === command.trackId);
@@ -179,7 +193,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       }
       next.stations = next.stations.flatMap((station) => {
         const stopPoints = station.stopPoints.filter((stopPoint) => stopPoint.trackId !== command.trackId);
-        return stopPoints.length > 0 ? [{ ...station, stopPoints }] : [];
+        return stopPoints.length > 0 || station.unresolvedReason ? [{ ...station, stopPoints }] : [];
       });
       removeInvalidRoutesAndTrains(next);
       return { state: next, message: "線路を撤去しました" };
@@ -214,6 +228,12 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       const group = requireGroup(next, command.groupId);
       next.trackGroups = next.trackGroups.filter((item) => item.id !== group.id);
       return { state: next, message: `「${group.name}」を解体しました。線路は残っています` };
+    }
+    case "station.createUnresolved": {
+      const name = normalizeStationName(command.name), reason = command.reason.trim();
+      if (!Number.isFinite(command.position.x) || !Number.isFinite(command.position.y) || !reason || reason.length > 1000) throw new Error("未確定駅の位置または理由が不正です");
+      next.stations.push({ id: `station-${next.nextStationId++}`, name, kind: "station", position: { ...command.position }, stopPoints: [], unresolvedReason: reason });
+      return { state: next, message: `駅「${name}」をホーム未確定として保持しました` };
     }
     case "station.createRange": {
       const name = normalizeStationName(command.name);
@@ -283,6 +303,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       return { state: next, message: `駅「${station.name}」を延長しました` };
     }
     case "station.merge": {
+      if (next.stationAreas.some((a) => a.stationId && command.stationIds.includes(a.stationId))) throw new Error("領域を再編してから停車場を統合してください");
       const stationIds = [...new Set(command.stationIds)];
       if (stationIds.length < 2) throw new Error("統合する駅を2駅以上選択してください");
       const stations = stationIds.map((id) => {
@@ -320,13 +341,17 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
         }
       }
       const centers = target.stopPoints.map((stopPoint) => pointAtPathDistance(sampleTrack(requireTrack(next, stopPoint.trackId)), (stopPoint.startDistanceM + stopPoint.endDistanceM) / 2));
-      target.position = { x: centers.reduce((sum, point) => sum + point.x, 0) / centers.length, y: centers.reduce((sum, point) => sum + point.y, 0) / centers.length };
+      if (centers.length) {
+        delete target.unresolvedReason;
+        target.position = { x: centers.reduce((sum, point) => sum + point.x, 0) / centers.length, y: centers.reduce((sum, point) => sum + point.y, 0) / centers.length };
+      }
       const removedIds = new Set(stationIds.slice(1));
       next.stations = next.stations.filter((station) => !removedIds.has(station.id));
       removeInvalidRoutesAndTrains(next);
       return { state: next, message: `${stationIds.length}駅を「${target.name}」へ統合しました` };
     }
     case "station.delete": {
+      if (next.stationAreas.some((a) => a.stationId === command.stationId)) throw new Error("構内領域の関連付けを解除してから停車場を撤去してください");
       const station = next.stations.find((item) => item.id === command.stationId);
       if (!station) throw new Error("駅が存在しません");
       const placed = next.vehiclePlacements.find((p) => p.stationId === command.stationId);
@@ -900,6 +925,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       if (status !== "unplaced" && status !== "awaiting-placement") throw new Error("配置済み・予約中・運行中の編成は配置できません");
       const station = next.stations.find((item) => item.id === command.stationId);
       if (!station) throw new Error("駅が存在しません");
+      if (station.facilityUse === "unknown" || station.facilityUse === "headshunt") throw new Error("用途未確認・引上げ線には留置配置できません");
       const track = next.tracks.find((item) => item.id === command.trackId);
       if (!track) throw new Error("線路が存在しません");
       const stopPoint = station.stopPoints.find((sp) => sp.trackId === command.trackId && command.distanceM >= sp.startDistanceM - 0.001 && command.distanceM <= sp.endDistanceM + 0.001);
@@ -917,6 +943,7 @@ export function executeCommand(state: MapState, command: MapCommand): CommandRes
       if (occupiedStartDistanceM < stopPoint.startDistanceM - 0.001 || occupiedEndDistanceM > stopPoint.endDistanceM + 0.001) {
         throw new Error("編成全体が駅の停車範囲に収まりません");
       }
+      assertAreaAllowsStabling(next, track.id, occupiedStartDistanceM, occupiedEndDistanceM);
       assertStablingClearOfJunctions(next, track, occupiedStartDistanceM, occupiedEndDistanceM);
       for (const placement of next.vehiclePlacements) {
         if (placement.trackId === command.trackId) {

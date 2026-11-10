@@ -11,7 +11,7 @@ export type YardAction =
   | { type: "yard.reverse"; cutId: string }
   | { type: "yard.split"; cutId: string; rearCount: number; newCutId: string }
   | { type: "yard.couple"; cutId: string; otherCutId: string };
-export interface YardState { formatVersion: 2; cuts: YardCut[]; plan: YardAction[]; planLabels: string[]; planIndex: number; automatic: boolean; error?: string; roles: { name: string; trackId: string; distanceM: number }[] }
+export interface YardState { facilityTrial?: { stationId: string; formationId: string; home: YardSpan; mainline: YardSpan }; formatVersion: 2; cuts: YardCut[]; plan: YardAction[]; planLabels: string[]; planIndex: number; automatic: boolean; error?: string; roles: { name: string; trackId: string; distanceM: number }[] }
 export type YardCommand = YardAction
   | { type: "yard.place"; cutId: string; trackId: string; headM: number; direction: 1 | -1 }
   | { type: "yard.automatic"; running: boolean }

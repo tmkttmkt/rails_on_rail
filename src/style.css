@@ -147,3 +147,27 @@ footer { display: flex; align-items: center; justify-content: space-between; pad
 .yard-form select, .yard-form input, #yard-cut { width: 100%; min-width: 0; padding: 6px; }
 #yard-status { white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.6; background: #e8edf0; padding: 8px; font-size: 11px; }
 .yard-vehicles { padding-left: 22px; line-height: 1.8; }
+
+.map-bookmarks { position: absolute; top: 12px; left: 12px; z-index: 5; display: flex; gap: 12px; align-items: center; background: #f5f8fb; border: 1px solid #667d8e; padding: 10px 14px; box-shadow: 0 2px 8px #0002; }
+.map-bookmarks select { min-width: 220px; }
+
+.facility-panel { position:absolute; left:12px; bottom:32px; width:min(330px,42vw); max-height:65%; overflow:auto; background:#f8fafbeF; border:1px solid #83949e; border-radius:4px; padding:12px; box-shadow:0 2px 7px #0002; z-index:4; font-size:13px; }
+.facility-panel[hidden] { display:none; }
+.facility-panel label { display:flex; flex-direction:column; gap:4px; margin:8px 0; }
+.facility-panel button { display:block; width:100%; margin:6px 0; }
+.facility-panel small { display:block; color:#52636d; line-height:1.5; }
+
+.complex-panel { position:absolute; top:12px; left:12px; bottom:32px; width:330px; overflow:auto; background:#f9fbfcf5; border:1px solid #9daab2; border-radius:5px; padding:12px; z-index:5; box-shadow:0 2px 8px #0002; font-size:12px; }
+.complex-panel[hidden] {display:none;}
+.complex-panel h2 {font-size:15px;margin:0 0 8px;}.complex-panel h3{font-size:13px;}
+.complex-panel select,.complex-panel input:not([type=checkbox]),.complex-panel button{width:100%;box-sizing:border-box;}
+.complex-panel label{display:block;margin:8px 0;}.complex-panel small,.complex-help{display:block;line-height:1.5;color:#52616c;}
+.area-row {display:flex;align-items:center;gap:8px;text-align:left;margin:5px 0;padding:8px;background:#fff;border:1px solid #c7d0d7;border-radius:4px;}
+.area-row.active{border:2px solid #486c87;background:#eaf2f7;}.area-number{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:23px;height:23px;border-radius:50%;color:white;font-weight:bold;}
+.area-row small{margin-top:3px;}.area-editor{border-top:1px solid #c4cdd5;margin-top:12px;padding-top:4px;}.complex-panel details{margin-top:12px;padding-top:8px;border-top:1px solid #d5dce2;}.complex-panel .area-track-choice{display:inline-flex;align-items:center;gap:3px;margin:4px 8px 4px 0;}
+
+.complex-panel.empty { bottom:auto; max-height:220px; }
+
+/* Facility management uses the existing mode panels, never a map overlay. */
+.tools > .complex-panel { position:static; width:auto; max-height:none; padding:0; border:0; border-radius:0; box-shadow:none; background:transparent; font-size:11px; }
+.inspector > .facility-panel { position:static; width:auto; max-height:none; margin-bottom:12px; padding:0 0 8px; border:0; border-bottom:1px solid #91979a; border-radius:0; box-shadow:none; background:transparent; font-size:11px; }
