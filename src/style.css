@@ -171,3 +171,21 @@ footer { display: flex; align-items: center; justify-content: space-between; pad
 /* Facility management uses the existing mode panels, never a map overlay. */
 .tools > .complex-panel { position:static; width:auto; max-height:none; padding:0; border:0; border-radius:0; box-shadow:none; background:transparent; font-size:11px; }
 .inspector > .facility-panel { position:static; width:auto; max-height:none; margin-bottom:12px; padding:0 0 8px; border:0; border-bottom:1px solid #91979a; border-radius:0; box-shadow:none; background:transparent; font-size:11px; }
+
+.home-screen { grid-row:1 / -1; position:relative; overflow:hidden; min-height:0; display:flex; align-items:center; padding:clamp(40px,8vw,130px); color:#eef0e8; background:#192c32; }
+.home-content { position:relative; z-index:1; max-width:620px; }
+.home-kicker { margin:0 0 20px; color:#abc1bd; font-size:13px; letter-spacing:.15em; }
+.home-screen h1 { margin:0; font-size:clamp(42px,6vw,76px); font-weight:600; letter-spacing:-.04em; line-height:1.1; }
+.home-description { margin:24px 0 36px; font-size:16px; color:#c2cfca; }
+.home-menu { display:grid; gap:10px; width:300px; }
+.home-menu button { min-height:48px; padding:12px 20px; text-align:left; border:1px solid #617873; color:#e5ebe3; background:#233d42; font-size:15px; cursor:pointer; }
+.home-menu button:hover:not(:disabled) { background:#345459; border-color:#b6cabd; }
+.home-menu button:focus-visible { outline:3px solid #f0cc81; outline-offset:3px; }
+.home-menu .home-primary { background:#c5d5b6; color:#1c3133; border-color:#c5d5b6; font-weight:700; }
+.home-menu .home-primary:hover:not(:disabled) { background:#e0e8ce; color:#1c3133; }
+.home-menu button:disabled { opacity:.4; cursor:default; }
+.home-detail,#home-status { max-width:540px; min-height:18px; font-size:12px; color:#bccdc5; }
+.home-version { display:block; margin-top:30px; color:#819a96; font-size:11px; }
+.home-rail { position:absolute; width:650px; height:1000px; right:-130px; top:-60px; transform:rotate(25deg); pointer-events:none; opacity:.3; }
+.home-rail span { position:absolute; top:0; bottom:0; width:90px; border-left:3px solid #9cb4a5; border-right:3px solid #9cb4a5; background:repeating-linear-gradient(to bottom, transparent 0 30px,#58736c 30px 35px,transparent 35px 50px); }
+.home-rail span:nth-child(2) { left:180px; }.home-rail span:nth-child(3) { left:360px; }

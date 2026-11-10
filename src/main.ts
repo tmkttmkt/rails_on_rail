@@ -43,9 +43,26 @@ const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("#app がありません");
 
 app.innerHTML = `
+  <section id="home-screen" class="home-screen" aria-labelledby="home-title">
+    <div class="home-content">
+      <p class="home-kicker">鉄道計画・運営シミュレーション</p>
+      <h1 id="home-title">Rails on Rail</h1>
+      <p class="home-description">線路をつなぎ、車両を組み、鉄道を動かす。</p>
+      <nav class="home-menu" aria-label="ゲーム開始">
+        <button id="home-resume" class="home-primary">続きから</button>
+        <button id="home-new">新規ゲーム</button>
+        <button id="home-load">ロード</button>
+        <button id="home-import">ファイルから読み込む</button>
+      </nav>
+      <p id="home-resume-detail" class="home-detail"></p>
+      <p id="home-status" role="status"></p>
+      <small class="home-version">開発版 · 自由マップ</small>
+    </div>
+    <div class="home-rail" aria-hidden="true"><span></span><span></span><span></span></div>
+  </section>
   <header class="topbar">
     <div class="brand"><span class="brand-mark">R</span><div><strong>Rails on Rail</strong><small>鉄道計画</small></div></div>
-    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="yard">操車</button><button data-mode="facility">施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
+    <nav class="mode-tabs" aria-label="モード"><button data-mode="map">地図</button><button data-mode="construction" class="active">建設</button><button data-mode="line">路線・系統</button><button data-mode="route">経路</button><button data-mode="schedule">運行</button><button data-mode="vehicleDuty">運用</button><button data-mode="yard">操車</button><button data-mode="facility">施設</button><button data-mode="vehicle">車両</button><button data-mode="management" disabled>経営</button><button data-mode="statistics" disabled>統計</button></nav><div class="time-controls" aria-label="ゲーム内時間"><strong id="simulation-time">1900/01/01 06:00:00</strong><button id="time-toggle" title="時間を進行・一時停止 (Space)">▶</button><button data-time-speed="1">1×</button><button data-time-speed="60">60×</button><button data-time-speed="300">300×</button><button data-time-speed="1800">1800×</button></div><div class="topbar-actions"><button id="home-screen-open" title="ホームへ戻る">ホーム</button><button id="save-manager-open" title="セーブ管理">💾</button><button id="import-save" title="取込">📥</button><input id="import-file" type="file" accept="application/json,.json" hidden></div>
     <div class="coordinates"><span>座標</span><strong id="coordinates">X 0 · Y 0</strong></div>
   </header>
   <main>
@@ -153,6 +170,9 @@ const context: CanvasRenderingContext2D = canvasContext;
 const LEGACY_QUICK_SAVE_KEY = "rails-on-rail.map-state.v1";
 const SAVE_SLOTS_KEY = "rails-on-rail.save-slots.v1";
 
+const directMap = ["tojo-depots", "tojo-import", "siding-trial", "tojo-areas"].includes(new URLSearchParams(location.search).get("map") ?? "");
+let homeScreenOpen = !directMap;
+let gameStarted = directMap;
 let state: MapState = createInitialState();
 let camera: Camera = createInitialCamera();
 let appMode: AppMode = "construction";
@@ -466,6 +486,7 @@ function renderSaveList(): void {
 }
 
 async function openSaveManager(): Promise<void> {
+  updateHomeScreen();
   renderSaveList();
   required<HTMLDialogElement>("#save-manager").showModal();
   try {
@@ -1040,6 +1061,60 @@ document.querySelectorAll<HTMLButtonElement>("[data-time-speed]").forEach((butto
   const speedMultiplier = Number(button.dataset.timeSpeed) as MapState["clock"]["speedMultiplier"];
   if (dispatch({ type: "simulation.setSpeed", speedMultiplier }) && state.clock.paused) dispatch({ type: "simulation.setPaused", paused: false });
 }));
+function updateHomeScreen(): void {
+  required<HTMLElement>("#home-screen").hidden = !homeScreenOpen;
+  for (const selector of [".topbar", "main", "footer"]) required<HTMLElement>(selector).hidden = homeScreenOpen;
+  const latest = [...saveSlots].filter((slot) => !slot.serverOnly).sort((a, b) => b.metadata.updatedAt.localeCompare(a.metadata.updatedAt))[0];
+  required<HTMLButtonElement>("#home-resume").disabled = !gameStarted && !latest;
+  required("#home-resume-detail").textContent = gameStarted ? "進行中のマップへ戻る（未保存の変更も保持）" : latest ? `最新の保存：${latest.metadata.name}` : "保存データがない。新規ゲームから開始できる。";
+  for (const id of ["save-new", "save-overwrite"]) required<HTMLElement>(`#${id}`).hidden = homeScreenOpen;
+  required<HTMLInputElement>("#save-name").hidden = homeScreenOpen;
+  required<HTMLElement>(".save-name-label").hidden = homeScreenOpen;
+}
+
+function enterGame(): void {
+  gameStarted = true;
+  homeScreenOpen = false;
+  previousFrameTime = null;
+  simulationAccumulatorSeconds = 0;
+  updateHomeScreen();
+  resizeCanvas();
+  updateUi();
+  canvas.focus();
+}
+
+required("#home-screen-open").addEventListener("click", () => {
+  homeScreenOpen = true;
+  pressedKeys.clear();
+  simulationAccumulatorSeconds = 0;
+  updateHomeScreen();
+  required<HTMLButtonElement>("#home-resume").focus();
+});
+required("#home-resume").addEventListener("click", () => {
+  if (!gameStarted) {
+    const latest = [...saveSlots].filter((slot) => !slot.serverOnly).sort((a, b) => b.metadata.updatedAt.localeCompare(a.metadata.updatedAt))[0];
+    if (!latest) return;
+    selectedSaveId = latest.id;
+    state = structuredClone(latest.state);
+    resetTransientState();
+    setMode("map");
+  }
+  enterGame();
+});
+required("#home-new").addEventListener("click", () => {
+  if (gameStarted && !window.confirm("進行中のマップを新しいマップに置き換える。未保存の変更は失われる。開始するか？")) return;
+  state = createInitialState();
+  camera = createInitialCamera();
+  selectedSaveId = null;
+  resetTransientState();
+  setMode("construction");
+  enterGame();
+  showMessage("新しいマップを開始しました。建設から線路・駅を設置できます");
+});
+required("#home-load").addEventListener("click", openSaveManager);
+required<HTMLDialogElement>("#save-manager").addEventListener("close", updateHomeScreen);
+required("#home-import").addEventListener("click", () => required<HTMLInputElement>("#import-file").click());
+
 required("#save-manager-open").addEventListener("click", openSaveManager);
 required("#save-new").addEventListener("click", async () => {
   try {
@@ -1080,7 +1155,8 @@ required("#save-load").addEventListener("click", () => {
   state = structuredClone(slot.state);
   resetTransientState();
   required<HTMLDialogElement>("#save-manager").close();
-  updateUi();
+  setMode("map");
+  enterGame();
   showMessage(`「${slot.metadata.name}」を読み込みました`);
 });
 required("#save-rename").addEventListener("click", () => {
@@ -1126,7 +1202,8 @@ importFile.addEventListener("change", async () => {
     writeSaveSlots();
     state = structuredClone(slot.state);
     resetTransientState();
-    updateUi();
+    setMode("map");
+    enterGame();
     try {
       await syncSaveToServer(slot);
       showMessage(`「${slot.metadata.name}」を取り込み、サーバーと同期しました`);
@@ -1209,7 +1286,7 @@ required("#count-up").addEventListener("click", () => setTrackCount(draftTrackCo
 
 const pressedKeys = new Set<string>();
 window.addEventListener("keydown", (event) => {
-  if (!isTextEntryTarget(event.target)) pressedKeys.add(event.key.toLowerCase());
+  if (!homeScreenOpen && !isTextEntryTarget(event.target)) pressedKeys.add(event.key.toLowerCase());
 });
 window.addEventListener("keyup", (event) => pressedKeys.delete(event.key.toLowerCase()));
 
@@ -1218,6 +1295,7 @@ function isAnyTextFocused(): boolean {
 }
 
 window.addEventListener("keydown", (event) => {
+  if (homeScreenOpen) return;
   // グローバルキー（テキスト入力中も一部有効）
   if (event.key === "F1") { event.preventDefault(); setMode("map"); return; }
   if (event.key === "F2") { event.preventDefault(); setMode("construction"); return; }
@@ -1351,6 +1429,7 @@ function cycleConnectionCandidate(): boolean {
 }
 
 function showMessage(message: string, error = false): void {
+  if (homeScreenOpen) required("#home-status").textContent = message;
   required("#message").textContent = message;
   const toast = required("#toast");
   toast.textContent = message;
@@ -2862,6 +2941,12 @@ function resizeCanvas(): void {
 }
 
 function frame(timestamp: number): void {
+  if (homeScreenOpen) {
+    previousFrameTime = null;
+    simulationAccumulatorSeconds = 0;
+    requestAnimationFrame(frame);
+    return;
+  }
   const dt = previousFrameTime !== null ? Math.min(0.1, (timestamp - previousFrameTime) / 1000) : 0;
   previousFrameTime = timestamp;
 
@@ -2960,6 +3045,7 @@ function frame(timestamp: number): void {
 }
 
 window.addEventListener("resize", resizeCanvas);
+updateHomeScreen();
 resizeCanvas();
 updateUi();
 requestAnimationFrame(frame);

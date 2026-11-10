@@ -11,6 +11,8 @@ updated: 2026-11-08
 
 ## 進行中
 
+- `review`: [ホーム画面を追加する](tasks/2026-11-10_home-screen.md)
+
 - `review`: [建設と施設の操作を分離する](tasks/2026-11-10_facility-navigation.md)
 
 - `review`: [構内を用途領域に分割し車両基地グループへまとめる](tasks/2026-11-08_station-complex-areas.md)（川越市の所属範囲と構内編集パネルを調整）
