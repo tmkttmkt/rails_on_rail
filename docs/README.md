@@ -12,6 +12,8 @@ md_class: operation
 
 ## 現在の開発
 
+- [実装対象の順序：東上線MVP → ベガソボロ操車場](planning/implementation-targets.md)
+
 - [構内・車両基地グループと用途領域](features/station-complex-areas.md)
 
 - [側線施設の用途指定と保守車の往復試験](features/siding-facilities.md)
@@ -24,18 +26,18 @@ md_class: operation
 - [ベカソヴォの入換試験](features/yard-operations.md)
 
 - [Epic一覧](epics/README.md)
-- [Phase -1 Epic](epics/phase-minus-one.md)
+- [旧技術プロトタイプの履歴](epics/phase-minus-one.md)
 - [Task一覧](task-index.md)
 - [操作とキーボード割当](controls.md)
 
 ## 将来構想
 
 - [技術方針](planning/technical-direction.md)
-- [開発段階](planning/development-stages.md)
+- [旧フェーズ案の扱い](planning/development-stages.md)
 
 ## 長期設計課題
 
-Epicとは独立した、複数Phaseにまたがる設計上の未解決問題。方針が固まるたびに更新する。
+Epicとは独立した、複数機能にまたがる設計上の未解決問題。方針が固まるたびに更新する。
 
 - [需要の設計](planning/demand-design.md) — リアリティと計算量のトレードオフ
 - [ダイヤの設計](planning/timetable-design.md) — 詳細さと操作の楽さのトレードオフ
@@ -71,7 +73,7 @@ Epicとは独立した、複数Phaseにまたがる設計上の未解決問題�
 
 ## 文書領域
 
-- `epics/` — 開発フェーズの目的、範囲、受入条件
+- `epics/` — 実装対象・機能群の目的、範囲、受入条件
 - `tasks/` — Epicを実現する作業単位と検証結果
 - `designs/` — 実装方法と設計判断
 - `research/` — 調査で確認した事実と出典
