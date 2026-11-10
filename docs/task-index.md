@@ -103,7 +103,9 @@ updated: 2026-11-08
 | `cancelled` | [路線・運行系統・運行経路・個別列車運行を分離して統合する](tasks/2026-08-13_structure-lines-services-routes-and-train-runs.md) | [路線・系統・経路・運行・運用を再構築する](tasks/2026-08-16_structure-lines-service-systems-and-operations.md) |
 | `cancelled` | [最初の操作可能な鉄道プロトタイプ](tasks/2026-08-08_first-interactive-prototype.md) | [自由マップ線路敷設プロトタイプ](tasks/2026-08-08_free-map-track-building.md) |
 
-## 今後の候補
+## 今後の候補（旧Phase -1からの保留事項）
+
+以下は過去の検討項目であり、現在の操車場Epicで着手することが決まった作業ではない。
 
 - Phase -1の技術選定と開発環境構築
 - 座標系と2D描画方式の比較

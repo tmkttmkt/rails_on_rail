@@ -26,7 +26,7 @@ status: ready
 owners:
   - <担当者>
 relations: []
-epic: epic-phase-<n> # 該当する場合。横断Taskでは省略可
+epic: epic-yard-operations # 現行Epicに属する作業例。横断Taskでは省略可
 ---
 
 # Task: タイトル
@@ -59,7 +59,7 @@ epic: epic-phase-<n> # 該当する場合。横断Taskでは省略可
 ## 規則
 
 - `id`はリポジトリ内で一意かつ変更しにくい名前にする。
-- 対応するPhaseが明確な場合、`epic`にPhase Epic IDを指定する。横断Taskでは省略し、本文に関連Phaseを記載してよい。
+- 対応するEpicが明確な場合、`epic`にそのEpic IDを指定する。旧Phase番号だけで現行Epicを推定しない。横断Taskでは省略し、本文に関連文書を記載してよい。
 - `status`は`ready`、`in-progress`、`review`、`done`、`cancelled`のいずれかとする。
 - 完了条件は実装手段ではなく、確認可能な結果として書く。
 - 完了後は原則として本文を書き換えない。訂正が必要なら後続Taskから参照する。
