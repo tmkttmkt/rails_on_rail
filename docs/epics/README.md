@@ -4,26 +4,18 @@ md_class: status
 
 # Epic一覧
 
-Rails on Railでは、開発段階の各PhaseをEpicとして扱う。Epicはその段階の目的、責任範囲、対象外、完了条件、受入状態を保持する。
+Epicは必要に応じて設ける機能群や実装目標の単位であり、フェーズを意味しない。現在の開発順序は[実装対象の順序](../planning/implementation-targets.md)を正本とする。
 
 | Epic | 状態 | 概要 |
 |---|---|---|
-| [操車場実働化](yard-operations.md) | active | ベカソヴォの入換・仕分・出発 |
-| [Phase -1](phase-minus-one.md) | review | 旧技術プロトタイプ。受入未確認、新規開発は操車場Epicへ移行 |
-| Phase 0 | planned | 鉄道が動く |
-| Phase 1 | planned | 鉄道経営の核 |
-| Phase 2 | planned | 運行 |
-| Phase 3 | planned | 鉄道工学 |
-| Phase 4 | planned | 鉄道会社 |
-| Phase 5 | planned | 社会と制度 |
-| Phase 6 | planned | 鉄道史 |
+| [操車場実働化](yard-operations.md) | planned | 東上線MVPの次の実装対象。先行試作あり |
+| [旧技術プロトタイプ](phase-minus-one.md) | review（履歴） | 旧構想の受入未確認事項を残す。新規作業の所属先ではない |
 
-将来Phaseの概要は[開発段階](../planning/development-stages.md)を構想資料とし、着手準備を始める時点で個別Epic文書を作って正本とする。
+東上線MVPの再現区間・受入条件は未確定であり、Epicの追加をMVP着手の必須条件とはしない。
 
 ## 規則
 
-- ゲーム機能の作業成果物は、原則として関係するEpicへ所属する。軽微な保守や横断的な開発基盤作業は例外としてよい。
-- Epicの状態は`planned`、`active`、`review`、`done`、`cancelled`のいずれかとする。
-- 原則として同時に`active`にするEpicは1つとする。
-- Epic完了には、配下TaskだけでなくEpic自身の完了条件と受入確認が必要である。
-- Epicを完了した後は履歴として凍結し、訂正は後続EpicまたはTaskから参照する。
+- Epicは必要なときだけ作成する。すべてのTaskをEpicへ所属させる必要はない。
+- 状態は`planned`、`active`、`review`、`done`、`cancelled`を使う。
+- Epicの完了には受入条件と確認が必要である。
+- 完了済みの記録は履歴として扱う。
