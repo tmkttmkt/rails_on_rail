@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { executeCommand, type MapCommand } from "../src/simulation/commands";
+import { stationComplexBounds } from "../src/simulation/stationAreas";
+import { COMPLEX_EXPAND_PX, collapsedStationComplexes } from "../src/ui/renderer";
 import { createInitialState, type MapState } from "../src/simulation/model";
 import { parseMapState, serializeMapState } from "../src/simulation/persistence";
 const run=(s:MapState,c:MapCommand)=>executeCommand(s,c).state;
@@ -43,5 +45,55 @@ describe("構内グループと用途領域",()=>{
     expect(s.stations).toHaveLength(0);expect(s.stationAreas[0].stationId).toBeUndefined();
     s=run(s,{type:"stationComplex.create",name:"分離した車両基地"});s=run(s,{type:"stationArea.move",areaId:id,complexId:s.stationComplexes[1].id});
     expect(s.stationAreas[0].complexId).toBe(s.stationComplexes[1].id);expect(s.tracks).toHaveLength(1);expect(parseMapState(serializeMapState(s))).toEqual(s);
+  });
+
+  it("グループごとの画面上の広がりで、折りたたみと駅部品への展開を切り替える",()=>{
+    // 600 mの線群を一つのグループへ所属させた状態を使う。
+    const s=area();const group=s.stationComplexes[0].id;
+    const bounds=stationComplexBounds(s,group)!;
+    expect(bounds.spanM).toBeCloseTo(600,1);expect(bounds.center.x).toBeCloseTo(300,1);
+    const at=(zoom:number)=>collapsedStationComplexes(s,{x:0,y:0,zoom,rotation:0});
+    // 閾値px未満の倍率では折りたたみ、超えたら展開する。
+    expect([...at(COMPLEX_EXPAND_PX/600*0.9).keys()]).toEqual([group]);
+    expect([...at(COMPLEX_EXPAND_PX/600*1.1).keys()]).toEqual([]);
+    expect(stationComplexBounds(s,"missing")).toBeNull();
+  });
+
+  it("広い構内と小さな側線群を同じ倍率で切り替えない",()=>{
+    let s=area();// 既存は600 m。60 mの小さな側線群をもう一つ作る。
+    s=run(s,{type:"track.create",kind:"side",geometry:"straight",points:[{x:0,y:5000},{x:60,y:5000}]});
+    s=run(s,{type:"stationComplex.create",name:"小側線群"});
+    const small=s.stationComplexes[1].id;
+    s=run(s,{type:"stationArea.create",area:{complexId:small,name:"側線",role:"stabling",basis:"layout",ranges:[{trackId:"track-2",startM:0,endM:60}]}});
+    // 大きい構内が展開する倍率でも、小さい側線群はまだ折りたたみのまま。
+    const collapsed=collapsedStationComplexes(s,{x:0,y:0,zoom:COMPLEX_EXPAND_PX/600*1.1,rotation:0});
+    expect([...collapsed.keys()]).toEqual([small]);
+  });
+
+  it("領域に属する停車場の種別変更を拒否し、属さない停車場では許可する",()=>{
+    const s=area();const linked=s.stationAreas[0].stationId!;
+    // 領域が種別と用途を決めている停車場は、停車場側から変えられない。
+    expect(()=>run(s,{type:"station.setKind",stationId:linked,kind:"depot"})).toThrow("構内領域");
+    // 領域に属さない停車場は施設タブから種別を変えられる。
+    let t=run(s,{type:"track.create",kind:"side",geometry:"straight",points:[{x:0,y:900},{x:400,y:900}]});
+    t=run(t,{type:"station.createRange",name:"単独の停車場",kind:"yard",trackId:"track-2",startPosition:{x:50,y:900},endPosition:{x:350,y:900}});
+    const alone=t.stations.find((st)=>st.name==="単独の停車場")!.id;
+    t=run(t,{type:"station.setKind",stationId:alone,kind:"depot"});
+    expect(t.stations.find((st)=>st.id===alone)!.kind).toBe("depot");
+  });
+
+  it("領域を削除すると区分だけが解け、停車場と線路は残る",()=>{
+    const s=area();const tracks=JSON.stringify(s.tracks);
+    expect(s.stations).toHaveLength(1);
+    const linked=s.stationAreas[0].stationId!;
+    const t=run(s,{type:"stationArea.delete",areaId:s.stationAreas[0].id});
+    expect(t.stationAreas).toHaveLength(0);
+    // 停車場と線路は保持する。区分の解除で配線や停車範囲を壊さない。
+    expect(t.stations.map((st)=>st.id)).toEqual([linked]);
+    expect(JSON.stringify(t.tracks)).toBe(tracks);
+    // 領域から外れたので、停車場側から種別を変えられるようになる。
+    expect(run(t,{type:"station.setKind",stationId:linked,kind:"depot"}).stations[0].kind).toBe("depot");
+    // 領域が無くなった親は削除できる。
+    expect(run(t,{type:"stationComplex.delete",complexId:t.stationComplexes[0].id}).stationComplexes).toHaveLength(0);
   });
 });

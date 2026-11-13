@@ -132,6 +132,14 @@ export function stationAreaPoints(state: MapState, area: StationArea): Point[] {
     result.push(yardPoint(state,r.trackId,r.endM)); return result;
   });
 }
+// グループの外接矩形。表示倍率を持たないので、描画と当たり判定が同じ広がりを使える。
+export function stationComplexBounds(state: MapState, complexId: string): { center: Point; spanM: number } | null {
+  const points = state.stationAreas.filter((a) => a.complexId === complexId).flatMap((a) => stationAreaPoints(state, a));
+  if (!points.length) return null;
+  const xs = points.map((p) => p.x), ys = points.map((p) => p.y);
+  const minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+  return { center: { x: (minX + maxX) / 2, y: (minY + maxY) / 2 }, spanM: Math.max(maxX - minX, maxY - minY) };
+}
 export function bufferedHull(points: Point[], padding: number): Point[] {
   const expanded = points.flatMap((p) => [{x:p.x-padding,y:p.y-padding},{x:p.x+padding,y:p.y-padding},{x:p.x+padding,y:p.y+padding},{x:p.x-padding,y:p.y+padding}]).sort((a,b) => a.x-b.x || a.y-b.y);
   if (expanded.length < 3) return expanded;

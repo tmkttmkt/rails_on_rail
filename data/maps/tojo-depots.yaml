@@ -1,6 +1,9 @@
 formatVersion: 1
-source: saves/osm-tobu-tojo.json
-sourceSha256: b2e9560dbe77a632e6a15d4aac70c8319aa53b129da6c234bd843fa8c51f1b2c
+source: saves/osm-tobu-tojo-measured.json
+sourceSha256: cc7e392dcea90c7910247b5a372bdd737a6644db377d8c2bffec12ad078ea879
+# 旅客ホーム長を合成180 mからOSMホーム端実測へ戻した派生スナップショット。
+# 生成: npx vite-node scripts/restore-platform-edge-ranges.ts saves/osm-tobu-tojo.json saves/osm-tojo-import-regression.json saves/osm-tobu-tojo-measured.json
+# 線路・分岐・転てつ器と駅の線路集合は元スナップショットと同一。長さと端点だけが実測である。
 output: saves/osm-tobu-tojo-depots.json
 # 既存OSM取込スナップショット専用。現地線路番号や最新配線の断定ではない。
 anchor: { stationName: 森林公園, x: -7735.107641845061, y: -13529.923153918407 }

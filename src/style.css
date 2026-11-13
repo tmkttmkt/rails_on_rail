@@ -60,6 +60,16 @@ main { min-height: 0; overflow: hidden; display: flex; }
 .divider { height: 1px; margin: 8px 0; background: #969c9f; }
 .tools button.primary,.tools button.secondary,.tools button.ghost { justify-content: flex-start; }.tools button.primary { border-color: #49677d; background: #c8d9e5; }
 .metrics { display: flex; gap: 8px; margin: 2px 0 6px; }.metrics > div { display: flex; flex-direction: column; align-items: center; min-width: 40px; padding: 4px; border: 1px solid #91979a; background: #eef0f0; }.metrics strong { font: 13px Consolas, monospace; color: #244f70; }.metrics span { margin-top: 1px; color: #5d6367; font-size: 8px; }.selection { padding: 6px; border: 1px solid #90969a; background: #f0f1f1; }.selection strong,.selection span { display: block; }.selection strong { font-size: 11px; }.selection span { margin-top: 4px; color: #555b5f; font-size: 10px; }
+/* 施設タブの詳細表示。停車地点の一覧と、管理上の編集欄。 */
+.selection small { display: block; margin-top: 4px; color: #6b7276; font-size: 9px; line-height: 1.5; }
+.detail-table { width: 100%; margin-top: 5px; border-collapse: collapse; font-size: 10px; }
+.detail-table th, .detail-table td { padding: 2px 4px; border-bottom: 1px solid #c9ced1; text-align: left; }
+.detail-table th { color: #5d6367; font-size: 9px; font-weight: normal; }
+.detail-table td:nth-child(2) { font-family: Consolas, monospace; text-align: right; }
+.station-management { margin-top: 8px; }
+.station-management label { display: block; margin: 4px 0; }
+.station-management select { width: 100%; }
+.station-management small { display: block; margin-top: 3px; color: #6b7276; font-size: 9px; line-height: 1.5; }
 .inspector button { width: 100%; margin-top: 6px; padding: 5px; border: 1px solid #898f93; background: #e0e2e3; cursor: pointer; }.inspector button:disabled { opacity: .45; }.inspector button.danger:not(:disabled) { color: #7f211c; }.inspector .divider:first-of-type { display: none; }
 .group-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }.group-actions button { margin: 0; font-size: 10px; }
 .station-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-top: 6px; }.station-actions button { margin: 0; font-size: 10px; }
@@ -150,6 +160,9 @@ footer { display: flex; align-items: center; justify-content: space-between; pad
 
 .map-bookmarks { position: absolute; top: 12px; left: 12px; z-index: 5; display: flex; gap: 12px; align-items: center; background: #f5f8fb; border: 1px solid #667d8e; padding: 10px 14px; box-shadow: 0 2px 8px #0002; }
 .map-bookmarks select { min-width: 220px; }
+.map-bookmarks.review-helper { max-width: calc(100% - 24px); flex-wrap: wrap; gap: 8px; border: 1px dashed #9a7835; border-left: 3px solid #9a7835; background: #fff8e8; color: #4c3d24; font-size: 12px; }
+.review-helper-badge { padding: 3px 6px; border: 1px solid #b79857; background: #efe0bb; color: #57421c; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.review-helper select { max-width: 100%; background: #fffdf6; }
 
 .facility-panel { position:absolute; left:12px; bottom:32px; width:min(330px,42vw); max-height:65%; overflow:auto; background:#f8fafbeF; border:1px solid #83949e; border-radius:4px; padding:12px; box-shadow:0 2px 7px #0002; z-index:4; font-size:13px; }
 .facility-panel[hidden] { display:none; }

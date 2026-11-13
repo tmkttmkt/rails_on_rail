@@ -22,7 +22,7 @@ export function findPhysicalRouteBetweenStops(
   fromStop: { stationId: string; trackId?: string; distanceM?: number },
   toStop: { stationId: string; trackId?: string; distanceM?: number }
 ): { tracks: RouteTraversalTrack[]; junctionIds: string[]; totalDistanceM: number } {
-  const traversals = findStationRoute(state, fromStop.stationId, toStop.stationId);
+  const traversals = findStationRoute(state, fromStop.stationId, toStop.stationId, { from: fromStop, to: toStop });
   const tracks: RouteTraversalTrack[] = traversals.map((t) => {
     const dir: "forward" | "reversed" = t.fromDistanceM <= t.toDistanceM ? "forward" : "reversed";
     const startM = Math.min(t.fromDistanceM, t.toDistanceM);
@@ -68,18 +68,17 @@ export function buildOperationRoute(
     if (!station) {
       throw new Error(`駅が存在しません: ${stopInput.stationId}`);
     }
-    const track = state.tracks.find((t) => t.id === stopInput.trackId) || state.tracks.find((t) => t.id === station.stopPoints[0]?.trackId);
+    const track = state.tracks.find((t) => t.id === stopInput.trackId);
     if (!track) {
       throw new Error(`停車線路が存在しません: ${stopInput.trackId}`);
     }
 
     const stopPointIdx = stopInput.stopPointIndex ?? 0;
     const stopPoint =
-      (stopInput.stopPointId ? station.stopPoints.find((sp) => sp.id === stopInput.stopPointId) : undefined) ||
-      station.stopPoints.find((sp) => sp.trackId === track.id) ||
-      station.stopPoints[stopPointIdx] ||
-      station.stopPoints[0];
-    if (!stopPoint) {
+      stopInput.stopPointId ? station.stopPoints.find((sp) => sp.id === stopInput.stopPointId && sp.trackId === track.id) :
+      stopInput.stopPointIndex !== undefined ? station.stopPoints[stopPointIdx] :
+      station.stopPoints.find((sp) => sp.trackId === track.id);
+    if (!stopPoint || stopPoint.trackId !== track.id) {
       throw new Error(`駅 ${station.name} に線路 ${track.id} の停車地点がありません`);
     }
 

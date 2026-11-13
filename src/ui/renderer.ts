@@ -1,4 +1,4 @@
-import { AREA_COLORS, bufferedHull, stationAreaPoints } from "../simulation/stationAreas";
+import { AREA_COLORS, bufferedHull, stationAreaPoints, stationComplexBounds } from "../simulation/stationAreas";
 import { yardFormation, yardVehicle, yardVehicleIds } from "../simulation/yardFleet";
 import { getFormationOperationalStatus, worldToScreen, type Camera, type MapState, type Point, type Viewport } from "../simulation/model";
 import { closestPointOnSegment, createParallelLines, sampleTrack, analyzeTrackLines } from "../simulation/geometry";
@@ -70,7 +70,14 @@ export function drawMap(
 
   drawGrid(context, camera, viewport);
 
-  if (renderState.showStationAreas) drawStationAreaTerritories(context,state,camera,viewport,renderState);
+  // グループの折りたたみは全モード共通の表示判断。用途領域の色面・番号は施設タブだけに保つ。
+  const collapsedComplexes = collapsedStationComplexes(state, camera);
+  const collapsedStations = collapsedStationIds(state, collapsedComplexes);
+  // 色面・番号を実際に描いている領域の停車場だけ、駅部品の代わりに領域表示へ置き換える。
+  // 施設タブで他グループを選んでいる間も、そのグループの駅部品は消さない。
+  const areaStations = new Set(visibleAreas(state, renderState, collapsedComplexes).map((a) => a.stationId).filter((id): id is string => !!id));
+
+  if (renderState.showStationAreas) drawStationAreaTerritories(context,state,camera,viewport,renderState,collapsedComplexes);
 
   for (const track of state.tracks) {
     const gaugeM = trackCatalog.getGauge(track.specification.gaugeId).gaugeMm / 1000;
@@ -122,10 +129,13 @@ export function drawMap(
         }
       }
     }
-    if (renderState.showStationAreas && state.stationAreas.some((a) => a.stationId === station.id)) continue;
+    // 折りたたみ中のグループは駅部品の代わりにグループを描く。拡大して展開したら駅部品へ戻す。
+    if (collapsedStations.has(station.id)) continue;
+    if (renderState.showStationAreas && areaStations.has(station.id)) continue;
     drawStation(context, station.position, station.unresolvedReason ? `${station.name}（ホーム未確定）` : station.name, camera, viewport, selected);
   }
-  if (renderState.showStationAreas) drawStationAreaNumbers(context,state,camera,viewport,renderState);
+  drawStationComplexSymbols(context,state,camera,viewport,renderState,collapsedComplexes);
+  if (renderState.showStationAreas) drawStationAreaNumbers(context,state,camera,viewport,renderState,collapsedComplexes);
   if (state.yard) {
     for (const role of state.yard.roles) drawStation(context, yardPoint(state, role.trackId, role.distanceM), role.name, camera, viewport, false);
     for (const cut of state.yard.cuts) {
@@ -514,13 +524,63 @@ function samplePolylineByDistance(points: Point[], spacingM: number): { point: P
   return samples;
 }
 
-function visibleAreas(state: MapState,view:RenderState) { return state.stationAreas.filter((a)=>!view.selectedStationComplexId || a.complexId===view.selectedStationComplexId); }
-function drawStationAreaTerritories(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState):void {
-  const areas=visibleAreas(state,view);
+// グループを一つの部品として描くか、所属する駅部品へ展開するかの境目。画面上の広がりで
+// 判定するので、広い構内と小さな側線群が同じ倍率で切り替わらない。
+export const COMPLEX_EXPAND_PX = 140;
+
+export function collapsedStationComplexes(state: MapState, camera: Camera): Map<string, { center: Point; spanM: number }> {
+  const collapsed = new Map<string, { center: Point; spanM: number }>();
+  for (const group of state.stationComplexes) {
+    const bounds = stationComplexBounds(state, group.id);
+    if (bounds && bounds.spanM * camera.zoom < COMPLEX_EXPAND_PX) collapsed.set(group.id, bounds);
+  }
+  return collapsed;
+}
+
+// 折りたたみ中のグループへ所属する停車場。駅部品の代わりにグループを描く対象。
+function collapsedStationIds(state: MapState, collapsed: Map<string, unknown>): Set<string> {
+  return new Set(state.stationAreas.filter((a) => a.stationId && collapsed.has(a.complexId)).map((a) => a.stationId!));
+}
+
+function drawStationComplexSymbols(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState,collapsed:Map<string,{center:Point;spanM:number}>):void {
+  for (const group of state.stationComplexes) {
+    const bounds = collapsed.get(group.id);
+    if (!bounds) continue;
+    const areas = state.stationAreas.filter((a) => a.complexId === group.id);
+    const screen = worldToScreen(bounds.center, camera, viewport);
+    const selected = group.id === view.selectedStationComplexId;
+    // 単独の停車場より一段大きい二重枠で、まとまりであることを示す。
+    context.beginPath();
+    context.rect(screen.x - 7, screen.y - 7, 14, 14);
+    context.fillStyle = selected ? "#a8322a" : "#f4f0df";
+    context.fill();
+    context.strokeStyle = selected ? "#7e1f1a" : "#aa7929";
+    context.lineWidth = selected ? 2.5 : 2;
+    context.stroke();
+    context.beginPath();
+    context.rect(screen.x - 3.5, screen.y - 3.5, 7, 7);
+    context.strokeStyle = selected ? "#f4f0df" : "#aa7929";
+    context.lineWidth = 1;
+    context.stroke();
+    const label = `${group.name}（${areas.length}領域）`;
+    context.font = "bold 11px Tahoma, 'Yu Gothic UI', sans-serif";
+    context.textBaseline = "bottom";
+    context.lineWidth = 3;
+    context.strokeStyle = "rgba(244,245,245,.95)";
+    context.strokeText(label, screen.x + 10, screen.y - 4);
+    context.fillStyle = selected ? "#8a251f" : "#6d4f17";
+    context.fillText(label, screen.x + 10, screen.y - 4);
+  }
+}
+
+// 折りたたみ中のグループは点ほどの大きさしかないため、色面と番号を描かない。
+function visibleAreas(state: MapState,view:RenderState,collapsed:Map<string,unknown>) { return state.stationAreas.filter((a)=>(!view.selectedStationComplexId || a.complexId===view.selectedStationComplexId) && !collapsed.has(a.complexId)); }
+function drawStationAreaTerritories(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState,collapsed:Map<string,unknown>):void {
+  const areas=visibleAreas(state,view,collapsed);
   const polygon=(points:Point[],fill:string,stroke:string,lineWidth:number,dash:number[]=[])=>{
     if(points.length<3)return; const screen=points.map((p)=>worldToScreen(p,camera,viewport));context.beginPath();screen.forEach((p,i)=>i?context.lineTo(p.x,p.y):context.moveTo(p.x,p.y));context.closePath();context.fillStyle=fill;context.fill();context.strokeStyle=stroke;context.lineWidth=lineWidth;context.setLineDash(dash);context.stroke();context.setLineDash([]);
   };
-  for(const group of state.stationComplexes.filter((g)=>!view.selectedStationComplexId || g.id===view.selectedStationComplexId)) {
+  for(const group of state.stationComplexes.filter((g)=>(!view.selectedStationComplexId || g.id===view.selectedStationComplexId) && !collapsed.has(g.id))) {
     const points=areas.filter((a)=>a.complexId===group.id).flatMap((a)=>stationAreaPoints(state,a));
     polygon(bufferedHull(points,9),"#c5962910","#aa7929",1.8,[8,5]);
   }
@@ -531,9 +591,11 @@ function drawStationAreaTerritories(context:CanvasRenderingContext2D,state:MapSt
     } else polygon(bufferedHull(stationAreaPoints(state,area),3.5),color+(selected?"55":"28"),color,selected?2.5:1.2);
   }
 }
-function drawStationAreaNumbers(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState):void {
-  const areas=visibleAreas(state,view);
-  areas.forEach((area,index)=>{
+function drawStationAreaNumbers(context:CanvasRenderingContext2D,state:MapState,camera:Camera,viewport:Viewport,view:RenderState,collapsed:Map<string,unknown>):void {
+  const areas=visibleAreas(state,view,collapsed);
+  areas.forEach((area)=>{
+    // 番号は所属グループ内の順。複数グループが同時に見えても一覧の番号と対応する。
+    const index=state.stationAreas.filter((a)=>a.complexId===area.complexId).findIndex((a)=>a.id===area.id);
     const points=stationAreaPoints(state,area);if(!points.length)return;
     const center={x:points.reduce((n,p)=>n+p.x,0)/points.length,y:points.reduce((n,p)=>n+p.y,0)/points.length};
     const p=worldToScreen(center,camera,viewport);context.beginPath();context.arc(p.x,p.y,9,0,Math.PI*2);context.fillStyle=AREA_COLORS[area.role];context.fill();context.strokeStyle="white";context.lineWidth=2;context.stroke();context.font="bold 11px sans-serif";context.textAlign="center";context.textBaseline="middle";context.fillStyle="white";context.fillText(String(index+1),p.x,p.y);

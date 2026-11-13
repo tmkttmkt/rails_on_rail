@@ -14,6 +14,10 @@ md_class: operation
 
 - [実装対象の順序：東上線MVP → ベガソボロ操車場](planning/implementation-targets.md)
 
+- [池袋〜小川町：土休日一日再現の実装順序](planning/tojo-holiday-implementation.md)
+
+- [東上線の近似再現・短編成試験](features/tojo-playable-trial.md)
+
 - [構内・車両基地グループと用途領域](features/station-complex-areas.md)
 
 - [側線施設の用途指定と保守車の往復試験](features/siding-facilities.md)
@@ -44,6 +48,8 @@ Epicとは独立した、複数機能にまたがる設計上の未解決問題�
 
 ## 調査（Research）
 
+- [池袋〜小川町の土休日一日ダイヤと設備](research/2026-11-10_tojo-holiday-timetable-and-infrastructure.md) — 列車候補一覧、時刻の欠落、上下経路・ホーム長・留置範囲
+
 - [鉄道規格カテゴリ](research/railway-spec-categories.md) — 軌間・電化・保安装置などの分類と代表値
 
 これらは中長期の構想を示す資料であり、現在作業の直接的な指示はEpicとTaskを正本とする。
@@ -52,6 +58,8 @@ Epicとは独立した、複数機能にまたがる設計上の未解決問題�
 
 - [Rails on RailのAOTP運用](aotp.md)
 - [開発ワークフロー](workflow.md)
+- [検証用UIの表示規約](review-ui.md)
+- [検証用UIの表示規約](review-ui.md)
 - [Taskの作成方法](tasks/README.md)
 - [AI向け 外部操作ガイド](ai-operations.md)
 

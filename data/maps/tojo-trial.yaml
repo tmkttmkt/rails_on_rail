@@ -1,0 +1,40 @@
+formatVersion: 1
+name: 東上線｜近似再現の線路・短編成試験
+input: saves/osm-tobu-tojo-areas.json
+output: saves/osm-tojo-playable-trial.json
+formationTemplateId: test-bidirectional-diesel-2car
+description: 実番線・実車運用は仮設定。時刻表は含まない。短編成で線路・駅を先に検証する。
+stations:
+  - 池袋
+  - 北池袋
+  - 下板橋
+  - 大山
+  - 中板橋
+  - ときわ台
+  - 上板橋
+  - 東武練馬
+  - 下赤塚
+  - 成増
+  - 和光市
+  - 朝霞
+  - 朝霞台
+  - 志木
+  - 柳瀬川
+  - みずほ台
+  - 鶴瀬
+  - ふじみ野
+  - 上福岡
+  - 新河岸
+  - 川越
+  - 川越市
+  - 霞ヶ関
+  - 鶴ヶ島
+  - 若葉
+  - 坂戸
+  - 北坂戸
+  - 高坂
+  - 東松山
+  - 森林公園
+  - つきのわ
+  - 武蔵嵐山
+  - 小川町

@@ -36,3 +36,23 @@ export function partitionStationStopPoints(points: StationStopPoint[], options: 
   points.forEach((point, i) => { const key = root(i); if (!groups.has(key)) groups.set(key, []); groups.get(key)!.push(point); });
   return [...groups.values()];
 }
+
+/**
+ * 並行判定に加えて、同じ線路の停車範囲を必ず同じ線群へ入れる。
+ * 分岐支障で分断された同一線路の区間は長手方向に重ならないため、範囲単位の判定だけでは
+ * 別の線群へ落ちて線群が無意味に分かれる。
+ */
+export function partitionStationStopPointsByTrack(points: StationStopPoint[], options: StationPartitionOptions): StationStopPoint[][] {
+  let partitions = partitionStationStopPoints(points, options);
+  for (let merged = true; merged;) {
+    merged = false;
+    for (let i = 0; i < partitions.length && !merged; i += 1) {
+      const tracks = new Set(partitions[i].map((p) => p.trackId));
+      const other = partitions.findIndex((candidate, index) => index !== i && candidate.some((p) => tracks.has(p.trackId)));
+      if (other < 0) continue;
+      partitions = partitions.filter((_, index) => index !== i && index !== other).concat([[...partitions[i], ...partitions[other]]]);
+      merged = true;
+    }
+  }
+  return partitions;
+}

@@ -1,80 +1,40 @@
-import { analyzeLine, getTrackPortTangent, isTangentContinuous, sampleTrack } from "./geometry";
+import { sampleTrack } from "./geometry";
+import { findYardPath } from "./directedPath";
 import type { MapState, OperatingTrain, Point, Route, RouteStop, RouteTraversal, RouteTraversalLeg, RouteTraversalTrack } from "./model";
 
-interface Edge { to: string; cost: number; traversal?: RouteTraversal }
-
-export function findStationRoute(state: MapState, fromStationId: string, toStationId: string): RouteTraversal[] {
+export function findStationRoute(state: MapState, fromStationId: string, toStationId: string,
+  endpoints?: { from?: { trackId?: string; distanceM?: number }; to?: { trackId?: string; distanceM?: number } }
+): RouteTraversal[] {
   const from = requireStation(state, fromStationId);
   const to = requireStation(state, toStationId);
-  const graph = new Map<string, Edge[]>();
-  const distancesByTrack = new Map<string, number[]>();
-  const addDistance = (trackId: string, distance: number) => {
-    const values = distancesByTrack.get(trackId) ?? [];
-    if (!values.some((value) => Math.abs(value - distance) < 0.001)) values.push(distance);
-    distancesByTrack.set(trackId, values);
+  const resolve = (station: typeof from, input?: { trackId?: string; distanceM?: number }) => {
+    if (input?.distanceM !== undefined && !input.trackId) throw new Error("停車距離には線路指定が必要です");
+    const stops = station.stopPoints.filter((stop) => !input?.trackId || stop.trackId === input.trackId);
+    if (!stops.length) throw new Error(`駅「${station.name}」に指定線路の停車地点がありません`);
+    return stops.map((stop) => {
+      const distanceM = input?.distanceM ?? stopMidpoint(stop);
+      if (!Number.isFinite(distanceM) || distanceM < stop.startDistanceM || distanceM > stop.endDistanceM) {
+        throw new Error(`駅「${station.name}」の停車距離が範囲外です`);
+      }
+      return { trackId: stop.trackId, distanceM };
+    });
   };
-
-  for (const track of state.tracks) {
-    const length = analyzeLine(sampleTrack(track)).lengthM;
-    addDistance(track.id, 0);
-    addDistance(track.id, length);
-  }
-  for (const junction of state.junctions) for (const port of junction.ports) addDistance(port.trackId, port.distanceM);
-  for (const station of state.stations) for (const stop of station.stopPoints) addDistance(stop.trackId, stopMidpoint(stop));
-
-  for (const [trackId, values] of distancesByTrack) {
-    values.sort((a, b) => a - b);
-    for (let index = 1; index < values.length; index += 1) {
-      const first = values[index - 1];
-      const second = values[index];
-      addEdge(graph, nodeKey(trackId, first), { to: nodeKey(trackId, second), cost: second - first, traversal: { trackId, fromDistanceM: first, toDistanceM: second } });
-      addEdge(graph, nodeKey(trackId, second), { to: nodeKey(trackId, first), cost: second - first, traversal: { trackId, fromDistanceM: second, toDistanceM: first } });
+  const fromPoints = resolve(from, endpoints?.from);
+  const toPoints = resolve(to, endpoints?.to);
+  let best: RouteTraversal[] | undefined;
+  let bestDistanceM = Infinity;
+  for (const start of fromPoints) for (const target of toPoints) for (const direction of [1, -1]) {
+    let spans;
+    try { spans = findYardPath(state, { ...start, direction }, target); }
+    catch { continue; }
+    const distanceM = spans.reduce((sum, span) => sum + Math.abs(span.toM - span.fromM), 0);
+    if (distanceM < bestDistanceM) {
+      bestDistanceM = distanceM;
+      best = spans.map((span) => ({ trackId: span.trackId, fromDistanceM: span.fromM, toDistanceM: span.toM }));
     }
   }
-  for (const junction of state.junctions) {
-    for (const first of junction.ports) for (const second of junction.ports) {
-      if (first !== second) {
-        const track1 = state.tracks.find((t) => t.id === first.trackId);
-        const track2 = state.tracks.find((t) => t.id === second.trackId);
-        if (track1 && track2) {
-          const tangent1 = getTrackPortTangent(track1, first.location, first.distanceM);
-          const tangent2 = getTrackPortTangent(track2, second.location, second.distanceM);
-          if (isTangentContinuous(tangent1, tangent2)) {
-            addEdge(graph, nodeKey(first.trackId, first.distanceM), { to: nodeKey(second.trackId, second.distanceM), cost: 0 });
-          }
-        }
-      }
-    }
-  }
-
-  const starts = from.stopPoints.map((stop) => nodeKey(stop.trackId, stopMidpoint(stop)));
-  const targets = new Set(to.stopPoints.map((stop) => nodeKey(stop.trackId, stopMidpoint(stop))));
-  const distances = new Map(starts.map((key) => [key, 0]));
-  const previous = new Map<string, { key: string; edge: Edge }>();
-  const pending = new Set(starts);
-  let reached: string | null = null;
-  while (pending.size > 0) {
-    const current = [...pending].reduce((best, key) => (distances.get(key)! < distances.get(best)! ? key : best));
-    pending.delete(current);
-    if (targets.has(current)) { reached = current; break; }
-    for (const edge of graph.get(current) ?? []) {
-      const nextDistance = distances.get(current)! + edge.cost;
-      if (nextDistance < (distances.get(edge.to) ?? Infinity)) {
-        distances.set(edge.to, nextDistance);
-        previous.set(edge.to, { key: current, edge });
-        pending.add(edge.to);
-      }
-    }
-  }
-  if (!reached) throw new Error(`「${from.name}」から「${to.name}」へ到達できません`);
-  const traversals: RouteTraversal[] = [];
-  let cursor: string | undefined = reached;
-  while (cursor && previous.has(cursor)) {
-    const step: { key: string; edge: Edge } = previous.get(cursor)!;
-    if (step.edge.traversal) traversals.unshift(step.edge.traversal);
-    cursor = step.key;
-  }
-  return coalesceTraversals(traversals);
+  if (!best) throw new Error(`「${from.name}」から「${to.name}」へ到達できません（分岐の進行方向を確認してください）`);
+  return best;
 }
 
 export function createOperationRoute(state: MapState, name: string, stationIds: string[]): Route {
@@ -251,25 +211,4 @@ function requireRoute(state: MapState, id: string): Route {
 
 function stopMidpoint(stop: { startDistanceM: number; endDistanceM: number }) {
   return (stop.startDistanceM + stop.endDistanceM) / 2;
-}
-
-function nodeKey(trackId: string, distance: number) {
-  return `${trackId}@${distance.toFixed(6)}`;
-}
-
-function addEdge(graph: Map<string, Edge[]>, from: string, edge: Edge) {
-  graph.set(from, [...(graph.get(from) ?? []), edge]);
-}
-
-function coalesceTraversals(items: RouteTraversal[]): RouteTraversal[] {
-  const result: RouteTraversal[] = [];
-  for (const item of items) {
-    const previous = result.at(-1);
-    if (previous && previous.trackId === item.trackId && Math.abs(previous.toDistanceM - item.fromDistanceM) < 0.001) {
-      previous.toDistanceM = item.toDistanceM;
-    } else {
-      result.push({ ...item });
-    }
-  }
-  return result;
 }

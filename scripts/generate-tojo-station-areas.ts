@@ -4,14 +4,14 @@ import { parse } from "yaml";
 import { executeCommand } from "../src/simulation/commands";
 import { createSaveFile, parseSaveFile, serializeSaveFile } from "../src/simulation/persistence";
 import { getUsableStablingSpans } from "../src/simulation/stabling";
-import { partitionStationStopPoints } from "../src/simulation/stationPartition";
+import { partitionStationStopPointsByTrack } from "../src/simulation/stationPartition";
 import { projectStationOnTrack } from "../src/simulation/stationImportRange";
 import { trackLength, yardPoint } from "../src/simulation/yard";
 import type { StationAreaRange, StationAreaRole, Station } from "../src/simulation/model";
 interface Group { id: string; name: string; station: string; facilities: { name: string; role: StationAreaRole }[] }
 interface RawArea { id: string; name: string; role: StationAreaRole; tracks?: number[]; ranges?: { track: number; from: number; to?: number }[]; safeOnly?: boolean }
 const facilityDefinitions = parse(fs.readFileSync("data/maps/tojo-depots.yaml","utf8")) as { facilities: { name:string; tracks?:number[]; trackRange?:[number,number] }[] };
-const config = parse(fs.readFileSync("data/maps/tojo-station-areas.yaml", "utf8")) as { formatVersion: number; source: string; output: string; maximumTracksPerArea: number; complexes: Group[]; kawagoe: { id: string; name: string; station: string; replaceFacilities: string[]; mainlineMarginM: number; scopeTracks: number[]; areas: RawArea[] } };
+const config = parse(fs.readFileSync("data/maps/tojo-station-areas.yaml", "utf8")) as { formatVersion: number; source: string; output: string; complexes: Group[]; kawagoe: { station: string; groups: { id: string; name: string; areas: string[]; residual?: "north" | "south" }[]; replaceFacilities: string[]; mainlineMarginM: number; scopeTracks: number[]; areas: RawArea[] } };
 if (config.formatVersion !== 1 || config.source === config.output) throw new Error("領域マップ設定が不正");
 const source = fs.readFileSync(config.source,"utf8"); let state = parseSaveFile(source).state;
 if (state.stationAreas.length || state.stationComplexes.length || state.yard || state.vehiclePlacements.length || Object.keys(state.routes).length || state.operatingTrains.length) throw new Error("領域分割前・運転前の原マップを指定する");
@@ -30,7 +30,10 @@ const cut = (ranges: StationAreaRange[], occupied: StationAreaRange[]) => {
   return result;
 };
 const k = config.kawagoe, station = find(k.station);
-run({ type:"stationComplex.create",id:k.id,name:k.name });
+for (const group of k.groups) run({ type:"stationComplex.create",id:group.id,name:group.name });
+const kawagoeOwner = new Map(k.groups.flatMap((g) => g.areas.map((areaId) => [areaId, g.id] as const)));
+for (const definition of k.areas) if (!kawagoeOwner.has(definition.id)) throw new Error(`川越市の領域が未所属: ${definition.id}`);
+const kawagoeResidual = (side: "north" | "south") => { const group = k.groups.find((g) => g.residual === side); if (!group) throw new Error(`川越市の${side}側残余の所属グループがない`); return group.id; };
 for (const name of k.replaceFacilities) run({ type:"station.delete",stationId:find(name).id });
 const candidateScopes: StationAreaRange[] = k.scopeTracks.map((n) => ({ trackId:`track-${n}`,startM:0,endM:trackLength(state,`track-${n}`) }));
 for (const trackId of ["track-1","track-10"]) {
@@ -43,7 +46,7 @@ for (const definition of k.areas) {
   let ranges: StationAreaRange[] = [...(definition.tracks ?? []).map((n) => ({trackId:`track-${n}`,startM:0,endM:trackLength(state,`track-${n}`)})),...(definition.ranges ?? []).map((r) => ({ trackId:`track-${r.track}`,startM:r.from,endM:r.to ?? trackLength(state,`track-${r.track}`) }))];
   if (definition.safeOnly) ranges = ranges.flatMap((r) => getUsableStablingSpans(state,state.tracks.find((t) => t.id === r.trackId)!,r.startM,r.endM).filter((s) => s.endM-s.startM>=20).map((s) => ({trackId:r.trackId,...s})));
   // 旧工場側は現役用途・進入経路が未確定。領域と物理的な停車可能範囲を分けて保持する。
-  add(k.id,`area-kawagoe-${definition.id}`,definition.name,definition.role,ranges,undefined,"ゲーム上の仮区分。正式番線・現役用途・ホームからの入出庫経路は未確定。");
+  add(kawagoeOwner.get(definition.id)!,`area-kawagoe-${definition.id}`,definition.name,definition.role,ranges,undefined,"ゲーム上の仮区分。正式番線・現役用途・ホームからの入出庫経路は未確定。");
 }
 const residual = cut(scopes,state.stationAreas.flatMap((a) => a.ranges));
 const north: StationAreaRange[] = [], south: StationAreaRange[] = [];
@@ -53,13 +56,13 @@ for (const range of residual) {
   const pieces = along > range.startM+0.01 && along < range.endM-0.01 ? [{...range,endM:along},{...range,startM:along}] : [range];
   for (const piece of pieces) (yardPoint(state,piece.trackId,(piece.startM+piece.endM)/2).y < station.position.y ? north:south).push(piece);
 }
-add(k.id,"area-kawagoe-north-throat","北側の分岐・接続区間（仮）","throat",north,undefined,"北側の残余区間。単一の入換経路として確認したものではなく、留置にも使用しない。");
-add(k.id,"area-kawagoe-south-throat","南側分岐・旧工場接続通路","transit",south,undefined,"接続通路。旧工場への有向進入経路は未確認。留置場所として登録しない。");
-const groupCoverage: {complexId:string;unassignedRanges:number}[] = [{complexId:k.id,unassignedRanges:0}];
+add(kawagoeResidual("north"),"area-kawagoe-north-throat","北側の分岐・接続区間（仮）","throat",north,undefined,"北側の残余区間。単一の入換経路として確認したものではなく、留置にも使用しない。");
+add(kawagoeResidual("south"),"area-kawagoe-south-throat","南側分岐・旧工場接続通路","transit",south,undefined,"接続通路。旧工場への有向進入経路は未確認。留置場所として登録しない。");
+const groupCoverage: {complexId:string;unassignedRanges:number;rangesOwnedByOtherGroup:number}[] = k.groups.map((g) => ({complexId:g.id,unassignedRanges:0,rangesOwnedByOtherGroup:0}));
 for (const group of config.complexes) {
   run({type:"stationComplex.create",id:group.id,name:group.name});
+  // 旅客ホームは独立した駅として扱い、車庫・検修・保守の構内グループへ入れない。
   const passengerStation = find(group.station);
-  add(group.id,`area-${group.id}-platform`,`${group.station}・旅客ホーム`,"platform",stationRanges(passengerStation),passengerStation.id);
   const scopeIds = new Set<string>();
   for (const [facilityIndex,member] of group.facilities.entries()) {
     const definition=facilityDefinitions.facilities.find((f)=>f.name===member.name);
@@ -67,13 +70,19 @@ for (const group of config.complexes) {
     const numbers=definition.tracks ?? Array.from({length:definition.trackRange![1]-definition.trackRange![0]+1},(_,i)=>definition.trackRange![0]+i);
     for(const n of numbers)if(state.tracks.some((t)=>t.id===`track-${n}` && t.kind==="side"))scopeIds.add(`track-${n}`);
     const original = structuredClone(find(member.name));
-    const partitions = partitionStationStopPoints(original.stopPoints,{maximumAngleDegrees:12,maximumLateralDistanceM:16,minimumOverlapRatio:0.55});
-    const groups = partitions.flatMap((points) => {
-      const sorted = [...points].sort((a,b) => (a.startPosition.x+a.endPosition.x)-(b.startPosition.x+b.endPosition.x));
-      const result: typeof points[] = [];
-      for (let i=0;i<sorted.length;i+=config.maximumTracksPerArea) result.push(sorted.slice(i,i+config.maximumTracksPerArea));
-      return result;
-    });
+    // 同じ線路の停車範囲は必ず同じ線群へ入れる。範囲単位の判定だけでは、分岐支障で
+    // 分断された同一線路の区間が別の線群へ落ちて線群が無意味に分かれる。
+    const partitions = partitionStationStopPointsByTrack(original.stopPoints,{maximumAngleDegrees:12,maximumLateralDistanceM:16,minimumOverlapRatio:0.55});
+    // 線群をさらに機械的な線路数で割らない。並行し長手方向が重なる線群がそのまま領域になる。
+    // 本数で切ると、同じ扇状の線群がx座標順の任意の位置で二つの領域へ分かれる。
+    const groups = partitions;
+    // 元の停車範囲を過不足なく、重複なく配分したことを確認する。
+    const distributed = groups.flat();
+    if (distributed.length !== original.stopPoints.length || new Set(distributed.map((p) => p.id)).size !== original.stopPoints.length) throw new Error(`線群の配分で停車範囲が重複または欠落: ${member.name}`);
+    for (const [, points] of groups.entries()) {
+      const tracks = new Set(points.map((p) => p.trackId));
+      if (groups.filter((other) => other !== points && other.some((p) => tracks.has(p.trackId))).length) throw new Error(`同じ線路が複数の線群へ分かれた: ${member.name}`);
+    }
     run({type:"station.delete",stationId:original.id});
     for (const [index,points] of groups.entries()) {
       const name = groups.length === 1 ? original.name : `${original.name}・第${index+1}線群`;
@@ -85,17 +94,22 @@ for (const group of config.complexes) {
   for(const junction of state.junctions.filter((j)=>j.ports.some((p)=>scopeIds.has(p.trackId))))for(const p of junction.ports){
     if(state.tracks.find((t)=>t.id===p.trackId)?.kind==="main")localScope.push({trackId:p.trackId,startM:Math.max(0,p.distanceM-45),endM:Math.min(trackLength(state,p.trackId),p.distanceM+45)});
   }
+  // 本線margin側にホームが掛かっても、分岐接続通路が旅客ホーム範囲を所有しないようにする。
   const merged:StationAreaRange[]=[];
-  for(const range of localScope.sort((a,b)=>a.trackId.localeCompare(b.trackId)||a.startM-b.startM)){const last=merged.at(-1);if(last?.trackId===range.trackId && range.startM<=last.endM+.001)last.endM=Math.max(last.endM,range.endM);else merged.push({...range});}
+  for(const range of cut(localScope,stationRanges(passengerStation)).sort((a,b)=>a.trackId.localeCompare(b.trackId)||a.startM-b.startM)){const last=merged.at(-1);if(last?.trackId===range.trackId && range.startM<=last.endM+.001)last.endM=Math.max(last.endM,range.endM);else merged.push({...range});}
   const remaining=cut(merged,state.stationAreas.flatMap((a)=>a.ranges));
-  if(remaining.length)add(group.id,`area-${group.id}-connections`,`${group.station}構内・分岐接続通路`,"transit",remaining,undefined,"元の施設対象線路と本線接続部の残余区間。停止範囲と分離し、留置用には扱わない。");
+  if(remaining.length)add(group.id,`area-${group.id}-connections`,`${group.name}・分岐接続通路`,"transit",remaining,undefined,"元の施設対象線路と本線接続部の残余区間。停止範囲と分離し、留置用には扱わない。");
   const missing=cut(merged,state.stationAreas.filter((a)=>a.complexId===group.id).flatMap((a)=>a.ranges));
   if(missing.length)throw new Error(`構内対象区間が未所属または他グループと競合: ${group.name}`);
-  groupCoverage.push({complexId:group.id,unassignedRanges:missing.length});
+  // 同じ駅を通常運行用と車庫・検修用のグループへ分けても、各グループが自分の対象区間を
+  // 過不足なく所有することを維持する。別グループ所有の発生を0として記録する。
+  const foreign=cut(merged,state.stationAreas.flatMap((a)=>a.ranges)).length;
+  groupCoverage.push({complexId:group.id,unassignedRanges:missing.length,rangesOwnedByOtherGroup:foreign});
 }
 if (JSON.stringify([state.tracks,state.junctions,state.turnouts]) !== geometry || JSON.stringify(state.stations.filter((s) => s.kind === "station")) !== passenger) throw new Error("線路・接続または旅客駅が変わった");
 // 川越市の対象範囲を過不足なく所有する。短い接続区間も咽喉部として保持する。
-const kawagoeRanges = state.stationAreas.filter((a) => a.complexId === k.id).flatMap((a) => a.ranges);
+const kawagoeIds = new Set(k.groups.map((g) => g.id));
+const kawagoeRanges = state.stationAreas.filter((a) => kawagoeIds.has(a.complexId)).flatMap((a) => a.ranges);
 const uncovered = cut(scopes,kawagoeRanges);
 if (uncovered.length) throw new Error("川越市構内に未所属区間が残った");
 state.clock.paused = true;

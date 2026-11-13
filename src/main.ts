@@ -10,14 +10,18 @@ import {
   type Camera,
   type MapState,
   type Point,
+  type Station,
+  type StationComplex,
+  type StationKind,
   type TrackGeometry,
   type Viewport,
+  STATION_KINDS,
   STATION_KIND_LABELS,
   FACILITY_USE_LABELS,
   STATION_AREA_LABELS,
   TRACK_KIND_LABELS,
 } from "./simulation/model";
-import { drawMap, type PlacementPreviewState } from "./ui/renderer";
+import { collapsedStationComplexes, drawMap, type PlacementPreviewState } from "./ui/renderer";
 import { createSaveFile, parseMapState, parseSaveFile, serializeSaveFile, validateSaveName, type SaveSlot } from "./simulation/persistence";
 import { isTextEntryTarget, matchesKey, shortcutLabel } from "./ui/keybindings";
 import { getFormationLengthM, type Orientation } from "./simulation/fleet";
@@ -32,7 +36,7 @@ import { buildOperationRoute } from "./simulation/pathfinding";
 import { prepareYardScenario } from "./simulation/yardScenario";
 import { yardPoint } from "./simulation/yard";
 import { renderStationComplexPanel } from "./ui/stationComplexPanel";
-import { stationAreaPoints, type StationAreaCommand } from "./simulation/stationAreas";
+import { stationAreaPoints, stationComplexBounds, type StationAreaCommand } from "./simulation/stationAreas";
 import { renderFacilityPanel } from "./ui/facilityPanel";
 import { renderYardPanel, yardSummary, type YardUiState } from "./ui/yardPanel";
 
@@ -115,6 +119,7 @@ app.innerHTML = `
         <div id="selection" class="selection"><span>線路を選択していません</span></div>
         <div class="group-actions" id="group-actions"><button id="group-create">束を作成</button><button id="group-add">束へ追加</button><button id="group-remove">束から外す</button><button id="group-dissolve">束を解体</button></div>
         <div class="station-actions" id="station-actions"><button id="station-rename">駅名変更</button><button id="station-extend">駅を延長</button><button id="station-merge">駅を統合</button><button id="station-delete" class="danger">駅を撤去</button></div>
+        <section id="station-management" class="station-management" hidden></section>
         <div class="divider"></div>
         <p class="eyebrow operation-title">運行</p>
         <div class="operation-actions">
@@ -170,7 +175,7 @@ const context: CanvasRenderingContext2D = canvasContext;
 const LEGACY_QUICK_SAVE_KEY = "rails-on-rail.map-state.v1";
 const SAVE_SLOTS_KEY = "rails-on-rail.save-slots.v1";
 
-const directMap = ["tojo-depots", "tojo-import", "siding-trial", "tojo-areas"].includes(new URLSearchParams(location.search).get("map") ?? "");
+const directMap = ["tojo-depots", "tojo-import", "siding-trial", "tojo-areas", "tojo-trial"].includes(new URLSearchParams(location.search).get("map") ?? "");
 let homeScreenOpen = !directMap;
 let gameStarted = directMap;
 let state: MapState = createInitialState();
@@ -548,6 +553,17 @@ function downloadSave(save: SaveSlot): void {
 
 function selectAt(screenPoint: Point, additive = false): void {
   const world = screenToWorld(screenPoint, camera, viewport());
+  // 折りたたみ表示中のグループは、所属駅部品の代わりに一つの部品として選ぶ。
+  const complex = [...collapsedStationComplexes(state, camera)]
+    .map(([id, bounds]) => ({ id, distance: Math.hypot(bounds.center.x - world.x, bounds.center.y - world.y) }))
+    .filter((item) => item.distance <= 16 / camera.zoom)
+    .sort((first, second) => first.distance - second.distance)[0];
+  if (complex) {
+    const group = state.stationComplexes.find((g) => g.id === complex.id)!;
+    focusStationComplex(complex.id, undefined, true);
+    showMessage(appMode === "facility" ? `${group.name}を選択しました。拡大すると所属する駅部品が見える` : `${group.name}を選択しました。「施設」タブで区分を編集できる`);
+    return;
+  }
   const nearestTrack = findNearestTrackPoint(state, world, 12 / camera.zoom);
   const station = state.stations
     .map((item) => {
@@ -2640,20 +2656,25 @@ function attachVehicleDutyPanelEvents(): void {
   }
 }
 
-function focusStationComplex(complexId: string, areaId?: string): void {
+function focusStationComplex(complexId: string | null, areaId?: string, keepCamera = false): void {
   selectedStationComplexId = complexId; selectedStationAreaId = areaId ?? null;
+  // グループ一覧へ戻る場合は選択だけ解除し、カメラは動かさない。
+  if (!complexId) { selectedStationIds.clear(); selectedTrackIds.clear(); selectedStationId = null; updateUi(); return; }
   const area = state.stationAreas.find((a) => a.id === areaId);
   selectedStationIds.clear(); selectedTrackIds.clear(); selectedStationId = area?.stationId ?? null;
   if (selectedStationId) selectedStationIds.add(selectedStationId);
+  // 地図で選んだだけで視点を動かさない。移動は一覧・「構内全体を見る」から行う。
+  if (keepCamera) { updateUi(); return; }
   const areas = area ? [area] : state.stationAreas.filter((a) => a.complexId === complexId);
-  const points = areas.flatMap((a) => stationAreaPoints(state,a));
-  if (points.length) {
-    const minX=Math.min(...points.map((p)=>p.x)),maxX=Math.max(...points.map((p)=>p.x)),minY=Math.min(...points.map((p)=>p.y)),maxY=Math.max(...points.map((p)=>p.y));
-    const panelWidth = 0;
-    const zoom=Math.min(3,Math.max(.05,Math.min((canvas.width-panelWidth-40)/(maxX-minX+60),(canvas.height-100)/(maxY-minY+60))));
-    camera={x:(minX+maxX)/2-panelWidth/2/zoom,y:(minY+maxY)/2,zoom,rotation:0};
-  }
+  fitCameraToAreaPoints(areas.flatMap((a) => stationAreaPoints(state,a)));
   updateUi();
+}
+function fitCameraToAreaPoints(points: Point[]): void {
+  if (!points.length) return;
+  const minX=Math.min(...points.map((p)=>p.x)),maxX=Math.max(...points.map((p)=>p.x)),minY=Math.min(...points.map((p)=>p.y)),maxY=Math.max(...points.map((p)=>p.y));
+  const panelWidth = 0;
+  const zoom=Math.min(3,Math.max(.05,Math.min((canvas.width-panelWidth-40)/(maxX-minX+60),(canvas.height-100)/(maxY-minY+60))));
+  camera={x:(minX+maxX)/2-panelWidth/2/zoom,y:(minY+maxY)/2,zoom,rotation:0};
 }
 function dispatchStationArea(command: StationAreaCommand): void {
   const previousStationId=selectedStationId,previousTrackIds=[...selectedTrackIds];
@@ -2664,12 +2685,78 @@ function dispatchStationArea(command: StationAreaCommand): void {
   else if (command.type.startsWith("stationArea.")) { const area=state.stationAreas.find((a)=>a.id===selectedStationAreaId);if(area)focusStationComplex(area.complexId,area.id);else focusStationComplex(selectedStationComplexId!); }
 }
 
+// 20 m車を前提にした表示用の目安。車両データから計算した値ではない。
+const FORMATION_GUIDES: { label: string; lengthM: number }[] = [{ label: "10両 200 m", lengthM: 200 }, { label: "6両 120 m", lengthM: 120 }, { label: "4両 80 m", lengthM: 80 }];
+
+function stationDetailHtml(station: Station): string {
+  const lengths = station.stopPoints.map((p) => p.endDistanceM - p.startDistanceM);
+  const area = state.stationAreas.find((a) => a.stationId === station.id);
+  const group = area && state.stationComplexes.find((g) => g.id === area.complexId);
+  const direction = { both: "両方向", forward: "順方向", reversed: "逆方向" };
+  const rows = station.stopPoints
+    .map((p) => `<tr><td>${escapeHtml(p.trackId.replace("track-", ""))}</td><td>${(p.endDistanceM - p.startDistanceM).toFixed(1)} m</td><td>${direction[p.direction] ?? p.direction}</td></tr>`)
+    .join("");
+  const kindLabel = station.kind === "station" ? STATION_KIND_LABELS[station.kind] : `${STATION_KIND_LABELS[station.kind]} · ${FACILITY_USE_LABELS[station.facilityUse ?? "unknown"]}`;
+  const fits = FORMATION_GUIDES.map((guide) => `${guide.label} ${lengths.filter((l) => l >= guide.lengthM).length}/${lengths.length}線`).join(" · ");
+  return `<strong>${escapeHtml(station.name)}</strong>`
+    + `<span>${kindLabel} · ${station.id.replace("station-", "停車場 ")} · 停車地点 ${station.stopPoints.length}箇所</span>`
+    + (station.unresolvedReason ? `<span>ホーム未確定：${escapeHtml(station.unresolvedReason)}</span>` : "")
+    + (rows ? `<table class="detail-table"><thead><tr><th>線路</th><th>長さ</th><th>方向</th></tr></thead><tbody>${rows}</tbody></table>` : "<span>停車地点がありません</span>")
+    + (lengths.length ? `<span>最長 ${Math.max(...lengths).toFixed(1)} m / 最短 ${Math.min(...lengths).toFixed(1)} m</span><span>${fits}</span><small>編成長は20 m車を前提にした表示上の目安で、車両データの計算ではない。</small>` : "")
+    + `<span>所属：${group && area ? `${escapeHtml(group.name)} / ${escapeHtml(area.name)}` : "グループ外"}</span>`;
+}
+
+// 施設タブの管理上の編集。再構築で入力状態を失わないよう署名で抑制する。
+function renderStationManagement(station: Station | null): void {
+  const root = required<HTMLElement>("#station-management");
+  const linkedArea = station && state.stationAreas.find((a) => a.stationId === station.id);
+  root.hidden = appMode !== "facility" || !station;
+  if (root.hidden || !station) return;
+  const signature = JSON.stringify([station.id, station.kind, station.facilityUse, linkedArea?.id]);
+  if (root.dataset.signature === signature) return;
+  root.dataset.signature = signature;
+  if (linkedArea) {
+    root.innerHTML = `<p class="eyebrow">停車場の管理</p><small>「${escapeHtml(linkedArea.name)}」の構内領域が種別と用途を決めている。左の領域編集から変更する。</small>`;
+    return;
+  }
+  root.innerHTML = `<p class="eyebrow">停車場の管理</p><label>停車場の種別<select id="station-kind" aria-label="停車場の種別">`
+    + STATION_KINDS.map((kind) => `<option value="${kind}" ${kind === station.kind ? "selected" : ""}>${STATION_KIND_LABELS[kind]}</option>`).join("")
+    + `</select></label><small>運転上の区分を変える。線路・範囲は変えない。</small>`;
+  root.querySelector<HTMLSelectElement>("#station-kind")!.addEventListener("change", (event) => {
+    const kind = (event.target as HTMLSelectElement).value as StationKind;
+    // 拒否されると種別が変わらず署名も変わらないため、選択欄が失敗した値のまま残る。
+    if (!dispatch({ type: "station.setKind", stationId: station.id, kind })) {
+      delete root.dataset.signature;
+      renderStationManagement(station);
+    }
+  });
+}
+
+function stationComplexDetailHtml(group: StationComplex): string {
+  const areas = state.stationAreas.filter((a) => a.complexId === group.id);
+  const tracks = new Set(areas.flatMap((a) => a.ranges.map((r) => r.trackId)));
+  const stopPoints = areas.flatMap((a) => state.stations.find((s) => s.id === a.stationId)?.stopPoints ?? []);
+  const lengths = stopPoints.map((p) => p.endDistanceM - p.startDistanceM);
+  const bounds = stationComplexBounds(state, group.id);
+  const roles = [...new Set(areas.map((a) => a.role))]
+    .map((role) => `${STATION_AREA_LABELS[role]} ${areas.filter((a) => a.role === role).length}`)
+    .join(" · ");
+  return `<strong>${escapeHtml(group.name)}</strong>`
+    + `<span>構内・車両基地グループ · ${group.id.replace("complex-", "")}</span>`
+    + `<span>${areas.length}用途領域 · ${tracks.size}線 · 停車区間 ${stopPoints.length}箇所</span>`
+    + `<span>${roles || "領域なし"}</span>`
+    + (lengths.length ? `<span>最長の停止可能長 ${Math.max(...lengths).toFixed(1)} m</span>` : "<span>停止可能区間なし</span>")
+    + (bounds ? `<span>構内の広がり 約${bounds.spanM.toFixed(0)} m</span>` : "")
+    + `<small>停止可能長は分岐支障を除いた区間。領域の長さそのものではない。</small>`;
+}
+
 function updateUi(): void {
   const hasComplexes = state.stationComplexes.length > 0;
   required<HTMLElement>(".operation-title").hidden = appMode === "facility";
   required<HTMLElement>(".operation-actions").hidden = appMode === "facility";
   const areaView = appMode === "facility" && hasComplexes;
-  if (areaView && !state.stationComplexes.some((g) => g.id === selectedStationComplexId)) selectedStationComplexId = state.stationComplexes[0].id;
+  // 施設タブを開いただけで特定グループの編集へ入らない。消えたグループの選択だけ解除する。
+  if (selectedStationComplexId && !state.stationComplexes.some((g) => g.id === selectedStationComplexId)) { selectedStationComplexId = null; selectedStationAreaId = null; }
   const complexPanel = required<HTMLElement>("#complex-panel");
   complexPanel.hidden = appMode !== "facility";
   if (appMode === "facility") renderStationComplexPanel(complexPanel, state, selectedStationComplexId, selectedStationAreaId, selectedStationId, [...selectedTrackIds], focusStationComplex, dispatchStationArea);
@@ -2830,10 +2917,13 @@ function updateUi(): void {
     : selectedTracks.length > 1
       ? `<strong>${selectedTracks.length}本を選択</strong><span>${[...new Set(selectedTracks.map((track) => findTrackGroup(state, track.id)?.name ?? "単独線路"))].join(" / ")}</span><span>Shift＋クリックで選択を追加・解除できます</span>`
       : `<span>線路を選択していません</span>`;
+  // 施設タブでは駅の停車地点を一覧で示す。所属グループ・領域と編成長の目安も添える。
+  if (appMode === "facility" && selectedStation) required("#selection").innerHTML = stationDetailHtml(selectedStation);
+  renderStationManagement(appMode === "facility" ? selectedStation ?? null : null);
   if (areaView) {
     const group=state.stationComplexes.find((g)=>g.id===selectedStationComplexId),area=state.stationAreas.find((a)=>a.id===selectedStationAreaId);
     if(area){const linked=state.stations.find((st)=>st.id===area.stationId);required("#selection").innerHTML=`<strong>${escapeHtml(area.name)}</strong><span>${escapeHtml(group?.name??"")} / ${STATION_AREA_LABELS[area.role]}</span><span>${new Set(area.ranges.map((r)=>r.trackId)).size}線・${area.ranges.length}所属区間 / ${linked?.stopPoints.length??0}停車可能区間 · 最長${Math.max(0,...(linked?.stopPoints.map((p)=>p.endDistanceM-p.startDistanceM)??[])).toFixed(1)} m</span><span>${["transit","throat","unknown","headshunt"].includes(area.role)?"長期留置不可":"分岐支障を除いた停車区間を使用"}</span><span>${escapeHtml(area.note??"")}</span>`;}
-    else if(group)required("#selection").innerHTML=`<strong>${escapeHtml(group.name)}</strong><span>構内・車両基地グループ</span><span>${state.stationAreas.filter((a)=>a.complexId===group.id).length}用途領域を管理</span>`;
+    else if(group)required("#selection").innerHTML=stationComplexDetailHtml(group);
   }
   const selectedGroups = [...new Set(selectedTracks.flatMap((track) => findTrackGroup(state, track.id)?.id ?? []))];
   const ungroupedCount = selectedTracks.filter((track) => !findTrackGroup(state, track.id)).length;
@@ -3055,15 +3145,16 @@ requestAnimationFrame(frame);
 async function openTojoDepotMap(): Promise<void> {
   try {
     const imported = new URLSearchParams(location.search).get("map") === "tojo-import";
+    const playableTrial = new URLSearchParams(location.search).get("map") === "tojo-trial";
     const sidingTrial = new URLSearchParams(location.search).get("map") === "siding-trial";
-    if (!imported && !sidingTrial) { const regions=await fetch("/api/server-saves/osm-tobu-tojo-areas.json");if(regions.ok){await openTojoStationAreas(regions);return;} }
-    const response = await fetch(sidingTrial ? "/api/server-saves/osm-tojo-siding-trial.json" : imported ? "/api/server-saves/osm-tojo-import-regression.json" : "/api/server-saves/osm-tobu-tojo-depots.json");
-    if (!response.ok) throw new Error("地図がない。npm run generate:tojo-depots を実行する");
+    if (!imported && !sidingTrial && !playableTrial) { const regions=await fetch("/api/server-saves/osm-tobu-tojo-areas.json");if(regions.ok){await openTojoStationAreas(regions);return;} }
+    const response = await fetch(playableTrial ? "/api/server-saves/osm-tojo-playable-trial.json" : sidingTrial ? "/api/server-saves/osm-tojo-siding-trial.json" : imported ? "/api/server-saves/osm-tojo-import-regression.json" : "/api/server-saves/osm-tobu-tojo-depots.json");
+    if (!response.ok) throw new Error(playableTrial ? "地図がない。npm run generate:tojo-trial を実行する" : "地図がない。npm run generate:tojo-depots を実行する");
     state = parseSaveFile(await response.text()).state;
     state.clock.paused = true;
     resetTransientState();
     setMode("map");
-    document.title = sidingTrial ? "上福岡｜小側線の保守車往復試験" : imported ? "東上線｜OSM再取込・未確定駅を表示" : "東武東上線｜車庫・留置線（OSM）";
+    document.title = playableTrial ? "東上線｜近似再現・短編成試験" : sidingTrial ? "上福岡｜小側線の保守車往復試験" : imported ? "東上線｜OSM再取込・未確定駅を表示" : "東武東上線｜車庫・留置線（OSM）";
     const focus = (name: string) => {
       const station = state.stations.find((s) => s.name === name);
       const tracks = station ? station.stopPoints.map((p) => ({ points: [p.startPosition, p.endPosition] })) : state.tracks;
@@ -3075,22 +3166,24 @@ async function openTojoDepotMap(): Promise<void> {
       selectedStationId = station?.id ?? null;
       updateUi();
     };
-    const nav = document.createElement("div"); nav.className = "map-bookmarks";
-    const title = document.createElement("strong"); title.textContent = sidingTrial ? "上福岡｜小側線の操作試験" : imported ? "東上線｜OSM再取込（未確定駅を表示）" : "東上線・越生線｜車庫・留置線（OSM）";
-    const select = document.createElement("select"); select.setAttribute("aria-label", imported ? "駅・施設へ移動" : "車庫・留置線へ移動");
-    for (const name of ["全線", ...state.stations.filter((s) => imported || s.kind !== "station").map((s) => s.name)]) {
+    const nav = document.createElement("div"); nav.className = "map-bookmarks review-helper";
+    const helperBadge = document.createElement("span"); helperBadge.className = "review-helper-badge"; helperBadge.textContent = "検証用UI";
+    nav.setAttribute("role", "region"); nav.setAttribute("aria-label", "検証用の地図移動補助");
+    const title = document.createElement("strong"); title.textContent = playableTrial ? "東上線｜近似再現（番線・短編成は仮設定）" : sidingTrial ? "上福岡｜小側線の操作試験" : imported ? "東上線｜OSM再取込（未確定駅を表示）" : "東上線・越生線｜車庫・留置線（OSM）";
+    const select = document.createElement("select"); select.setAttribute("aria-label", imported || playableTrial ? "駅・施設へ移動" : "車庫・留置線へ移動");
+    for (const name of ["全線", ...state.stations.filter((s) => imported || playableTrial || s.kind !== "station").map((s) => s.name)]) {
       const option = document.createElement("option"); option.value = name; option.textContent = name; select.append(option);
     }
-    const requested = new URLSearchParams(location.search).get("focus") ?? (sidingTrial ? "上福岡留置線" : imported ? "全線" : "森林公園検修区");
+    const requested = new URLSearchParams(location.search).get("focus") ?? (playableTrial ? "池袋" : sidingTrial ? "上福岡留置線" : imported ? "全線" : "森林公園検修区");
     select.value = requested;
     select.addEventListener("change", () => focus(select.value));
-    nav.append(title, select);
+    nav.append(helperBadge, title, select);
     document.querySelector(".canvas-wrap")!.append(nav);
     focus(select.value);
-    showMessage(sidingTrial ? "試験用保守車を配置済み。左下の「本線へ出て側線へ戻る」で往復を開始できる" : imported ? "全駅の存在を保持。ホーム未確定の駅は位置と理由を表示し、車両の配置には使用できない" : "OSM取込配線を基に作成。赤い範囲は選択した留置施設。上の一覧で施設へ移動できる");
+    showMessage(playableTrial ? "池袋に試験用短編成を配置済み。上下の仮経路を用意。ダイヤ運転と競合制御は未設定" : sidingTrial ? "試験用保守車を配置済み。左下の「本線へ出て側線へ戻る」で往復を開始できる" : imported ? "全駅の存在を保持。ホーム未確定の駅は位置と理由を表示し、車両の配置には使用できない" : "OSM取込配線を基に作成。赤い範囲は選択した留置施設。上の一覧で施設へ移動できる");
   } catch (error) { showMessage((error as Error).message, true); }
 }
-if (new URLSearchParams(location.search).get("map") === "tojo-depots" || new URLSearchParams(location.search).get("map") === "tojo-import" || new URLSearchParams(location.search).get("map") === "siding-trial") void openTojoDepotMap();
+if (["tojo-depots", "tojo-import", "siding-trial", "tojo-trial"].includes(new URLSearchParams(location.search).get("map") ?? "")) void openTojoDepotMap();
 
 async function openTojoStationAreas(loadedResponse?: Response): Promise<void> {
   try {
@@ -3098,11 +3191,15 @@ async function openTojoStationAreas(loadedResponse?: Response): Promise<void> {
     if(!response.ok)throw new Error("構内領域マップがない。npm run generate:tojo-areas を実行する");
     state=parseSaveFile(await response.text()).state;state.clock.paused=true;resetTransientState();setMode("map");
     document.title="東上線｜構内・車両基地の領域分割";
-    const requested=new URLSearchParams(location.search).get("focus")??"complex-kawagoeshi";
-    const area=state.stationAreas.find((a)=>a.id===requested || a.name===requested);
-    const prefixArea=state.stationAreas.find((a)=>a.name.startsWith(`${requested}・`));
-    const group=area?.complexId??prefixArea?.complexId??state.stationComplexes.find((g)=>g.id===requested)?.id??state.stationComplexes[0].id;
-    focusStationComplex(group,area?.id);showMessage("構内の区分を確認・編集するには、最上部の「施設」タブを開く");
+    // focus指定がなければどのグループも選択せず、全グループが入る位置へ合わせる。
+    const requested=new URLSearchParams(location.search).get("focus");
+    if(requested){
+      const area=state.stationAreas.find((a)=>a.id===requested || a.name===requested);
+      const prefixArea=state.stationAreas.find((a)=>a.name.startsWith(`${requested}・`));
+      const group=area?.complexId??prefixArea?.complexId??state.stationComplexes.find((g)=>g.id===requested)?.id??state.stationComplexes[0].id;
+      focusStationComplex(group,area?.id);
+    } else fitCameraToAreaPoints(state.stationAreas.flatMap((a)=>stationAreaPoints(state,a)));
+    showMessage("構内の区分を確認・編集するには、最上部の「施設」タブを開く");
   } catch(error){showMessage((error as Error).message,true);}
 }
 if(new URLSearchParams(location.search).get("map")==="tojo-areas")void openTojoStationAreas();

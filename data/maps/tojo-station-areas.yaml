@@ -1,20 +1,26 @@
 formatVersion: 1
 source: saves/osm-tobu-tojo-depots.json
 output: saves/osm-tobu-tojo-areas.json
-maximumTracksPerArea: 6
+# 旅客ホームはグループへ入れず、独立した駅として保持する。通常運行の設備と車庫・検修・保守の
+# 設備を同じグループへ混ぜない。1グループは1種類の設備とその分岐接続通路だけを持つ。
 complexes:
-  - { id: complex-shimoitabashi, name: 下板橋駅・留置施設, station: 下板橋, facilities: [{ name: 下板橋留置線, role: stabling }] }
-  - { id: complex-kamiitabashi, name: 上板橋駅構内, station: 上板橋, facilities: [{ name: 上板橋引上げ線, role: headshunt }] }
-  - { id: complex-narimasu, name: 成増駅構内, station: 成増, facilities: [{ name: 成増構内側線, role: stabling }] }
-  - { id: complex-shiki, name: 志木駅・留置施設, station: 志木, facilities: [{ name: 志木留置・引上げ線, role: stabling }] }
-  - { id: complex-kamifukuoka, name: 上福岡駅・留置施設, station: 上福岡, facilities: [{ name: 上福岡留置線, role: stabling }] }
-  - { id: complex-shinrin, name: 森林公園駅・検修区, station: 森林公園, facilities: [{ name: 森林公園検修区, role: workshop }, { name: 森林公園駅構内側線, role: stabling }] }
-  - { id: complex-ogawa, name: 小川町駅・留置施設, station: 小川町, facilities: [{ name: 小川町留置線, role: stabling }] }
-  - { id: complex-wako, name: 和光市駅・和光検車区（参考）, station: 和光市, facilities: [{ name: 和光検車区（東京メトロ・参考）, role: workshop }] }
+  - { id: complex-shimoitabashi, name: 下板橋留置線, station: 下板橋, facilities: [{ name: 下板橋留置線, role: stabling }] }
+  - { id: complex-kamiitabashi, name: 上板橋引上げ線, station: 上板橋, facilities: [{ name: 上板橋引上げ線, role: headshunt }] }
+  - { id: complex-narimasu, name: 成増構内側線, station: 成増, facilities: [{ name: 成増構内側線, role: stabling }] }
+  - { id: complex-shiki, name: 志木留置・引上げ線, station: 志木, facilities: [{ name: 志木留置・引上げ線, role: stabling }] }
+  - { id: complex-kamifukuoka, name: 上福岡留置線, station: 上福岡, facilities: [{ name: 上福岡留置線, role: stabling }] }
+  - { id: complex-shinrin, name: 森林公園検修区, station: 森林公園, facilities: [{ name: 森林公園検修区, role: workshop }] }
+  - { id: complex-shinrin-sidings, name: 森林公園駅構内側線, station: 森林公園, facilities: [{ name: 森林公園駅構内側線, role: stabling }] }
+  - { id: complex-ogawa, name: 小川町留置線, station: 小川町, facilities: [{ name: 小川町留置線, role: stabling }] }
+  - { id: complex-wako, name: 和光検車区（東京メトロ・参考）, station: 和光市, facilities: [{ name: 和光検車区（東京メトロ・参考）, role: workshop }] }
 kawagoe:
-  id: complex-kawagoeshi
-  name: 川越市駅・旧工場側構内
   station: 川越市
+  # 川越市も運行用の待機・引上げと、保守用側線、旧工場側の車庫・作業線を別グループへ分ける。
+  # 残余の分岐区間は、北側を保守側、南側を旧工場側へ所属させる。
+  groups:
+    - { id: complex-kawagoeshi-sidings, name: 川越市駅構内側線, areas: [station-west, south-shunt] }
+    - { id: complex-kawagoeshi-service, name: 川越市北側保守用側線, areas: [north-service], residual: north }
+    - { id: complex-kawagoeshi-works, name: 川越市旧工場側構内, areas: [old-west, old-east], residual: south }
   replaceFacilities: [川越市構内側線（OSM・経路未確認）]
   mainlineMarginM: 350
   scopeTracks: [135, 136, 137, 138, 139, 140, 141, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 261, 292, 294]

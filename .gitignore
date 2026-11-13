@@ -15,3 +15,6 @@ saves/osm-*.html
 saves/osm-*.bak
 
 saves/osm-*.png
+
+# 調査用の公開時刻表控え・派生データ。利用条件確定前に配布しない。
+saves/research-tojo-*

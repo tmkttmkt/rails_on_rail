@@ -1,15 +1,29 @@
 ---
 md_class: status
-updated: 2026-11-08
+updated: 2026-11-11
 ---
 
 # Task一覧
 
 現在は手動で管理する。Taskを作成または更新した変更と同時に、この一覧も更新する。
 
-現在のEpic: [ベカソヴォの操車場を動かす](epics/yard-operations.md)。以下の既存Phase -1 Taskは履歴・残作業として保持する。
+現在の目標は[東上線の土休日一日再現](planning/tojo-holiday-implementation.md)。ベカソヴォ操車場は次の実装対象である。以下の既存Taskは履歴・残作業として保持する。
 
 ## 進行中
+
+- `review`: [無意味に分かれた留置線群をまとめる](tasks/2026-11-11_merge-split-siding-groups.md)（同一線路を同じ領域へ、本数上限を撤去。54→35領域）
+
+- `review`: [施設タブで駅グループと駅を詳しく調べ、編集できるようにする](tasks/2026-11-11_inspect-and-edit-stations-in-facility.md)（停車地点一覧・役割内訳・種別変更・領域とグループの削除を追加）
+
+- `review`: [旅客ホーム長を合成180 mからホーム端実測へ戻す](tasks/2026-11-11_restore-platform-edge-ranges.md)（113件中106件を実測化。対象33駅の31駅が200 m以上に。未実測7件は180 mのまま）
+
+- `review`: [駅グループを地図に表示し、施設タブの自動選択をやめる](tasks/2026-11-11_show-station-groups-on-map.md)（倍率でグループと駅部品を切替、施設タブはグループ一覧から開始。画面確認待ち）
+
+- `review`: [営業経路の分岐点での暗黙反転を防ぐ](tasks/2026-11-11_fix-directional-operation-routing.md)（営業・入換の有向探索を共用、試験セーブ再生成済み）
+
+- `review`: [本番との差分に合った検証用UIを整える](tasks/2026-11-11_distinguish-review-workspace.md)（専用補助にラベル・枠を追加し、他UI向けの表示規約を整備）
+
+- `review`: [東上線の近似再現に使う線路・駅・試験編成を整える](tasks/2026-11-10_prepare-tojo-playable-foundation.md)（33駅・上下仮経路・短編成の試験セーブを生成。画面確認待ち）
 
 - `review`: [ホーム画面を追加する](tasks/2026-11-10_home-screen.md)
 
@@ -54,6 +68,8 @@ updated: 2026-11-08
 | `review` | [AI生成マップの確定前に接続状態を確認する](tasks/2026-08-13_inspect-ai-map-connectivity.md) | [Phase -1](epics/phase-minus-one.md) |
 
 ## 完了
+
+- `done`: [池袋〜小川町の土休日ダイヤと設備を調査する](tasks/2026-11-10_research-tojo-holiday-timetable.md)（追加指示で近似再現用の資料整理として終了。厳密な全件照合は後続候補）
 
 - `done`: [編成全体の留置範囲と分岐支障を検査する](tasks/2026-11-07_validate-stabling-placement.md)（Phase -1）
 

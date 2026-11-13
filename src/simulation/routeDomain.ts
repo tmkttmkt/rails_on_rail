@@ -30,12 +30,11 @@ export function buildRouteStops(state: MapState, stopInputs: CreateRouteStopInpu
 
     const stopPointIdx = input.stopPointIndex ?? 0;
     const stopPoint =
-      (input.stopPointId ? station.stopPoints.find((sp) => sp.id === input.stopPointId) : undefined) ||
-      station.stopPoints.find((sp) => sp.trackId === input.trackId) ||
-      station.stopPoints[stopPointIdx] ||
-      station.stopPoints[0];
+      input.stopPointId ? station.stopPoints.find((sp) => sp.id === input.stopPointId && sp.trackId === input.trackId) :
+      input.stopPointIndex !== undefined ? station.stopPoints[stopPointIdx] :
+      station.stopPoints.find((sp) => sp.trackId === input.trackId);
 
-    if (!stopPoint) {
+    if (!stopPoint || stopPoint.trackId !== input.trackId) {
       throw new Error(`駅「${station.name}」に線路 ${input.trackId} の停車地点がありません`);
     }
 
